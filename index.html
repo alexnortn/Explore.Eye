@@ -1,11 +1,35 @@
 <html>
 	<head>
 		<title>Explore.Eye Test</title>
-		<style>canvas { width: 100%; height: 100% }</style>
+		<style>
+			canvas {
+				width: 500px;
+				height: 1000px;
+			}
+		</style>
 	</head>
 	<body>
 		<script src="js/threejs.min.js"></script>
 		<script>
+			function webglAvailable() {
+				try {
+					var canvas = document.createElement( 'canvas' );
+					return !!( window.WebGLRenderingContext && (
+						canvas.getContext( 'webgl' ) ||
+						canvas.getContext( 'experimental-webgl' ) )
+					);
+				} catch ( e ) {
+					return false;
+				}
+			}
+
+			if ( webglAvailable() ) {
+				renderer = new THREE.WebGLRenderer();
+			} else {
+				renderer = new THREE.CanvasRenderer();
+			}
+
+		
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera(175, window.innerWidth/window.innerHeight, 0.1, 1000);
 
