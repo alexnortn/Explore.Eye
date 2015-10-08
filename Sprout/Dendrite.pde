@@ -4,9 +4,9 @@
 
 // Recursive Tree (w/ ArrayList)
 
-// A class for one branch in the system
+// A class for one dendrite in the system
 
-class Branch {
+class Dendrite {
   // Each has a location, velocity, and timer 
   // We could implement this same idea with different data
   PVector start;
@@ -17,7 +17,7 @@ class Branch {
 
   boolean growing = true;
 
-  Branch(PVector l, PVector v, float n) {
+  Dendrite(PVector l, PVector v, float n) {
     start = l.get();
     end = l.get();
     vel = v.get();
@@ -39,7 +39,7 @@ class Branch {
   }
 
   // Did the timer run out?
-  boolean timeToBranch() {
+  boolean timeToDendrite() {
     timer--;
     if (timer < 0 && growing) {
       growing = false;
@@ -50,8 +50,8 @@ class Branch {
     }
   }
 
-  // Create a new branch at the current location, but change direction by a given angle
-  Branch branch(float angle) {
+  // Create a new dendrite at the current location, but change direction by a given angle
+  Dendrite dendrite(float angle) {
     // What is my current heading
     float theta = vel.heading2D();
     // What is my current speed
@@ -60,8 +60,8 @@ class Branch {
     theta += radians(angle);
     // Look, polar coordinates to cartesian!!
     PVector newvel = new PVector(mag*cos(theta),mag*sin(theta));
-    // Return a new Branch
-    return new Branch(end,newvel,timerstart*0.66f);
+    // Return a new Dendrite
+    return new Dendrite(end,newvel,timerstart*0.66f);
   }
 
 }
