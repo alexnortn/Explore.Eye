@@ -7,17 +7,15 @@
 // A class for a leaf that gets placed at the end of 
 // the last branches
 
-class Leaf {
-  PVector loc;
+class Neuron {
+  Node node;
 
-  Leaf(PVector l) {
-    loc = l.get();
+  Neuron(Node n) {
+    // neuron = n.pos();
   }
 
   void display() {
-    noStroke();
-    fill(50,100);
-    ellipse(loc.x,loc.y,4,4);   
+    
   }
 }
 
