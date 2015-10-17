@@ -14,14 +14,16 @@ class Node {
   PVector vel;
   float timer;
   float timerstart;
-  boolean size = false;
   int depth;
 
   Node parent;
   ArrayList<Node> children = new ArrayList<Node>();
+  ArrayList<Node> adj_list = new ArrayList<Node>();
 
   boolean growing = true;
-  boolean midpt = false;
+  boolean leaf = true;
+  boolean size = false;
+  boolean start_point = false;
 
   Node(PVector p, PVector v, float n, int l) {
     start = p.get();
@@ -56,13 +58,17 @@ class Node {
     stroke(0);
     line(start.x,start.y,end.x,end.y);
     // Debugging Dots
-    fill(100,255,0);
-    ellipse(start.x, start.y, 10, 10);
+    // fill(100,255,0);
+    // ellipse(start.x, start.y, 10, 10);
     if (size) {
       fill(255,0,0);
-      ellipse(start.x,start.y,5,5);
+      ellipse(start.x,start.y,15,15);
       fill(0,255,0);
-      ellipse(end.x, end.y, 5, 5);
+      ellipse(end.x, end.y, 15, 15);
+    }
+    if (start_point) {
+      fill(0,0,0);
+      ellipse(end.x, end.y, 15, 15);
     }
   }
 
@@ -93,6 +99,7 @@ class Node {
     // Return a new Node
     Node node = new Node(end,newvel,timerstart*0.66f, depth);
     this.addChild(node);
+    this.leaf = false;
     return node;
   }
 

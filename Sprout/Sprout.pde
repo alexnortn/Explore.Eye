@@ -15,14 +15,14 @@ ArrayList<PVector> vertices;
 ArrayList<Synapse> leaves;
 
 void setup() {
-  size(640,360);
-  // fullScreen();
+  // size(640,360);
+  fullScreen();
   background(255);
   // Setup the arraylist and add one dendrite to it
   nodes = new ArrayList<Node>();
   leaves = new ArrayList<Synapse>();
   // Create root node
-  Node n = new Node(new PVector(width/2,height/2),new PVector(1,0),50,0);
+  Node n = new Node(new PVector(width/2,height/2),new PVector(3,3),50,0);
   // Add to arraylist
   nodes.add(n); 
   // A dendrite has a starting location, a starting "velocity", and a starting "timer"
@@ -51,7 +51,7 @@ void draw() {
     n.render();
     // If it's ready to split
     if (n.timeToNode()) {
-      if (n.depth < 4 ) {
+      if (n.depth < 10 ) {
         //neuron.remove(i);             // Delete it
         nodes.add(n.branch(30));   // Add one going right
         nodes.add(n.branch(-30));   // Add one going left
@@ -69,30 +69,38 @@ void draw() {
 }
 
 // Recurse through nodes to specified depth
-Node recurse(Node c, int depth) {
-  if(c.parent == null) {
+Node recurse(Node n, int depth) {
+  if(n.parent == null) {
     println("Node is Root");
-    return c;
+    return n;
   }
   else if (depth == 0) {
-    println("End Recursion : "+c);
-    return c;
+    println("End Recursion : "+n);
+    return n;
   }
   else {
-    return recurse(c.parent, depth-1);
+    return recurse(n.parent, depth-1);
   }
 }
 
 // Recurse through nodes to root
-Node recurseMore(Node c) {
-  if(c.parent == null) {
-    println("Currently At Root Node: " + c);
-    return c;
+ArrayList<Node> recurseMore(Node n, ArrayList<Node> p) {
+  ArrayList<Node> path = new ArrayList<Node>();
+  path = p;
+  if(n.parent == null) {
+    return path;
   }
   else {
-    println("Currently At Node: " + c + " And at Depth : " + c.depth);
-    return recurseMore(c.parent);
+    path.add(n.parent);
+    return recurseMore(n.parent, path);
   }
+}
+
+ArrayList<Node> adj(Node n) {
+  ArrayList<Node> path = new ArrayList<Node>();
+  n.start_point = true;
+  recurseMore(n, path);
+  return path;
 }
 
 void keyPressed() {
@@ -101,12 +109,15 @@ void keyPressed() {
     setup();
   }
   if(keyCode == 48) {
-    // Find random point
-    int index = int(random(0,(nodes.size()-1)));
-    Node n = nodes.get(index);
-    println(n.parent);
-    n.size = true;
-    recurseMore(n);
+    for (Node n: nodes) {
+      if (n.leaf) {
+        for (Node nn: adj(n)) {
+          nn.size = true;
+        }
+        println(adj(n));
+        break;
+      }
+    }
   }
   if(keyCode == 49) {
     // Find roots
