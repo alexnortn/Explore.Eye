@@ -12,7 +12,7 @@ class Neuron {
   PVector position;
   float   neuron_timer;
   float   neuron_timerstart;
-  int 	  neuron_depth;
+  int 	  max_depth;
   int     num_branches;
 
 	// An arraylist that will keep track of all current dendritees
@@ -21,11 +21,11 @@ class Neuron {
 
   boolean growing = true;
 
-  Neuron(PVector pos, int num_b, float t, int depth) {
+  Neuron(PVector pos, int num_b, float t, int mxd) {
     position = pos.get();
     num_branches = num_b;
     neuron_timer = t;
-    neuron_depth = depth;
+    max_depth = mxd;
     // Setup the arraylist and add one dendrite to it
     nodes = new ArrayList<Node>();
     leaves = new ArrayList<Synapse>();
@@ -57,7 +57,7 @@ class Neuron {
       n.render();
       // If it's ready to split
       if (n.timeToNode()) {
-        if (n.depth < this.neuron_depth ) {
+        if (n.depth < this.max_depth ) {
           if(((n.depth+1) % 2 == 0)&&(n.depth != 2)) {
             //neuron.remove(i);             // Delete it
             nodes.add(n.branch(30));   // Add one going right

@@ -1,43 +1,41 @@
+// Growing Neurons
+// Alex Norton :: 2015
+// https://github.com/alexnortn/Explore.Eye
+
+// Recursive Neuron (w/ ArrayList)
 
 
-// Neuron neuron;
-int num_neurons = 1;
-Neuron[] neurons = new Neuron[num_neurons];
-PVector neuron_position;
+
+
+Nnn nnn;
 
 void setup() {
   // size(1000,800);
   fullScreen();
   background(255);
 
-  for (int i=0; i < num_neurons; i++) {
-    neuron_position = new PVector(width/2,height/2);
-    int branches = int(random(3,10));
-    float neuron_time = random(10,40);
-    int depth = int(random(5,12));
-
-    neurons[i] = new Neuron(neuron_position, branches, neuron_time, depth);
-    neurons[i].neuron_setup();
-
-  }
+  // Initialize the nnn
+  nnn = new Nnn(10);
+  nnn.initialize();
 
 }
 
 void draw() {
   background(255);
-  for (Neuron neuron: neurons) {
-    neuron.update();
-  }
-
+  // Run the nnn
+  nnn.run();
 }
 
+
+// Interactions :: Mostly debugging
+
 void keyPressed() {
-  if(keyCode == TAB) {
+  if(keyCode == TAB) { // Key:TAB
     // Refresh
     setup();
   }
-  if(keyCode == 48) {
-    for (Neuron neuron: neurons) {
+  if(keyCode == 48) { // Key:0
+    for (Neuron neuron: nnn.neurons) {
       for (Node n: neuron.nodes) {
         if (n.leaf) {
           for (Node nn: neuron.adj(n)) {
@@ -49,50 +47,53 @@ void keyPressed() {
       }
     }
   }
-  if(keyCode == 49) {
+  if(keyCode == 49) { // Key:1
     // Find roots
-    for (Neuron neuron: neurons) {
+    for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
         if (n.parent == null) println("Node " + i + " is a root : "+n + " : " + n.end.mag() + " "+ n.end.heading());
       }
     }
   }
-  if(keyCode == 50) {
+  if(keyCode == 50) { // Key:2
     // Find leaves
-    for (Neuron neuron: neurons) {
+    for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
         if (n.children.size() == 0) println("Node " + i + " is a leaf : "+n + " : " + n.end.mag() + " "+ n.end.heading());
       }
     }
   }
-  if(keyCode == 51) {
+  if(keyCode == 51) { // Key:3
     // Find roots
-    for (Neuron neuron: neurons) {
+    for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
         if (n.depth == 2) println("Node " + i + " is at depth : "+n.depth + " : " + n.end.mag() + " "+ n.end.heading());
       }
     }
   }
-  if(keyCode == 52) {
+  if(keyCode == 52) { // Key:4
     // Find roots
-    for (Neuron neuron: neurons) {
+    for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
         if (n.depth == 3) println("Node " + i + " is at depth : "+n.depth + " : " + n.end.mag() + " "+ n.end.heading());
       }
     }
   }
-  if(keyCode == 53) {
+  if(keyCode == 53) { // Key:5
     // Find roots
-    for (Neuron neuron: neurons) {
+    for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
         if (n.depth == 4) println("Node " + i + " is at depth : "+n.depth + " : " + n.end.mag() + " "+ n.end.heading());
       }
     }
+  }
+  if(keyCode == 54) { // Key:6
+    nnn.add_neuron(1);
   }      
 }
 

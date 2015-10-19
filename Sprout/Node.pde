@@ -1,39 +1,39 @@
-// The Nature of Code
-// Daniel Shiffman  
-// http://natureofcode.com
+// Growing Neurons
+// Alex Norton :: 2015
+// https://github.com/alexnortn/Explore.Eye
 
-// Recursive Tree (w/ ArrayList)
+// Recursive Neuron (w/ ArrayList)
 
-// A class for one dendrite in the system
+// A class for extending a Neuron with Sum Weighted Forces across nodes
 
 class Node {
   // Each has a location, velocity, and timer 
-  // We could implement this same idea with different data
   PVector start;
   PVector end;
   PVector vel;
-  float timer;
-  float timerstart;
-  int depth;
+  float   timer;
+  float   timerstart;
+  int     depth;
 
-  Node parent;
+  Node    parent;
+
   ArrayList<Node> children = new ArrayList<Node>();
   ArrayList<Node> adj_list = new ArrayList<Node>();
 
   PVector[] curve_pts= new PVector[4]; 
 
-  boolean growing = true;
+  boolean   growing = true;
   boolean leaf = true;
   boolean size = false;
   boolean start_point = false;
 
-  Node(PVector p, PVector v, float n, int l) {
+  Node (PVector p, PVector v, float n, int d) {
     start = p.get();
     end = p.get();
     vel = v.get();
     timerstart = n;
     timer = timerstart;
-    depth = l;
+    depth = d;
     depth++;
     // println(this + " : " + depth);
   }
