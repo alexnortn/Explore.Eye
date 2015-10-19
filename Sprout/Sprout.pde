@@ -52,7 +52,7 @@ void draw() {
     // If it's ready to split
     if (n.timeToNode()) {
       if (n.depth < 10 ) {
-        if(n.depth % 2 == 0) {
+        if((n.depth % 2 == 0)&&(n.depth != 2)) {
           //neuron.remove(i);             // Delete it
           nodes.add(n.branch(30));   // Add one going right
           nodes.add(n.branch(-30));   // Add one going left

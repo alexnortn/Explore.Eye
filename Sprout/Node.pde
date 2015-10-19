@@ -119,7 +119,11 @@ class Node {
 
   // Did the timer run out?
   boolean timeToNode() {
-    timer--;
+    if ((depth == 2)||(depth == 3)) {
+      timer -= 2;
+    } else {
+      timer--;
+    }
     if (timer < 0 && growing) {
       growing = false;
       // Set branch point
@@ -141,7 +145,7 @@ class Node {
     // Look, polar coordinates to cartesian!!
     PVector newvel = new PVector(mag*cos(theta),mag*sin(theta));
     // Return a new Node
-    Node node = new Node(end,newvel,timerstart*0.66f, depth);
+    Node node = new Node(end,newvel,timerstart*0.85f, depth);
     this.addChild(node);
     this.leaf = false;
     return node;
