@@ -21,7 +21,7 @@ class Neuron {
 
   boolean growing = true;
 
-  Neuron(PVector pos, int num_b, float t, int mxd) {
+  Neuron (PVector pos, int num_b, float t, int mxd) {
     position = pos.get();
     num_branches = num_b;
     neuron_timer = t;

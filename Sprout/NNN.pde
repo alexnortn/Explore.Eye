@@ -33,6 +33,7 @@ class Nnn {
     	neuron.update();
   	}
   }
+
   // Add neuron to the network
   void add_neuron(int count) {
     for (int i=0; i < count; i++) {
@@ -46,4 +47,13 @@ class Nnn {
 	    println("neurons.size: "+neurons.size());
 	  }
   }
+
+   // Remove neuron to the network
+  void rmv_neuron(int count) {
+    for (int i=0; i < count; i++) {
+	    int j = int(random(neurons.size()));
+	    neurons.remove(j);
+	  }
+  }
+
 }

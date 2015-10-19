@@ -24,6 +24,28 @@ void draw() {
   background(255);
   // Run the nnn
   nnn.run();
+  plus_minus();
+}
+
+void plus_minus() {
+  if (frameCount % 120 == 0) {
+    nnn.rmv_neuron(1);
+    nnn.add_neuron(1);
+    recurse();
+  }
+}
+
+void recurse() {
+  Neuron neuron = nnn.neurons.get(int(random(nnn.neurons.size())));
+  for (Node n: neuron.nodes) {
+    if (n.leaf) {
+      for (Node nn: neuron.adj(n)) {
+        nn.size = true;
+      }
+      println(neuron.adj(n));
+      break;
+    }
+  }
 }
 
 
@@ -94,7 +116,10 @@ void keyPressed() {
   }
   if(keyCode == 54) { // Key:6
     nnn.add_neuron(1);
-  }      
+  }
+  if(keyCode == 55) { // Key:7
+    nnn.rmv_neuron(1);
+  }        
 }
 
 
