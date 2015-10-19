@@ -15,23 +15,23 @@ ArrayList<PVector> vertices;
 ArrayList<Synapse> leaves;
 
 void setup() {
-  // size(640,360);
-  fullScreen();
+  size(1000,800);
+  // fullScreen();
   background(255);
   // Setup the arraylist and add one dendrite to it
   nodes = new ArrayList<Node>();
   leaves = new ArrayList<Synapse>();
   // Create root node
-  Node n = new Node(new PVector(width/2,height/2),new PVector(3,3),50,0);
+  Node n = new Node(new PVector(width/2,height/2),new PVector(1,1),50,0);
   // Add to arraylist
   nodes.add(n); 
   // A dendrite has a starting location, a starting "velocity", and a starting "timer"
   int num_dendrites = int(random(5,8));
-  // int num_dendrites = 5;
+  // int num_dendrites = 1;
   float theta = TWO_PI / num_dendrites;  
   // Create seed dendritees
   for(int i = 0; i < num_dendrites; i++) {
-    float start_angle = (theta * i) + radians(random(-10,10));
+    float start_angle = (theta * i);
     float x = sin(start_angle);
     float y = cos(start_angle);
     // Branch a bunch of times
@@ -52,9 +52,13 @@ void draw() {
     // If it's ready to split
     if (n.timeToNode()) {
       if (n.depth < 10 ) {
-        //neuron.remove(i);             // Delete it
-        nodes.add(n.branch(30));   // Add one going right
-        nodes.add(n.branch(-30));   // Add one going left
+        if(n.depth % 2 == 0) {
+          //neuron.remove(i);             // Delete it
+          nodes.add(n.branch(30));   // Add one going right
+          nodes.add(n.branch(-30));   // Add one going left
+        } else {
+          nodes.add(n.branch(random(-30,30)));
+        }
       } 
       else {
         // leaves.add(new Synapse(b.end));
@@ -123,35 +127,35 @@ void keyPressed() {
     // Find roots
     for(int i=0; i < nodes.size()-1; i++) {
       Node n = nodes.get(i);
-      if (n.parent == null) println("Node " + i + " is a root : "+n);
+      if (n.parent == null) println("Node " + i + " is a root : "+n + " : " + n.end.mag() + " "+ n.end.heading());
     }
   }
   if(keyCode == 50) {
     // Find leaves
     for(int i=0; i < nodes.size()-1; i++) {
       Node n = nodes.get(i);
-      if (n.children.size() == 0) println("Node " + i + " is a leaf : "+n);
+      if (n.children.size() == 0) println("Node " + i + " is a leaf : "+n + " : " + n.end.mag() + " "+ n.end.heading());
     }
   }
   if(keyCode == 51) {
     // Find roots
     for(int i=0; i < nodes.size()-1; i++) {
       Node n = nodes.get(i);
-      if (n.depth == 2) println("Node " + i + " is at depth : "+n.depth);
+      if (n.depth == 2) println("Node " + i + " is at depth : "+n.depth + " : " + n.end.mag() + " "+ n.end.heading());
     }
   }
     if(keyCode == 52) {
     // Find roots
     for(int i=0; i < nodes.size()-1; i++) {
       Node n = nodes.get(i);
-      if (n.depth == 3) println("Node " + i + " is at depth : "+n.depth);
+      if (n.depth == 3) println("Node " + i + " is at depth : "+n.depth + " : " + n.end.mag() + " "+ n.end.heading());
     }
   }
     if(keyCode == 53) {
     // Find roots
     for(int i=0; i < nodes.size()-1; i++) {
       Node n = nodes.get(i);
-      if (n.depth == 4) println("Node " + i + " is at depth : "+n.depth);
+      if (n.depth == 4) println("Node " + i + " is at depth : "+n.depth + " : " + n.end.mag() + " "+ n.end.heading());
     }
   }      
 }

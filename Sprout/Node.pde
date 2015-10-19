@@ -20,6 +20,8 @@ class Node {
   ArrayList<Node> children = new ArrayList<Node>();
   ArrayList<Node> adj_list = new ArrayList<Node>();
 
+  PVector[] curve_pts= new PVector[4]; 
+
   boolean growing = true;
   boolean leaf = true;
   boolean size = false;
@@ -33,7 +35,7 @@ class Node {
     timer = timerstart;
     depth = l;
     depth++;
-    println(this + " : " + depth);
+    // println(this + " : " + depth);
   }
 
   void addChild(Node x) {
@@ -52,14 +54,56 @@ class Node {
     }
   }
 
+  // Set curve points
+  PVector pt_0() {
+    PVector p_0 = new PVector();
+    if (this.parent.parent == null) {
+      p_0 = this.start.get();       
+      return p_0;
+    } else {
+      return p_0.set(this.parent.start.x,this.parent.start.y);
+    }
+  }
+  PVector pt_1() {
+    PVector p_1 = new PVector();
+      return p_1.set(this.start.x,this.start.y);
+  }
+    PVector pt_2() {
+    PVector p_2 = new PVector();
+      return p_2.set(this.end.x,this.end.y);
+  }
+  PVector pt_3() {
+    PVector p_3 = new PVector();
+    if (this.leaf) {
+      // If we're at the end, create a random vector
+      // println("0");
+      return p_3.random2D();
+    } else {
+      if (this.children.size()==1){
+        // println("1");
+        return p_3.set(this.children.get(0).end.x,this.children.get(0).end.y);
+      } else if (this.children.size()>1) {
+          for(int i=0; i<this.children.size(); i++) {
+            p_3.add(this.children.get(i).end);
+          }
+          // println("2");
+          p_3.div(children.size());
+          return p_3;
+      } else {
+        // println("3");
+        return p_3.set(this.end.x,this.end.y);
+      }
+    }
+  }
+
   // Draw a dot at location
   void render() {
-    // Render fractal lines
+    // Basic Fractal Lines
     stroke(0);
-    line(start.x,start.y,end.x,end.y);
-    // Debugging Dots
-    // fill(100,255,0);
-    // ellipse(start.x, start.y, 10, 10);
+    noFill();
+    // line(start.x,start.y,end.x,end.y);
+    // Render Curves
+    curve(pt_0().x,pt_0().y,pt_1().x,pt_1().y,pt_2().x,pt_2().y,pt_2().x,pt_2().y);
     if (size) {
       fill(255,0,0);
       ellipse(start.x,start.y,15,15);
