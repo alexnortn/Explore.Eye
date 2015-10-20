@@ -40,8 +40,8 @@ class Node {
     acceleration = new PVector(0,0);
     r = 6;
     wandertheta = 0;
-    maxspeed = 5;       // Default 2
-    maxforce = 0.000175;    // Default 0.05
+    maxspeed = 3;       // Default 2
+    maxforce = 0.05;    // Default 0.05
     timerstart = n;
     timer = timerstart;
     depth = d;
@@ -198,9 +198,9 @@ class Node {
     PVector ini = seek(findRoot(this)).mult(-1); // Root Node (multiply by -1 to repel)
     PVector wan = wander();             // Wander
     // Arbitrarily weight these forces
-    sep.mult(2.0);
+    sep.mult(1.0);
     ini.mult(1.0);
-    wan.mult(2.0);
+    wan.mult(1.0);
     // Add the force vectors to acceleration
     applyForce(sep);
     applyForce(ini);
