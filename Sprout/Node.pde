@@ -9,8 +9,13 @@
 class Node {
   // Each has a location, velocity, and timer 
   PVector start;
-  PVector end;
+  PVector location;
   PVector velocity;
+  PVector acceleration;
+  float   r;
+  float   wandertheta;
+  float   maxforce;    // Maximum steering force
+  float   maxspeed;    // Maximum speed
   float   timer;
   float   timerstart;
   int     depth;
@@ -29,13 +34,17 @@ class Node {
 
   Node (PVector p, PVector v, float n, int d) {
     start = p.get();
-    end = p.get();
+    location = p.get();
     velocity = v.get();
+    acceleration = new PVector(0,0);
+    r = 6;
+    wandertheta = 0;
+    maxspeed = 2;
+    maxforce = 0.05;
     timerstart = n;
     timer = timerstart;
     depth = d;
     depth++;
-    // println(this + " : " + depth);
   }
 
   void addChild(Node x) {
@@ -45,13 +54,6 @@ class Node {
 
   void addParent(Node x) {
     x.addChild(this);
-  }
-
-  // Move location
-  void update() {
-    if (growing) {
-      end.add(velocity);
-    }
   }
 
   // Set curve points
@@ -70,87 +72,33 @@ class Node {
   }
     PVector pt_2() {
     PVector p_2 = new PVector();
-      return p_2.set(this.end.x,this.end.y);
+      return p_2.set(this.location.x,this.location.y);
   }
   PVector pt_3() {
     PVector p_3 = new PVector();
     if (this.leaf) {
-      // If we're at the end, create a random vector
+      // If we're at the location, create a random vector
       // println("0");
       return p_3.random2D();
     } else {
       if (this.children.size()==1){
         // println("1");
-        return p_3.set(this.children.get(0).end.x,this.children.get(0).end.y);
+        return p_3.set(this.children.get(0).location.x,this.children.get(0).location.y);
       } else if (this.children.size()>1) {
           for(int i=0; i<this.children.size(); i++) {
-            p_3.add(this.children.get(i).end);
+            p_3.add(this.children.get(i).location);
           }
           // println("2");
           p_3.div(children.size());
           return p_3;
       } else {
         // println("3");
-        return p_3.set(this.end.x,this.end.y);
+        return p_3.set(this.location.x,this.location.y);
       }
     }
   }
 
-  // Draw a dot at location
-  void render() {
-    // Basic Fractal Lines
-    stroke(0);
-    noFill();
-    // line(start.x,start.y,end.x,end.y);
-    // Render Curves
-    curve(pt_0().x,pt_0().y,pt_1().x,pt_1().y,pt_2().x,pt_2().y,pt_2().x,pt_2().y);
-    if (size) {
-      fill(255,0,0);
-      ellipse(start.x,start.y,15,15);
-      fill(0,255,0);
-      ellipse(end.x, end.y, 15, 15);
-    }
-    if (start_point) {
-      fill(0,0,0);
-      ellipse(end.x, end.y, 15, 15);
-    }
-  }
-
-
-  // Did the timer run out?
-  boolean timeToNode() {
-    if ((depth == 2)||(depth == 3)) {
-      timer -= 2;
-    } else {
-      timer--;
-    }
-    if (timer < 0 && growing) {
-      growing = false;
-      // Set branch point
-      return true;
-    } 
-    else {
-      return false;
-    }
-  }
-
-    // Method to update location
-  void update() {
-    // Update velocity
-    velocity.add(acceleration);
-    // Limit speed
-    velocity.limit(maxspeed);
-    location.add(velocity);
-    // Reset accelertion to 0 each cycle
-    acceleration.mult(0);
-  }
-
-  // Simple method to sum forces
-  void applyForce(PVector force) {
-    acceleration.add(force);
-  }
-
-  void wander() {
+  PVector wander() {
     float wanderR = 25;         // Radius for our "wander circle"
     float wanderD = 80;         // Distance for our "wander circle"
     float change = 0.3;
@@ -166,16 +114,18 @@ class Node {
 
     PVector circleOffSet = new PVector(wanderR*cos(wandertheta+h),wanderR*sin(wandertheta+h));
     PVector target = PVector.add(circleloc,circleOffSet);
-    seek(target);
-
+    
     // Render wandering circle, etc. 
-    if (debug) drawWanderStuff(location,circleloc,target,wanderR);
+    // if (debug) drawWanderStuff(location,circleloc,target,wanderR);
+    
+    return seek(target);
+
   }  
 
   // A method that calculates and applies a steering force towards a target
   // STEER = DESIRED MINUS VELOCITY
   // Consider using to attract towards another cell or synapse
-  void seek(PVector target) {
+  PVector seek(PVector target) {
     PVector desired = PVector.sub(target,location);  // A vector pointing from the location to the target
 
     // Normalize desired and scale to maximum speed
@@ -185,10 +135,10 @@ class Node {
     PVector steer = PVector.sub(desired,velocity);
     steer.limit(maxforce);  // Limit to maximum steering force
 
-    applyForce(steer);
+    return steer;
   }
 
-    // Separation
+  // Separation
   // Method checks for nearby nodes and steers away
   PVector separate (ArrayList<Node> nodes) {
     float desiredseparation = 25.0f;
@@ -196,7 +146,7 @@ class Node {
     int count = 0;
     // For every node in the system that is a leaf, check if it's too close
     for (Node other : nodes) {
-      if (node.leaf) {
+      if (other.leaf) {
         float d = PVector.dist(location,other.location);
         // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
         if ((d > 0) && (d < desiredseparation)) {
@@ -225,14 +175,19 @@ class Node {
     return steer;
   }
 
+  // Simple method to sum forces
+  void applyForce(PVector force) {
+    acceleration.add(force);
+  }
+
   // We accumulate a new acceleration each time based on three rules
   void expand(ArrayList<Node> nodes) {
-    PVector sep = separate(nodes);   // Separation
-    PVector ini = this.start;                // Initial Heading
-    PVector wan = wander();   // Cohesion
+    PVector sep = separate(nodes);      // Separation
+    PVector ini = seek(findRoot(this)).mult(-1); // Root Node (multiply by -1 to repel)
+    PVector wan = wander();             // Wander
     // Arbitrarily weight these forces
     sep.mult(1.5);
-    ini.mult(1.0);
+    ini.mult(10.0);
     wan.mult(1.0);
     // Add the force vectors to acceleration
     applyForce(sep);
@@ -240,9 +195,84 @@ class Node {
     applyForce(wan);
   }
 
+  // Method to update location
+  void update() {
+    if (growing) {
+      // Update velocity
+      velocity.add(acceleration);
+      println(velocity);
+      // Limit speed
+      velocity.limit(maxspeed);
+      location.add(velocity);
+      // Reset accelertion to 0 each cycle
+      acceleration.mult(0);
+    }
+  }
+
+  // Draw a dot at location
+  void render() {
+    // Basic Fractal Lines
+    stroke(0);
+    noFill();
+    // line(start.x,start.y,location.x,location.y);
+    // Render Curves
+    curve(pt_0().x,pt_0().y,pt_1().x,pt_1().y,pt_2().x,pt_2().y,pt_2().x,pt_2().y);
+    if (size) {
+      fill(255,0,0);
+      ellipse(start.x,start.y,15,15);
+      fill(0,255,0);
+      ellipse(location.x, location.y, 15, 15);
+    }
+    if (start_point) {
+      fill(0,0,0);
+      ellipse(location.x, location.y, 15, 15);
+    }
+  }
+
+  void run(ArrayList<Node> nodes) {
+    expand(nodes);
+    update();
+    render();
+  }
+
+  // Recurse through nodes to root
+  PVector findRoot(Node n) {
+    if(n.parent == null) {
+      return n.start;
+    }
+    else {
+      return findRoot(n.parent);
+    }
+  }
+
+  // Did the timer run out?
+  boolean timeToNode() {
+    if ((depth == 2)||(depth == 3)) {
+      timer -= 2;
+    } else {
+      timer--;
+    }
+    if (timer < 0 && growing) {
+      growing = false;
+      // Set branch point
+      return true;
+    } 
+    else {
+      return false;
+    }
+  }
+
   // Create a new dendrite at the current location, but change direction by a given angle
-  Node branch() {
-    Node node = new Node(end,velocity,timerstart*0.85f, depth);
+  Node branch(float angle) {
+    // What is my current heading
+    float theta = velocity.heading2D();
+    // What is my current speed
+    float mag = velocity.mag();
+    // Turn me
+    theta += radians(angle);
+    // Polar coordinates to cartesian!!
+    PVector newvel = new PVector(mag*cos(theta),mag*sin(theta));
+    Node node = new Node(location,newvel,timerstart*0.85f, depth);
     this.addChild(node);
     this.leaf = false;
     // Return a new Node

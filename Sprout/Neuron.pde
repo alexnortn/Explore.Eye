@@ -4,12 +4,12 @@
 
 // Recursive Tree (w/ ArrayList)
 
-// A class for a leaf that gets placed at the end of 
+// A class for a leaf that gets placed at the location of 
 // the last branches
 
 class Neuron {
 
-  PVector position;
+  PVector location;
   float   neuron_timer;
   float   neuron_timerstart;
   int 	  max_depth;
@@ -21,9 +21,9 @@ class Neuron {
 
   boolean growing = true;
 
-  Neuron (PVector pos, int num_b, float t, int mxd) {
-    position = pos.get();
-    num_branches = num_b;
+  Neuron (PVector loc, int b, float t, int mxd) {
+    location = loc.get();
+    num_branches = b;
     neuron_timer = t;
     max_depth = mxd;
     // Setup the arraylist and add one dendrite to it
@@ -32,8 +32,8 @@ class Neuron {
   }
 
   void neuron_setup() {
-    PVector start_velocity = new PVector(2,2);
-    Node n = new Node(this.position, start_velocity, neuron_timer, 0);
+    PVector start_velocity = new PVector(5,5); // Change this value to determine simulation speed
+    Node n = new Node(this.location, start_velocity, this.neuron_timer, 0);
     // Add to arraylist
     nodes.add(n); 
     float theta = TWO_PI / num_branches;  
@@ -44,6 +44,7 @@ class Neuron {
       float y = cos(start_angle);
       // Branch a bunch of times
       nodes.add(n.branch(degrees(start_angle)));
+      // nodes.add(n.branch());
     }
   }
 
@@ -53,21 +54,20 @@ class Neuron {
     for (int i = nodes.size()-1; i >= 1; i--) {
       // Get the dendrite, update and draw it
       Node n = nodes.get(i);
-      n.update();
-      n.render();
+      n.run(nodes);
       // If it's ready to split
       if (n.timeToNode()) {
         if (n.depth < this.max_depth ) {
           if(((n.depth+1) % 2 == 0)&&(n.depth != 2)) {
             //neuron.remove(i);             // Delete it
-            nodes.add(n.branch(30));   // Add one going right
-            nodes.add(n.branch(-30));   // Add one going left
+            nodes.add(n.branch(0));   // Add one going right
+            nodes.add(n.branch(0));   // Add one going left
           } else {
-            nodes.add(n.branch(random(-30,30)));
+            nodes.add(n.branch(0));
           }
         } 
         else {
-          // leaves.add(new Synapse(b.end));
+          // leaves.add(new Synapse(b.location));
         }
       }
     }

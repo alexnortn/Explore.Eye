@@ -74,7 +74,7 @@ void keyPressed() {
     for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
-        if (n.parent == null) println("Node " + i + " is a root : "+n + " : " + n.end.mag() + " "+ n.end.heading());
+        if (n.parent == null) println("Node " + i + " is a root : "+n + " : " + n.location.mag() + " "+ n.location.heading());
       }
     }
   }
@@ -83,7 +83,7 @@ void keyPressed() {
     for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
-        if (n.children.size() == 0) println("Node " + i + " is a leaf : "+n + " : " + n.end.mag() + " "+ n.end.heading());
+        if (n.children.size() == 0) println("Node " + i + " is a leaf : "+n + " : " + n.location.mag() + " "+ n.location.heading());
       }
     }
   }
@@ -92,7 +92,7 @@ void keyPressed() {
     for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
-        if (n.depth == 2) println("Node " + i + " is at depth : "+n.depth + " : " + n.end.mag() + " "+ n.end.heading());
+        if (n.depth == 2) println("Node " + i + " is at depth : "+n.depth + " : " + n.location.mag() + " "+ n.location.heading());
       }
     }
   }
@@ -101,7 +101,7 @@ void keyPressed() {
     for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
-        if (n.depth == 3) println("Node " + i + " is at depth : "+n.depth + " : " + n.end.mag() + " "+ n.end.heading());
+        if (n.depth == 3) println("Node " + i + " is at depth : "+n.depth + " : " + n.location.mag() + " "+ n.location.heading());
       }
     }
   }
@@ -110,7 +110,7 @@ void keyPressed() {
     for (Neuron neuron: nnn.neurons) {
       for(int i=0; i < neuron.nodes.size()-1; i++) {
         Node n = neuron.nodes.get(i);
-        if (n.depth == 4) println("Node " + i + " is at depth : "+n.depth + " : " + n.end.mag() + " "+ n.end.heading());
+        if (n.depth == 4) println("Node " + i + " is at depth : "+n.depth + " : " + n.location.mag() + " "+ n.location.heading());
       }
     }
   }

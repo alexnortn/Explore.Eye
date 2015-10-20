@@ -4,7 +4,7 @@
 
 // Recursive Tree (w/ ArrayList)
 
-// A class for a leaf that gets placed at the end of 
+// A class for a leaf that gets placed at the location of 
 // the last branches
 
 class Synapse {
