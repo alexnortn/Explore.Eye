@@ -18,8 +18,8 @@ class Nnn {
 
   void initialize() {
   	for (int i=0; i < num_neurons; i++) {
-	    neuron_position = new PVector(random(width),random(height));
-	    int branches = int(random(5,10));
+	    neuron_position = new PVector(width/2,height/2);
+	    int branches = int(random(7,12));
 	    float neuron_time = random(10,40);
 	    int depth = int(random(5,12));
 	    // Initialize array of Neuron objects
@@ -38,7 +38,7 @@ class Nnn {
   void add_neuron(int count) {
     for (int i=0; i < count; i++) {
 	    neuron_position = new PVector(random(width),random(height));
-	    int branches = int(random(5,10));
+	    int branches = int(random(7,12));
 	    float neuron_time = random(10,40);
 	    int depth = int(random(5,12));
 	    // Initialize array of Neuron objects
@@ -47,6 +47,17 @@ class Nnn {
 	    println("neurons.size: "+neurons.size());
 	  }
   }
+
+  // Add neuron to the network
+  void add_neuronn(PVector pos) {
+    neuron_position = new PVector(pos.x,pos.y);
+    int branches = int(random(7,12));
+    float neuron_time = random(10,40);
+    int depth = int(random(5,12));
+    neurons.add(new Neuron(neuron_position, branches, neuron_time, depth));
+    neurons.get(neurons.size()-1).neuron_setup(); 
+    println("neurons.size: "+neurons.size());
+	}
 
    // Remove neuron to the network
   void rmv_neuron(int count) {

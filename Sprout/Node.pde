@@ -27,10 +27,11 @@ class Node {
 
   PVector[] curve_pts= new PVector[4]; 
 
-  boolean   growing = true;
+  boolean growing = true;
   boolean leaf = true;
   boolean size = false;
   boolean start_point = false;
+  boolean dw = false;
 
   Node (PVector p, PVector v, float n, int d) {
     start = p.get();
@@ -39,8 +40,8 @@ class Node {
     acceleration = new PVector(0,0);
     r = 6;
     wandertheta = 0;
-    maxspeed = 2;
-    maxforce = 0.05;
+    maxspeed = 5;       // Default 2
+    maxforce = 0.000175;    // Default 0.05
     timerstart = n;
     timer = timerstart;
     depth = d;
@@ -116,10 +117,21 @@ class Node {
     PVector target = PVector.add(circleloc,circleOffSet);
     
     // Render wandering circle, etc. 
-    // if (debug) drawWanderStuff(location,circleloc,target,wanderR);
+    if(dw) drawWanderStuff(location,circleloc,target,wanderR);
     
     return seek(target);
 
+  }
+
+  // A method just to draw the circle associated with wandering
+  void drawWanderStuff(PVector location, PVector circle, PVector target, float rad) {
+    stroke(100); 
+    noFill();
+    ellipseMode(CENTER);
+    ellipse(circle.x,circle.y,rad*2,rad*2);
+    ellipse(target.x,target.y,4,4);
+    line(location.x,location.y,circle.x,circle.y);
+    line(circle.x,circle.y,target.x,target.y);
   }  
 
   // A method that calculates and applies a steering force towards a target
@@ -141,12 +153,12 @@ class Node {
   // Separation
   // Method checks for nearby nodes and steers away
   PVector separate (ArrayList<Node> nodes) {
-    float desiredseparation = 25.0f;
+    float desiredseparation = 50.0f;
     PVector steer = new PVector(0,0,0);
     int count = 0;
     // For every node in the system that is a leaf, check if it's too close
     for (Node other : nodes) {
-      if (other.leaf) {
+      // if (other.leaf) {
         float d = PVector.dist(location,other.location);
         // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
         if ((d > 0) && (d < desiredseparation)) {
@@ -157,7 +169,7 @@ class Node {
           steer.add(diff);
           count++;            // Keep track of how many
         }
-      }
+      // }
     }
     // Average -- divide by how many
     if (count > 0) {
@@ -186,9 +198,9 @@ class Node {
     PVector ini = seek(findRoot(this)).mult(-1); // Root Node (multiply by -1 to repel)
     PVector wan = wander();             // Wander
     // Arbitrarily weight these forces
-    sep.mult(1.5);
-    ini.mult(3.0);
-    wan.mult(1.0);
+    sep.mult(2.0);
+    ini.mult(1.0);
+    wan.mult(2.0);
     // Add the force vectors to acceleration
     applyForce(sep);
     applyForce(ini);
@@ -273,7 +285,7 @@ class Node {
     theta += radians(angle);
     // Polar coordinates to cartesian!!
     PVector newvel = new PVector(mag*cos(theta),mag*sin(theta));
-    Node node = new Node(location,newvel,timerstart*random(0.75,0.85f), depth);
+    Node node = new Node(location,newvel,timerstart*random(0.8,0.85f), depth);
     this.addChild(node);
     this.leaf = false;
     // Return a new Node

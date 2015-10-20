@@ -12,10 +12,12 @@ Nnn nnn;
 void setup() {
   // size(1000,800);
   fullScreen();
-  background(255);
+  background(25);
+  // frameRate(5);
+  noCursor();
 
   // Initialize the nnn
-  nnn = new Nnn(15);
+  nnn = new Nnn(1);
   nnn.initialize();
 
 }
@@ -24,7 +26,8 @@ void draw() {
   background(25);
   // Run the nnn
   nnn.run();
-  plus_minus();
+  // plus_minus();
+  iterate();
 }
 
 void plus_minus() {
@@ -32,6 +35,12 @@ void plus_minus() {
     nnn.rmv_neuron(1);
     nnn.add_neuron(1);
     recurse();
+  }
+}
+
+void iterate() {
+  if (frameCount % 180 == 0) {
+    setup();
   }
 }
 
@@ -114,12 +123,22 @@ void keyPressed() {
       }
     }
   }
-  if(keyCode == 54) { // Key:6
-    nnn.add_neuron(1);
+  if(keyCode == 54) { // Key:7
+    nnn.add_neuron(1); 
   }
-  if(keyCode == 55) { // Key:7
+  if(keyCode == 55) { // Key:8
     nnn.rmv_neuron(1);
-  }        
+  }
+  if(keyCode == 32) { // Key:SPACE
+    for (Node n: nnn.neurons.get(0).nodes) {
+      n.dw = !n.dw;
+    }
+  }          
+}
+
+void mousePressed() {
+  PVector mousePos = new PVector(mouseX, mouseY);
+  nnn.add_neuronn(mousePos);
 }
 
 

@@ -32,7 +32,7 @@ class Neuron {
   }
 
   void neuron_setup() {
-    PVector start_velocity = new PVector(5,5); // Change this value to determine simulation speed
+    PVector start_velocity = new PVector(2,2); // Change this value to determine simulation speed
     Node n = new Node(this.location, start_velocity, this.neuron_timer, 0);
     // Add to arraylist
     nodes.add(n); 
@@ -63,7 +63,7 @@ class Neuron {
             nodes.add(n.branch(10));   // Add one going right
             nodes.add(n.branch(-10));   // Add one going left
           } else {
-            nodes.add(n.branch(0));
+            nodes.add(n.branch(int(random(-20,20))));
           }
         } 
         else {
