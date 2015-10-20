@@ -15,13 +15,13 @@ void setup() {
   background(255);
 
   // Initialize the nnn
-  nnn = new Nnn(10);
+  nnn = new Nnn(15);
   nnn.initialize();
 
 }
 
 void draw() {
-  background(255);
+  background(25);
   // Run the nnn
   nnn.run();
   plus_minus();

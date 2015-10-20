@@ -19,7 +19,7 @@ class Nnn {
   void initialize() {
   	for (int i=0; i < num_neurons; i++) {
 	    neuron_position = new PVector(random(width),random(height));
-	    int branches = int(random(3,10));
+	    int branches = int(random(5,10));
 	    float neuron_time = random(10,40);
 	    int depth = int(random(5,12));
 	    // Initialize array of Neuron objects
@@ -38,7 +38,7 @@ class Nnn {
   void add_neuron(int count) {
     for (int i=0; i < count; i++) {
 	    neuron_position = new PVector(random(width),random(height));
-	    int branches = int(random(3,10));
+	    int branches = int(random(5,10));
 	    float neuron_time = random(10,40);
 	    int depth = int(random(5,12));
 	    // Initialize array of Neuron objects

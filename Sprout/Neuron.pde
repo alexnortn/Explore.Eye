@@ -60,8 +60,8 @@ class Neuron {
         if (n.depth < this.max_depth ) {
           if(((n.depth+1) % 2 == 0)&&(n.depth != 2)) {
             //neuron.remove(i);             // Delete it
-            nodes.add(n.branch(0));   // Add one going right
-            nodes.add(n.branch(0));   // Add one going left
+            nodes.add(n.branch(10));   // Add one going right
+            nodes.add(n.branch(-10));   // Add one going left
           } else {
             nodes.add(n.branch(0));
           }

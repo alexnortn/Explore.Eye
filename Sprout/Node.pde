@@ -187,7 +187,7 @@ class Node {
     PVector wan = wander();             // Wander
     // Arbitrarily weight these forces
     sep.mult(1.5);
-    ini.mult(10.0);
+    ini.mult(3.0);
     wan.mult(1.0);
     // Add the force vectors to acceleration
     applyForce(sep);
@@ -212,20 +212,21 @@ class Node {
   // Draw a dot at location
   void render() {
     // Basic Fractal Lines
-    stroke(0);
+    stroke(200);
     noFill();
     // line(start.x,start.y,location.x,location.y);
     // Render Curves
     curve(pt_0().x,pt_0().y,pt_1().x,pt_1().y,pt_2().x,pt_2().y,pt_2().x,pt_2().y);
     if (size) {
-      fill(255,0,0);
-      ellipse(start.x,start.y,15,15);
-      fill(0,255,0);
-      ellipse(location.x, location.y, 15, 15);
+      noStroke();
+      fill(200,0,0);
+      ellipse(start.x,start.y,5,5);
+      ellipse(location.x, location.y, 5, 5);
     }
     if (start_point) {
-      fill(0,0,0);
-      ellipse(location.x, location.y, 15, 15);
+      noStroke();
+      fill(200,0,0);
+      ellipse(location.x, location.y, 5, 5);
     }
   }
 
@@ -272,7 +273,7 @@ class Node {
     theta += radians(angle);
     // Polar coordinates to cartesian!!
     PVector newvel = new PVector(mag*cos(theta),mag*sin(theta));
-    Node node = new Node(location,newvel,timerstart*0.85f, depth);
+    Node node = new Node(location,newvel,timerstart*random(0.75,0.85f), depth);
     this.addChild(node);
     this.leaf = false;
     // Return a new Node
