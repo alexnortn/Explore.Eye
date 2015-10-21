@@ -8,21 +8,21 @@
 
 class Node {
   // Each has a location, velocity, and timer 
-  PVector start;
-  PVector location;
-  PVector velocity;
-  PVector acceleration;
-  float   r;
-  float   wandertheta;
-  float   maxforce;    // Maximum steering force
-  float   maxspeed;    // Maximum speed
-  float   inimult;     // Initial offset multiplier
-  float   sepmult;     // Separation multiplier
-  float   timer;
-  float   timerstart;
-  float   wan_const;
-  int     depth;
-  int     max_depth;
+  PVector start,
+          location,
+          velocity,
+          acceleration;
+  float   r,
+          wandertheta,
+          maxforce,    // Maximum steering force
+          maxspeed,    // Maximum speed
+          inimult,     // Initial offset multiplier
+          sepmult,     // Separation multiplier
+          timer,
+          timerstart,
+          wan_const;
+  int     max_depth,
+          depth;
 
   Node    parent;
 
@@ -289,7 +289,7 @@ class Node {
   // Did the timer run out?
   boolean timeToNode() {
     if ((depth == 2)||(depth == 3)) {
-      timer -= sub_t(max_depth);
+      timer -= int(random(2,sub_t(max_depth)));
     } else {
       timer--;
     }

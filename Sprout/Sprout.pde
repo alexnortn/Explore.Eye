@@ -14,8 +14,9 @@ int counter = 0;
 int mxn = 0;
 int avg = 0;
 int all_nodes = 0;
-boolean record = true;
+boolean record = false;
 boolean loop = true;
+boolean frame = true;
 
 void setup() {
   // size(1000,800);
@@ -43,6 +44,7 @@ void draw() {
 
   // plus_minus();
   iterate();
+  if(frame) saveFrame(counter + ":sprout-######.tga");
 }
 
 void plus_minus() {
