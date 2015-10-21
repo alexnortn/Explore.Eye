@@ -39,7 +39,7 @@ class Neuron {
     float theta = TWO_PI / num_branches;  
     // Create seed dendritees
     for(int i = 0; i < num_branches; i++) {
-      float start_angle = (theta * i);
+      float start_angle = (theta * i) + radians(random(-15,15));
       float x = sin(start_angle);
       float y = cos(start_angle);
       // Branch a bunch of times

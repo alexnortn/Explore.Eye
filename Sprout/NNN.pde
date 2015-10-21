@@ -20,7 +20,7 @@ class Nnn {
   	for (int i=0; i < num_neurons; i++) {
 	    neuron_position = new PVector(width/2,height/2);
 	    int branches = int(random(7,15));
-	    float neuron_time = random(5,50);
+	    float neuron_time = random(40,100);
 	    int depth = int(random(5,12));
 	    // Initialize array of Neuron objects
 	    neurons.add(new Neuron(neuron_position, branches, neuron_time, depth));

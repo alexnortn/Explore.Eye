@@ -16,6 +16,8 @@ class Node {
   float   wandertheta;
   float   maxforce;    // Maximum steering force
   float   maxspeed;    // Maximum speed
+  float   inimult;     // Initial offset multiplier
+  float   sepmult;     // Separation multiplier
   float   timer;
   float   timerstart;
   int     depth;
@@ -40,8 +42,8 @@ class Node {
     acceleration = new PVector(0,0);
     r = 6;
     wandertheta = 0;
-    maxspeed = 3;       // Default 2
-    maxforce = 0.15;    // Default 0.05
+    maxspeed = 1.5;       // Default 2
+    maxforce = 1;    // Default 0.05
     timerstart = n;
     timer = timerstart;
     depth = d;
@@ -139,6 +141,9 @@ class Node {
   // Consider using to attract towards another cell or synapse
   PVector seek(PVector target) {
     PVector desired = PVector.sub(target,location);  // A vector pointing from the location to the target
+    // float angle = degrees(desired.heading());
+    // println(angle);
+    // inimult =  map(angle,0,180,0,5);  
 
     // Normalize desired and scale to maximum speed
     desired.normalize();
@@ -165,9 +170,10 @@ class Node {
           // Calculate vector pointing away from neighbor
           PVector diff = PVector.sub(location,other.location);
           diff.normalize();
-          diff.div(d);        // Weight by distance
+          diff.div(d*d);        // Weight by distance
+          sepmult = map((1/(d*d)),0,1,0,5);     // Proportional to Inverse Distance Squared
           steer.add(diff);
-          count++;            // Keep track of how many
+          count++;              // Keep track of how many
         }
       // }
     }
@@ -198,8 +204,8 @@ class Node {
     PVector ini = seek(findRoot(this)).mult(-1); // Root Node (multiply by -1 to repel)
     PVector wan = wander();             // Wander
     // Arbitrarily weight these forces
-    sep.mult(5.0);
-    ini.mult(1.0);
+    sep.mult(1.0);
+    ini.mult(1.5);
     wan.mult(1.0);
     // Add the force vectors to acceleration
     applyForce(sep);
@@ -240,6 +246,14 @@ class Node {
       fill(200,0,0);
       ellipse(location.x, location.y, 5, 5);
     }
+
+    // Debug Neighborhood
+    pushStyle();
+      noStroke();
+      fill(255,10);
+      ellipse(location.x,location.y,50,50);
+      fill(255,255);
+    popStyle();
   }
 
   void run(ArrayList<Node> nodes) {
@@ -251,7 +265,7 @@ class Node {
   // Recurse through nodes to root
   PVector findRoot(Node n) {
     if(n.parent == null) {
-      return n.start;
+      return n.location;
     }
     else {
       return findRoot(n.parent);
@@ -261,12 +275,14 @@ class Node {
   // Did the timer run out?
   boolean timeToNode() {
     if ((depth == 2)||(depth == 3)) {
-      timer -= 2;
+      timer -= 4;
     } else {
       timer--;
     }
     if (timer < 0 && growing) {
       growing = false;
+      // Display Wandering Debug
+      // dw = false;
       // Set branch point
       return true;
     } 

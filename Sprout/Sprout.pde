@@ -11,13 +11,13 @@ import processing.pdf.*;
 
 Nnn nnn;
 int counter = 0;
-boolean record;
+boolean record = false;
 
 void setup() {
   // size(1000,800);
   fullScreen();
   background(25);
-  // frameRate(5);
+  // frameRate(15);
   noCursor();
 
   // Initialize the nnn
@@ -26,7 +26,7 @@ void setup() {
 
   // Record PDF
   String pdf = "Neuron_Itr: " + str(counter);
-  beginRecord(PDF, pdf+".pdf"); 
+  if (record) beginRecord(PDF, pdf+".pdf"); 
 
 }
 
@@ -50,8 +50,8 @@ void plus_minus() {
 }
 
 void iterate() {
-  if (frameCount % 180 == 0) {
-    endRecord();
+  if (frameCount % 240 == 0) {
+    if(record) endRecord();
     setup();
     counter++;
   }
@@ -178,7 +178,7 @@ void keyPressed() {
   }
   if(keyCode == 32) { // Key:SPACE
     for (Node n: nnn.neurons.get(0).nodes) {
-      n.dw = !n.dw;
+      // n.dw = !n.dw;
     }
   }          
 }
