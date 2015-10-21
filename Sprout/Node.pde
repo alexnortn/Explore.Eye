@@ -20,7 +20,9 @@ class Node {
   float   sepmult;     // Separation multiplier
   float   timer;
   float   timerstart;
+  float   wan_const;
   int     depth;
+  int     max_depth;
 
   Node    parent;
 
@@ -35,17 +37,19 @@ class Node {
   boolean start_point = false;
   boolean dw = true;
 
-  Node (PVector p, PVector v, float n, int d) {
+  Node (PVector p, PVector v, float n, int d, int mxd) {
     start = p.get();
     location = p.get();
     velocity = v.get();
     acceleration = new PVector(0,0);
     r = 6;
     wandertheta = 0;
+    wan_const = 1.0;
     maxspeed = 1.5;       // Default 2
-    maxforce = random(0.8,1.1);    // Default 0.05
+    maxforce = random(0.8,1);    // Default 0.05
     timerstart = n;
     timer = timerstart;
+    max_depth = mxd;
     depth = d;
     depth++;
   }
@@ -53,7 +57,7 @@ class Node {
   void addChild(Node x) {
     x.parent = this;
     this.children.add(x);
-  }
+  } 
 
   void addParent(Node x) {
     x.addChild(this);
@@ -206,7 +210,7 @@ class Node {
     // Arbitrarily weight these forces
     sep.mult(1.0);
     ini.mult(1.5);
-    wan.mult(1.0);
+    wan.mult(wan_const);
     // Add the force vectors to acceleration
     applyForce(sep);
     applyForce(ini);
@@ -215,16 +219,13 @@ class Node {
 
   // Method to update location
   void update() {
-    if (growing) {
-      // Update velocity
-      velocity.add(acceleration);
-      println(velocity);
-      // Limit speed
-      velocity.limit(maxspeed);
-      location.add(velocity);
-      // Reset accelertion to 0 each cycle
-      acceleration.mult(0);
-    }
+    // Update velocity
+    velocity.add(acceleration);
+    // Limit speed
+    velocity.limit(maxspeed);
+    location.add(velocity);
+    // Reset accelertion to 0 each cycle
+    acceleration.mult(0);
   }
 
   // Draw a dot at location
@@ -235,6 +236,7 @@ class Node {
     // line(start.x,start.y,location.x,location.y);
     // Render Curves
     curve(pt_0().x,pt_0().y,pt_1().x,pt_1().y,pt_2().x,pt_2().y,pt_2().x,pt_2().y);
+    // Render Path Home
     if (size) {
       noStroke();
       fill(200,0,0);
@@ -246,7 +248,11 @@ class Node {
       fill(200,0,0);
       ellipse(location.x, location.y, 5, 5);
     }
-
+    // Draw Soma
+    pushStyle();
+      fill(200);
+      if (depth == 2) ellipse(start.x,start.y,25,25);
+    popStyle();
     // Debug Neighborhood
     pushStyle();
       noStroke();
@@ -257,8 +263,10 @@ class Node {
   }
 
   void run(ArrayList<Node> nodes) {
-    expand(nodes);
-    update();
+    if (growing) {
+      expand(nodes);
+      update();
+    }
     render();
   }
 
@@ -272,13 +280,21 @@ class Node {
     }
   }
 
+  // Calc T(--)
+  int sub_t(int mxd) {
+    int tt = int(mxd / 1.5);
+    return tt;
+  }
+
   // Did the timer run out?
   boolean timeToNode() {
     if ((depth == 2)||(depth == 3)) {
-      timer -= 3;
+      timer -= sub_t(max_depth);
     } else {
       timer--;
     }
+    // Make leaves go crazy on final level
+    if (depth == (max_depth-2)) wan_const = 3;
     if (timer < 0 && growing) {
       // Display Wandering Debug
       dw = false;
@@ -291,6 +307,27 @@ class Node {
     }
   }
 
+
+  //  // Did the timer run out?
+  // boolean timeToNode() {
+  //   if ((depth == 2)||(depth == 3)) {
+  //     int time_constant = int((this.depth / 2)
+  //     timer -= time_constant;
+  //   } else {
+  //     timer--;
+  //   }
+  //   if (timer < 0 && growing) {
+  //     // Display Wandering Debug
+  //     dw = false;
+  //     growing = false;
+  //     // Set branch point
+  //     return true;
+  //   } 
+  //   else {
+  //     return false;
+  //   }
+  // }
+
   // Create a new dendrite at the current location, but change direction by a given angle
   Node branch(float angle) {
     // What is my current heading
@@ -301,7 +338,7 @@ class Node {
     theta += radians(angle);
     // Polar coordinates to cartesian!!
     PVector newvel = new PVector(mag*cos(theta),mag*sin(theta));
-    Node node = new Node(location,newvel,timerstart*random(0.8,0.85f), depth);
+    Node node = new Node(location,newvel,timerstart*random(0.8,0.85f), depth, max_depth);
     this.addChild(node);
     this.leaf = false;
     // Return a new Node

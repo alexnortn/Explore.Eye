@@ -11,17 +11,21 @@ import processing.pdf.*;
 
 Nnn nnn;
 int counter = 0;
-boolean record = false;
+int mxn = 0;
+int avg = 0;
+int all_nodes = 0;
+boolean record = true;
+boolean loop = true;
 
 void setup() {
   // size(1000,800);
   fullScreen();
-  background(25);
+  // background(25);
   // frameRate(15);
   noCursor();
 
-  // Initialize the nnn
-  nnn = new Nnn(1);
+  // Initialize the nnn with args[0] = neuron amount, args[1] = general complexity
+  nnn = new Nnn(1, 14);
   nnn.initialize();
 
   // Record PDF
@@ -52,6 +56,7 @@ void plus_minus() {
 void iterate() {
   if (frameCount % 360 == 0) {
     if(record) endRecord();
+    avg = avg_node(nnn.neurons.get(0));
     setup();
     counter++;
   }
@@ -70,6 +75,20 @@ void recurse() {
   }
 }
 
+// Quick Max Calc
+int max_node(Neuron n) {
+  if (n.nodes.size() > mxn) mxn = n.nodes.size();
+    return mxn;
+}
+
+// Quick Avg Calc
+int avg_node(Neuron n) {
+  all_nodes += n.nodes.size();
+  avg = int(all_nodes / (counter+1));
+  return avg;
+}
+
+// Simulation Results
 void meta(Neuron n) {
   // Make fonts
   PFont whitney;
@@ -77,18 +96,22 @@ void meta(Neuron n) {
   PFont whitney_m;
   whitney_m = createFont("WhitneyHTF-Medium.otf", 12);
   // Make meta
-  String[] meta_name = new String[5];
-  String[] meta_value = new String[5];
-    meta_value[0] = str(counter);              // Number of Interations
+  String[] meta_name = new String[7];
+  String[] meta_value = new String[7];
+    meta_value[0] = str(counter);               // Number of Interations
     meta_value[1] = str(n.neuron_timer);        // Neuron Timer
-    meta_value[2] = str(n.max_depth);          // Max Depth
-    meta_value[3] = str(n.nodes.size());  // Node Size
-    meta_value[4] = str(n.num_branches);      // Number of Branches
+    meta_value[2] = str(n.max_depth);           // Max Depth
+    meta_value[3] = str(n.num_branches);        // Number of Branches
+    meta_value[4] = str(n.nodes.size());        // Node Size
+    meta_value[5] = str(max_node(n));           // Max Node Size
+    meta_value[6] = str(avg);           // Avg Node Size
     meta_name[0] = "neuron interation:";
     meta_name[1] = "timer:";
     meta_name[2] = "max depth:";
-    meta_name[3] = "node count:";
-    meta_name[4] = "branch count:";
+    meta_name[3] = "branch count:";
+    meta_name[4] = "node count:";
+    meta_name[5] = "max node count:";
+    meta_name[6] = "avg node count:";
   // Draw Text
   for(int i=0; i<meta_name.length; i++) {
     textAlign(RIGHT);
@@ -179,6 +202,13 @@ void keyPressed() {
   if(keyCode == 32) { // Key:SPACE
     for (Node n: nnn.neurons.get(0).nodes) {
       // n.dw = !n.dw;
+      loop = !loop;
+
+      if (loop) {
+        noLoop();
+      } else {
+        loop();
+      }
     }
   }          
 }

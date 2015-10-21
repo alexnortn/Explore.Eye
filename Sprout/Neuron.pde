@@ -33,7 +33,7 @@ class Neuron {
 
   void neuron_setup() {
     PVector start_velocity = new PVector(2,2); // Change this value to determine simulation speed
-    Node n = new Node(this.location, start_velocity, this.neuron_timer, 0);
+    Node n = new Node(this.location, start_velocity, this.neuron_timer, 0, this.max_depth);
     // Add to arraylist
     nodes.add(n); 
     float theta = TWO_PI / num_branches;  
