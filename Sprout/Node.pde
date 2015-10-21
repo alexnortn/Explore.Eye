@@ -33,7 +33,7 @@ class Node {
   boolean leaf = true;
   boolean size = false;
   boolean start_point = false;
-  boolean dw = false;
+  boolean dw = true;
 
   Node (PVector p, PVector v, float n, int d) {
     start = p.get();
@@ -43,7 +43,7 @@ class Node {
     r = 6;
     wandertheta = 0;
     maxspeed = 1.5;       // Default 2
-    maxforce = 1;    // Default 0.05
+    maxforce = random(0.8,1.1);    // Default 0.05
     timerstart = n;
     timer = timerstart;
     depth = d;
@@ -275,14 +275,14 @@ class Node {
   // Did the timer run out?
   boolean timeToNode() {
     if ((depth == 2)||(depth == 3)) {
-      timer -= 4;
+      timer -= 3;
     } else {
       timer--;
     }
     if (timer < 0 && growing) {
-      growing = false;
       // Display Wandering Debug
-      // dw = false;
+      dw = false;
+      growing = false;
       // Set branch point
       return true;
     } 

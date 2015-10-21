@@ -50,7 +50,7 @@ void plus_minus() {
 }
 
 void iterate() {
-  if (frameCount % 240 == 0) {
+  if (frameCount % 360 == 0) {
     if(record) endRecord();
     setup();
     counter++;
