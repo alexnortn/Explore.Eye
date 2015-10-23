@@ -45,6 +45,9 @@ void draw() {
   // plus_minus();
   iterate();
   if(frame) saveFrame(counter + ":sprout-######.tga");
+
+  // Exit after 100 iterations
+  exit_sprout();
 }
 
 void plus_minus() {
@@ -53,6 +56,10 @@ void plus_minus() {
     nnn.add_neuron(1);
     recurse();
   }
+}
+
+void exit_sprout() {
+	if (counter > 100) exit();
 }
 
 void iterate() {

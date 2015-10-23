@@ -19,7 +19,7 @@ function Nnn(nc,cp) {
 			var y = (height/2) + p.random(1);
 			neuron_pos = p.createVector(x,y);
 			// Initialize Neuron
-			add_neuron(neuron_pos);
+			this.add_neuron(neuron_pos);
 		}
 	}
 	
@@ -33,7 +33,7 @@ function Nnn(nc,cp) {
 	// Add neuron to the network --> Accepts P5.Vector for Arg
 	function add_neuron(pos) {
 		// Create Neurons with similar general levels of complexity
-		var branches = p.round(p.random(5,9));
+		var branches = p.round(p.random(6,9));
 		var depth = complexity - branches;
 		// Given a constant branching speed, this controls neuron size
 		// does not effect morphology.

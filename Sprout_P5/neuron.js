@@ -8,7 +8,21 @@
 // the last branches
 
 // Contructor: P5.Vector, Integer, Float, Integer
-function Neuron (loc,b,t,mxd) {
+
+function Neuron (args) {
+	args = args || {};
+
+	this.num_branches = args.num_branches || 0;
+
+}
+
+new Neuron ({
+	num_branches: 5,
+})
+
+
+
+function Neuron (loc,b,t,mxd, p) {
 	this.location = loc.copy();
 	this.num_branches = b;
 	this.neuron_timer = t;
@@ -18,6 +32,8 @@ function Neuron (loc,b,t,mxd) {
 	nodes = [];
 	leaves = [];
 
+	// Call methods to access outside of class this way!
+	this.neuron_setup = function()
 	function neuron_setup() {
 		var start_velocity = p.createVector(2,2); // Change this value to determine simulation speed
 		// Create a new Node instance
@@ -65,6 +81,8 @@ function Neuron (loc,b,t,mxd) {
 							nodes.push(n.branch(10));    // Add one going right
 							nodes.push(n.branch(-10));   // Add one going left
 						} else {
+							// Added leaves to end of Neuron --> Can be vastly improved to consider
+							// the entire 'distal' zone of the neuron.
 							nodes.push(n.branch(p.round(p.random(-20,20))));
 						} 
 					}

@@ -39,7 +39,7 @@ class Neuron {
     // Random rotational offset constant
     float theta_const = random(TWO_PI); 
     // Create seed dendritees
-    for(int i = 0; i < num_branches; i++) {
+    for (int i = 0; i < num_branches; i++) {
       float start_angle = (theta * i) + radians(random(-15,15)) + theta_const;
       float x = sin(start_angle);
       float y = cos(start_angle);

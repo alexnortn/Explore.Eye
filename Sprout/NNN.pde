@@ -22,7 +22,7 @@ class Nnn {
   	for (int i=0; i < num_neurons; i++) {
 	    neuron_position = new PVector(width/2,height/2);
 	    // Create Neurons with similar general levels of complexity
-	    int branches = int(random(5,9));
+	    int branches = int(random(6,9));
 	    int depth = complexity - branches;
 	    // Given a constant branching speed, this controls neuron size, does not effect morphology
 	    // Grow time is inversely proportional to branches
