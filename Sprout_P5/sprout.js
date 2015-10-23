@@ -12,8 +12,8 @@ p.preload = function() {
 p.setup = function() {
 	p.createCanvas(window.innerWidth, window.innerHeight);
 	p.noCursor();
-	// Initialize the nnn with args[0] = neuron amount, args[1] = general complexity
-	nnn = new Nnn(1, 14);
+	// Initialize the nnn with args[0] = neuron amount, args[1] = general complexity, args[2] = 'p' instance
+	nnn = new Nnn(1, 14, p);
 	nnn.initialize();
 }
 
@@ -28,7 +28,7 @@ p.draw = function() {
 }
 
 function plus_minus() {
-	if (frameCount % 120 == 0) {
+	if (p.frameCount % 120 == 0) {
 		nnn.rmv_neuron(1);
 		nnn.add_neuron(1);
 		recurse();
@@ -36,7 +36,7 @@ function plus_minus() {
 }
 
 function iterate() {
-	if (frameCount % 360 == 0) {
+	if (p.frameCount % 360 == 0) {
 		avg = avg_node(nnn.neurons[0]);
 		p.setup();
 		counter++;
@@ -44,12 +44,12 @@ function iterate() {
 }
 
 function recurse() {
-	Neuron neuron = nnn.neurons[p.round(random(nnn.neurons.length))];
+	var neuron = nnn.neurons[p.round(p.random(nnn.neurons.length))];
 	nnn.neurons.forEach(function(n) {
 	if (n.leaf) {
-		for (Node nn: neuron.adj(n)) {
+		neuron.adj(n).forEach(function(nn) {
 			nn.size = true;
-		}
+		});
 			console.log(neuron.adj(n));
 		break;
 	}
@@ -72,8 +72,8 @@ function avg_node(n) {
 
 // User Interactions
 function mousePressed() {
-	mousePos = p.createVector(mouseX, mouseY);
-	nnn.add_neuronn(mousePos);
+	mousePos = p.createVector(p.mouseX, p.mouseY);
+	nnn.add_neuronn(p.mousePos);
 }
 
 // .
@@ -104,7 +104,7 @@ var sprout = function (p) {
 	p.setup();
 	p.draw();
 
-
+	// Delete this
 	this.preload = function () {
 		this.neuron = new Neuron(1,2,3,4,5, p);
 	}

@@ -20,17 +20,23 @@ new Neuron ({
 	num_branches: 5,
 })
 
+function Neuron (args) {
+	args = args || {};
 
+	// Private arguments from constructor
+	var p = args.p;
+	
+	// Public arguments from constructor
+	this.location = args.loc.copy() || p.createVector(0,0);
+	this.num_branches = args.num_branches || 7;
+	this.neuron_timer = args.neuron_timer || 60;
+	this.max_depth = args.max_depth || 6;
 
-function Neuron (loc,b,t,mxd, p) {
-	this.location = loc.copy();
-	this.num_branches = b;
-	this.neuron_timer = t;
-	this.max_depth = mxd;
+	// Generic public array variable : not an argument though
 	this.growing = true;
 	// Setup the arraylist and add one dendrite to it
-	nodes = [];
-	leaves = [];
+	this.nodes = [];
+	this.leaves = [];
 
 	// Call methods to access outside of class this way!
 	this.neuron_setup = function()
