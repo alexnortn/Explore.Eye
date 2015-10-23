@@ -15,8 +15,8 @@ int mxn = 0;
 int avg = 0;
 int all_nodes = 0;
 boolean record = false;
+boolean frame = false;
 boolean loop = true;
-boolean frame = true;
 
 void setup() {
   // size(1000,800);
@@ -26,7 +26,7 @@ void setup() {
   noCursor();
 
   // Initialize the nnn with args[0] = neuron amount, args[1] = general complexity
-  nnn = new Nnn(1, 14);
+  nnn = new Nnn(1, 13);
   nnn.initialize();
 
   // Record PDF

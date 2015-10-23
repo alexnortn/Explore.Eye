@@ -16,8 +16,8 @@ class Synapse {
 
   void display() {
     noStroke();
-    fill(50,100);
-    ellipse(loc.x,loc.y,4,4);   
+    fill(200,200);
+    ellipse(loc.x,loc.y,5,5);   
   }
 }
 

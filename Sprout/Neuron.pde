@@ -11,13 +11,12 @@ class Neuron {
 
   PVector location;
   float   neuron_timer;
-  float   neuron_timerstart;
-  int 	  max_depth;
-  int     num_branches;
+  int     max_depth,
+          num_branches;
 
-	// An arraylist that will keep track of all current dendritees
-	ArrayList<Node> nodes;
-	ArrayList<Synapse> leaves;
+  // An arraylist that will keep track of all current dendritees
+  ArrayList<Node> nodes;
+  ArrayList<Synapse> leaves;
 
   boolean growing = true;
 
@@ -60,16 +59,23 @@ class Neuron {
       // If it's ready to split
       if (n.timeToNode()) {
         if (n.depth < this.max_depth ) {
-          if(((n.depth+1) % 2 == 0)&&(n.depth != 2)) {
+          if (((n.depth+1) % 2 == 0) && (n.depth != 2)) {
             //neuron.remove(i);             // Delete it
             nodes.add(n.branch(10));   // Add one going right
             nodes.add(n.branch(-10));   // Add one going left
           } else {
-            nodes.add(n.branch(int(random(-20,20))));
+            // Additional method for probabalistic branching
+            float rnd = random(1);
+            if ((rnd < 0.15) && ((n.depth + 1) < this.max_depth )) {
+              nodes.add(n.branch(10));   // Add one going right
+              nodes.add(n.branch(-10));   // Add one going left
+            } else {
+              nodes.add(n.branch(int(random(-20,20))));
+            } 
           }
         } 
         else {
-          // leaves.add(new Synapse(b.location));
+          leaves.add(new Synapse(n.location));
         }
       }
     }
