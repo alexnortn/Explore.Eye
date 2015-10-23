@@ -8,18 +8,6 @@
 // the last branches
 
 // Contructor: P5.Vector, Integer, Float, Integer
-
-function Neuron (args) {
-	args = args || {};
-
-	this.num_branches = args.num_branches || 0;
-
-}
-
-new Neuron ({
-	num_branches: 5,
-})
-
 function Neuron (args) {
 	args = args || {};
 
@@ -27,14 +15,14 @@ function Neuron (args) {
 	var p = args.p;
 	
 	// Public arguments from constructor
-	this.location = args.loc.copy() || p.createVector(0,0);
-	this.num_branches = args.num_branches || 7;
-	this.neuron_timer = args.neuron_timer || 60;
-	this.max_depth = args.max_depth || 6;
+	this.location = args.loc.get()       	|| p.createVector(0,0);
+	this.num_branches = args.num_branches 	|| 7;
+	this.neuron_timer = args.neuron_timer 	|| 60;
+	this.max_depth = args.max_depth 	  	|| 6;
 
 	// Generic public array variable : not an argument though
 	this.growing = true;
-	// Setup the arraylist and add one dendrite to it
+	// Setup public arrays and add one dendrite to it
 	this.nodes = [];
 	this.leaves = [];
 
@@ -44,6 +32,13 @@ function Neuron (args) {
 		var start_velocity = p.createVector(2,2); // Change this value to determine simulation speed
 		// Create a new Node instance
 		var n = new Node(this.location, start_velocity, this.neuron_timer, 0, this.max_depth);
+		var n = new Neuron ({
+					location: 		this.location,
+					num_branches: 	this.num_branches,
+					neuron_timer: 	this.neuron_timer,
+					max_depth: 		this.max_depth,
+					p: 					 p,
+				});	
 		// Add to arraylist
 		nodes.push(n); 
 		var theta = p.TWO_PI / num_branches;  

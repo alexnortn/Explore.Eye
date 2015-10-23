@@ -55,12 +55,12 @@ function Nnn(args) {
 		// 		args[4] = 'p' instance
 		this.neurons.push(
 			new Neuron ({
-				location: location,
-				num_branches: num_branches,
-				neuron_timer: neuron_timer,
-				max_depth: max_depth,
-				p: p,
-			})	
+				location: 		location,
+				num_branches: 	num_branches,
+				neuron_timer: 	neuron_timer,
+				max_depth: 		max_depth,
+				p: 				p,
+			});	
 		);
 
 
