@@ -27,16 +27,15 @@ function Neuron (args) {
 	this.leaves = [];
 
 	// Call methods to access outside of class this way!
-	this.neuron_setup = function()
-	function neuron_setup() {
+	this.neuron_setup = function() {
 		var start_velocity = p.createVector(2,2); // Change this value to determine simulation speed
 		// Create a new Node instance
-		var n = new Node(this.location, start_velocity, this.neuron_timer, 0, this.max_depth);
-		var n = new Neuron ({
-					location: 		this.location,
-					num_branches: 	this.num_branches,
+		var n = new Node ({
 					neuron_timer: 	this.neuron_timer,
 					max_depth: 		this.max_depth,
+					location: 		this.location,
+					velocity: 			 start_velocity,
+					depth: 				 0,
 					p: 					 p,
 				});	
 		// Add to arraylist
@@ -57,7 +56,7 @@ function Neuron (args) {
 		}
 	}
 
-	function update() {
+	this.update = function() {
 		// Let's stop when the neuron gets too deep
 		// For every dendrite in the arraylist
 		for (var i = nodes.length-1; i >= 1; i--) {

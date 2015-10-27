@@ -183,7 +183,7 @@ class Node {
     }
     // Average -- divide by how many
     if (count > 0) {
-      steer.div((float)count);
+      steer.div(count);
     }
 
     // As long as the vector is greater than 0
