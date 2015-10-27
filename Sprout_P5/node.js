@@ -35,7 +35,7 @@ function Node (args) {
 	this.children = [];
 	this.adj_list = [];
 	// Public array of vectors to contain coordinates for Catmull Rom paths
-	this.curve_pts = [4]; 
+	this.curve_pts = []; // 4 pts
 	
 	// Node Object :: Can only ever have a single parent
 	this.parent;
@@ -49,17 +49,22 @@ function Node (args) {
 
 	// Floats
 	var   inimult,     // Initial offset multiplier
-		  sepmult,     // Separation multiplier
+		  sepmult;     // Separation multiplier
 
 	// Private variables
 	var wandertheta = 0;
 	var wan_const = 1.0;
 	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
-	var timer = neuron_timer;
+	var timer = this.neuron_timer;
 
 	// Increment for each instantiation at a branch event
 	depth++;
+
+	// Ensures that the definition of leaf is fresh
+	this.isLeaf = function () {
+		return this.children.length === 0;
+	};
 
 	// var n :: Node()
 	this.addChild = function(n) {
@@ -75,39 +80,43 @@ function Node (args) {
 	// Set curve points
 	function pt_0() {
 		var p_0 = p.createVector();
-		if (this.parent.parent == null) {
+		if (this.parent.parent === null) {
 			p_0 = this.start.get();       
 			return p_0;
-		} else {
+		} 
+		else {
 			return p_0.set(this.parent.start.x,this.parent.start.y);
 		}
 	}
 	function pt_1() {
-			var p_1 = p.createVector();
-			return p_1.set(this.start.x,this.start.y);
-		}
+		var p_1 = p.createVector();
+		return p_1.set(this.start.x, this.start.y);
+	}
 	function pt_2() {
 		var p_2 = p.createVector();
-		  return p_2.set(this.location.x,this.location.y);
-		}
+		return p_2.set(this.location.x, this.location.y);
+	}
+
 	function pt_3() {
 		var p_3 = p.createVector();
-		if (this.leaf) {
-		  // If we're at the location, create a random vector
-		  return p_3.random2D();
-		} else {
-		  if (this.children.length == 1){
+		if (this.children.length === 0) {
+			// If we're at the location, create a random vector
+			return p_3.random2D();
+		} 
+		else if (this.children.length == 1) {
 			return p_3.set(this.children[0].location.x,this.children[0].location.y);
-		  } else if (this.children.length[] > 1) {
-			  for (var i=0; i < this.children.length; i++) {
-				p_3.add(this.children.length[0].location);
-			  }
-			  p_3.div(this.children.length);
-			  return p_3;
-		  } else {
+		} 
+		else if (this.children.length > 1) {
+			for (var i = 0; i < this.children.length; i++) {
+				p_3.add(this.children[i].location);
+			}
+			p_3.div(this.children.length);
+			return p_3;
+		} 
+		else { // While we're growing
 			return p_3.set(this.location.x,this.location.y);
-		  }
 		}
+
 	}
 
 	this.wander = function() {
@@ -124,11 +133,14 @@ function Node (args) {
 
 		var h = this.velocity.heading2D();        		// We need to know the heading to offset wandertheta
 
-		var circleOffSet = p.createVector(wanderR * p.cos(this.wandertheta+h), wanderR * p.sin(this.wandertheta+h));
-		var target = p.p5.Vector.add(circleloc,circleOffSet);
+		var circleOffSet = p.createVector(
+			wanderR * p.cos(this.wandertheta + h), 
+			wanderR * p.sin(this.wandertheta + h)
+		);
+		var target = p.p5.Vector.add(circleloc, circleOffSet);
 
 		// Render wandering circle, etc. 
-		if(dw) drawWanderStuff(this.location,circleloc,target,wanderR);
+		if (dw) drawWanderStuff(this.location,circleloc,target,wanderR);
 
 		// Returns call to seek() and a vector object
 		return this.seek(target);
@@ -161,7 +173,7 @@ function Node (args) {
 		desired.normalize();
 		desired.mult(this.maxspeed);
 		// Steering = Desired minus Velocity
-		var steer = p.p5.Vector.sub(desired,this.velocity);
+		var steer = p.p5.Vector.sub(desired, this.velocity);
 			steer.limit(this.maxforce);  // Limit to maximum steering force
 
 		return steer;
@@ -186,7 +198,7 @@ function Node (args) {
 					diff.div(d*d);        				// Weight by distance
 				sepmult = p.map((1/(d*d)),0,1,0,5);     // Proportional to Inverse Distance Squared
 				steer.add(diff);
-				count++;              					// Keep track of how many
+				count++;             					// Keep track of how many
 			}
 		});
 		// Average -- divide by how many
@@ -201,6 +213,7 @@ function Node (args) {
 			steer.sub(this.velocity);
 			steer.limit(this.maxforce);
 		}
+
 		return steer;
 	}
 
@@ -245,15 +258,34 @@ function Node (args) {
 		p.stroke(200);
 		p.noFill();
 		// Array to store curve points
-		var pts = [];
-			pts[0] = p.createVector(this.pt_0().x, this.pt_0().y);
-			pts[1] = p.createVector(this.pt_1().x, this.pt_1().y);
-			pts[2] = p.createVector(this.pt_2().x, this.pt_2().y);
-			pts[3] = p.createVector(this.pt_3().x, this.pt_3().y);
+		var pts = [
+			p.createVector(this.pt_0().x, this.pt_0().y),
+			p.createVector(this.pt_1().x, this.pt_1().y),
+			p.createVector(this.pt_2().x, this.pt_2().y),
+			p.createVector(this.pt_3().x, this.pt_3().y)
+		];
+			
 		// p.line(start.x,start.y,location.x,location.y);
 		// Render Curves
-		p.curve(pts[0].x,pts[0].y,pts[1].x,pts[1]y,pts[2].x,pts[2].y,pts[3].x,pts[3].y);
-		// p.curve(this.pt_0().x,this.pt_0().y,this.pt_1().x,this.pt_1().y,this.pt_2().x,this.pt_2().y,this.pt_2().x,this.pt_2().y);
+		p.curve(
+			pts[0].x, pts[0].y,
+			pts[1].x, pts[1].y,
+			pts[2].x, pts[2].y,
+			pts[3].x, pts[3].y
+		);
+
+		// For fun:
+		// pts = pts
+		// 	.map(function (v) {
+		// 		return [v.x, v.y]
+		// 	})
+		// 	.reduce(function (arr, vec) {
+		// 		arr.push(vec[0], vec[1])
+		// 		return arr;
+		// 	}, [])
+
+		// p.curve.apply(p, pts);
+
 		// Render Path Home
 		if (this.size) {
 			p.noStroke();
@@ -261,6 +293,7 @@ function Node (args) {
 			p.ellipse(this.start.x,this.start.y,5,5);
 			p.ellipse(this.location.x, this.location.y, 5, 5);
 		}
+
 		if (this.start_point) {
 			p.noStroke();
 			p.fill(200,0,0);
@@ -286,14 +319,15 @@ function Node (args) {
 			this.expand(nodes);
 			this.update();
 		}
-			this.render();
+		
+		this.render();
 	}
 
 	// Recurse through nodes to root
 	// Accepts Node object
 	// Returns p5.Vector object
 	this.findRoot = function(n) {
-		if(n.parent == null) {
+		if (n.parent == null) {
 			return n.location;
 		}
 		else {
@@ -310,13 +344,17 @@ function Node (args) {
 	// Did the timer run out?
 	// Returns boolean --> Growing?
 	this.timeToNode = function () {
-		if ((this.depth == 2)||(this.depth == 3)) {
+		if ((this.depth == 2) || (this.depth == 3)) {
 			this.timer -= p.floor(p.random(2,this.sub_t(this.max_depth)));
-		} else {
+		} 
+		else {
 			this.timer--;
 		}
 		// Make leaves go crazy on final level
-		if (this.depth == (this.max_depth-2)) this.wan_const = 3;
+		if (this.depth == (this.max_depth - 2)) {
+			this.wan_const = 3;
+		}
+
 		if (this.timer < 0 && this.growing) {
 		  // Display Wandering Debug
 		  this.dw = false;
@@ -342,13 +380,14 @@ function Node (args) {
 		var newvel = p.createVector(mag * p.cos(theta),mag * p.sin(theta));
 		// Create a new Node instance
 		var node = new Node ({
-					neuron_timer: 	this.neuron_timer * p.random(0.8,0.85),
-					max_depth: 		this.max_depth,
-					location: 		this.location,
-					velocity: 			 new_vel
-					depth: 				 this.depth,
-					p: 					 p,
-				});
+			neuron_timer: 	this.neuron_timer * p.random(0.8,0.85),
+			max_depth: 		this.max_depth,
+			location: 		this.location,
+			velocity: 			 new_vel,
+			depth: 			this.depth,
+			p: 					   p,
+		});
+		
 		this.addChild(node);
 		this.leaf = false;
 		// Return a new Node

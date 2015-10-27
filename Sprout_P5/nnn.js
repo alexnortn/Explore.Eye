@@ -13,18 +13,18 @@ function Nnn(args) {
 	var p = args.p;
 
 	// Public arguments from constructor
-	this.num_neurons = args.nc || 1;
-	this.complexity = args.cp  || 13;
+	this.num_neurons = args.num_neurons || 1;
+	this.complexity = args.complexity  || 13;
 
 	// Generic public array variable : not an argument though
 	this.neurons = [];
 
 	this.initialize = function() {
-		for (var i=0; i < this.num_neurons; i++) {
+		for (var i = 0; i < this.num_neurons; i++) {
 			// Set Neuron Soma Position (Root)
 			// Start all neurons in center: Repel()
-			var x = (p.width/2) + p.random(1);
-			var y = (p.height/2) + p.random(1);
+			var x = (p.width / 2) + p.random(1);
+			var y = (p.height / 2) + p.random(1);
 			this.neuron_pos = p.createVector(x,y);
 			// Initialize Neuron
 			this.add_neuron(this.neuron_pos);
@@ -32,6 +32,7 @@ function Nnn(args) {
 	}
 	
 	// Simple method for running the neurons
+	// Call this something like 'renderFrame'
 	function run() {
 		this.neurons.forEach(function(neuron) {
 			neuron.update();
@@ -64,14 +65,14 @@ function Nnn(args) {
 		);
 
 
-		this.neurons[this.neurons.length].neuron_setup();
+		this.neurons[this.neurons.length - 1].neuron_setup();
 	}
 
 	// Remove neuron to the network
-	this.rmv_neuron = function(count) {
-		for (var i=0; i < count; i++) {
+	this.remove_neuron = function(count) {
+		for (var i = 0; i < count; i++) {
 			var j = p.floor(p.random(this.neurons.length));
-			this.neurons.splice(j, 1);;
+			this.neurons.splice(j, 1);
 		}
 	}
 

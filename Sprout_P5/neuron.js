@@ -15,7 +15,7 @@ function Neuron (args) {
 	var p = args.p;
 	
 	// Public arguments from constructor
-	this.location = args.loc.get()       	|| p.createVector(0,0);
+	this.location = args.location.get()    	|| p.createVector(0,0);
 	this.num_branches = args.num_branches 	|| 7;
 	this.neuron_timer = args.neuron_timer 	|| 60;
 	this.max_depth = args.max_depth 	  	|| 6;
@@ -39,86 +39,93 @@ function Neuron (args) {
 					p: 					 p,
 				});	
 		// Add to arraylist
-		nodes.push(n); 
-		var theta = p.TWO_PI / num_branches;  
+		this.nodes.push(n); 
+		var theta = p.TWO_PI / this.num_branches;  
 		// Random rotational offset constant
 		var theta_const = p.random(p.TWO_PI); 
 		// Create seed dendritees
-		for (var i=0; i < num_branches; i++) {
+		for (var i = 0; i < this.num_branches; i++) {
 			// Create a unique initial offset velocity heading for each branch with respect to the total
 			// number of seed branches, for additional diversity, add a random rotational offset
-			var start_angle = (theta * i) + p.radians(p.random(-15,15)) + p.random(p.TWO_PI);
+			var start_angle = (theta * i) + p.radians(p.random(-15, 15)) + p.random(p.TWO_PI);
 			// Convert from polar to cartesian coordinates
-			var x = p.sin(start_angle);
-			var y = p.cos(start_angle);
+			// var x = p.cos(start_angle);
+			// var y = p.sin(start_angle);
 			// Branch a bunch of times
-			nodes.push(n.branch(p.degrees(start_angle)));
+			this.nodes.push(
+				n.branch(p.degrees(start_angle))
+			);
 		}
 	}
 
 	this.update = function() {
 		// Let's stop when the neuron gets too deep
 		// For every dendrite in the arraylist
-		for (var i = nodes.length-1; i >= 1; i--) {
+		for (var i = this.nodes.length - 1; i >= 1; i--) {
 			// Get the dendrite, update and draw it
-			var n = nodes[i];
-			n.run(nodes);
-			// If it's ready to split
-			if (n.timeToNode()) {
+			var n = this.nodes[i];
+			n.run(this.nodes);
+
+			if (!n.timeToNode()) {
+				this.leaves.push(new Synapse(n.location));
+				continue;
+			}
+			else if (n.depth >= this.max_depth) {
 				// If we havn't reached stopping depth (growth bounded by depth and then time)
-				if (n.depth < this.max_depth ) {
-					// For every other node added: add one or two branches to create natural form
-					// Could definitely have a better way of accessing neuron depth.. that would improve branching
-					if (((n.depth+1) % 2 == 0) && (n.depth != 2)) {
-						nodes.push(n.branch(10));    // Add one going right
-						nodes.push(n.branch(-10));   // Add one going left
-					} else {
-						// Additional method for probabalistic branching
-						// Default rnd = 15% : could be push higher
-						// Neuron feels slightly over complicated given complexity: 13 & min [5] branches
-						var rnd = p.random(1);
-						if ((rnd < 0.15) && ((n.depth + 1) < this.max_depth )) {
-							nodes.push(n.branch(10));    // Add one going right
-							nodes.push(n.branch(-10));   // Add one going left
-						} else {
-							// Added leaves to end of Neuron --> Can be vastly improved to consider
-							// the entire 'distal' zone of the neuron.
-							nodes.push(n.branch(p.round(p.random(-20,20))));
-						} 
-					}
+				continue;
+			}
+
+			
+			// For every other node added: add one or two branches to create natural form
+			// Could definitely have a better way of accessing neuron depth.. that would improve branching
+			if (((n.depth+1) % 2 == 0) && (n.depth != 2)) {
+				this.nodes.push(n.branch(10));    // Add one going right
+				this.nodes.push(n.branch(-10));   // Add one going left
+			} 
+			else {
+				// Additional method for probabalistic branching
+				// Default rnd = 15% : could be push higher
+				// Neuron feels slightly over complicated given complexity: 13 & min [5] branches
+				var rnd = p.random(1);
+				if ((rnd < 0.15) && ((n.depth + 1) < this.max_depth )) {
+					this.nodes.push(n.branch(10));    // Add one going right
+					this.nodes.push(n.branch(-10));   // Add one going left
 				} 
 				else {
-					leaves.push(new Synapse(n.location));
-				}
+					// Added leaves to end of Neuron --> Can be vastly improved to consider
+					// the entire 'distal' zone of the neuron.
+					this.nodes.push(
+						n.branch(p.round(p.random(-20,20)))
+					);
+				} 
 			}
 		}
 		// Add boutons --> Synapses to leaves of neuron :: Could definitely be improved
-		leaves.forEach(function(synapse) {
+		this.leaves.forEach(function (synapse) {
 			synapse.display(); 
 		});
 	}
 
 	// Recurse through nodes to root --> Returns an array
-	//  Args[0]:Node, Args[1]:Array of Nodes
-	function recurseMore(n,p) {
-		// Make a 'shallow' copy of an array
-		var path = p.slice();
-		if(n.parent == null) {
-			return path;
-		} else {
-			path.push(n.parent);
-			return recurseMore(n.parent, path);
-		}
-	}
-
-	// Recurse through nodes to root --> Returns an array
 	//  Args[0]:Node
-	function adj(n) {
+	this.adj = function(n) {
+		// Recurse through nodes to root --> Returns an array
+		//  Args[0]:Node, Args[1]:Array of Nodes
+		function recurseMore (n, parents) {
+			// Make a 'shallow' copy of an array
+			var path = parents.slice();
+			if (n.parent == null) {
+				return path;
+			} 
+			else {
+				path.push(n.parent);
+				return recurseMore(n.parent, path);
+			}
+		}
+
 		// Make a 'shallow' copy of an array
-		var path = p.slice();
 		n.start_point = true;
-		recurseMore(n, path);
-		return path;
+		return recurseMore(n, []);
 	}
 }
 

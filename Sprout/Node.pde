@@ -83,7 +83,7 @@ class Node {
   }
   PVector pt_3() {
     PVector p_3 = new PVector();
-    if (this.leaf) {
+    if (this.children.size() == 0) {
       // If we're at the location, create a random vector
       // println("0");
       return p_3.random2D();
