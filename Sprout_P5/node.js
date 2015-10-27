@@ -124,7 +124,7 @@ function Node (args) {
 
 		var h = this.velocity.heading2D();        		// We need to know the heading to offset wandertheta
 
-		var circleOffSet = p.createVector(wanderR * p.cos(wandertheta+h), wanderR * p.sin(wandertheta+h));
+		var circleOffSet = p.createVector(wanderR * p.cos(this.wandertheta+h), wanderR * p.sin(this.wandertheta+h));
 		var target = p.p5.Vector.add(circleloc,circleOffSet);
 
 		// Render wandering circle, etc. 
@@ -136,7 +136,7 @@ function Node (args) {
 	}
 
 	// A method just to draw the circle associated with wandering
-	function drawWanderStuff(loc, circle, target, rad) {
+	function drawWanderStuff(loc,circle,target,rad) {
 		p.push();
 			p.stroke(100); 
 			p.noFill();
@@ -206,7 +206,7 @@ function Node (args) {
 
 	// Simple method to sum forces
 	// Accepts P5.Vector
-	function applyForce(force) {
+	this.applyForce = function(force) {
 		this.acceleration.add(force);
 	}
 
@@ -240,7 +240,7 @@ function Node (args) {
 	}
 
 	// Draw a dot at location
-	void render() {
+	this.render = function() {
 		// Basic Fractal Lines
 		p.stroke(200);
 		p.noFill();
@@ -255,7 +255,7 @@ function Node (args) {
 		p.curve(pts[0].x,pts[0].y,pts[1].x,pts[1]y,pts[2].x,pts[2].y,pts[3].x,pts[3].y);
 		// p.curve(this.pt_0().x,this.pt_0().y,this.pt_1().x,this.pt_1().y,this.pt_2().x,this.pt_2().y,this.pt_2().x,this.pt_2().y);
 		// Render Path Home
-		if (size) {
+		if (this.size) {
 			p.noStroke();
 			p.fill(200,0,0);
 			p.ellipse(this.start.x,this.start.y,5,5);
@@ -282,7 +282,7 @@ function Node (args) {
 
 	// Accepts an Array of Node Objects
 	this.run = function(nodes) {
-		if (growing) {
+		if (this.growing) {
 			this.expand(nodes);
 			this.update();
 		}
@@ -340,7 +340,15 @@ function Node (args) {
 		theta += p.radians(angle);
 		// Polar coordinates to cartesian!!
 		var newvel = p.createVector(mag * p.cos(theta),mag * p.sin(theta));
-		var node = new Node(this.location,newvel,.this.neuron_timer * p.random(0.8,0.85), this.depth, this.max_depth);
+		// Create a new Node instance
+		var node = new Node ({
+					neuron_timer: 	this.neuron_timer * p.random(0.8,0.85),
+					max_depth: 		this.max_depth,
+					location: 		this.location,
+					velocity: 			 new_vel
+					depth: 				 this.depth,
+					p: 					 p,
+				});
 		this.addChild(node);
 		this.leaf = false;
 		// Return a new Node
