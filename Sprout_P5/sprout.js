@@ -19,18 +19,18 @@ var sprout = function (p) {
 	var loop = true;
 
 	// Preload any required assets
-	p.preload = function() {
+	// p.preload = function() {
 
-	}
+	// }
 
 	p.setup = function() {
 		p.createCanvas(window.innerWidth, window.innerHeight);
 		// p.noCursor(); // Only enable this for desktop --> Kind of rude otherwise
 
-		// p.frameRate(1);
+		// p.frameRate(5);
 		
 		// Initialize the nnn with args[0] = neuron amount, args[1] = general complexity, args[2] = 'p' instance
-		nnn = new Nnn({
+		nnn = new Nnn ({
 			num_neurons: 1,
 			complexity:  13,
 			p:           p,
@@ -49,7 +49,7 @@ var sprout = function (p) {
 
 	}
 
-	function plus_minus() {
+	plus_minus = function() {
 		if (p.frameCount % 120 == 0) {
 			nnn.rmv_neuron(1);
 			nnn.add_neuron(1);
@@ -57,7 +57,7 @@ var sprout = function (p) {
 		}
 	}
 
-	function iterate() {
+	iterate = function() {
 		if (p.frameCount % 360 == 0) {
 			avg = avg_node(nnn.neurons[0]);
 			p.setup();
@@ -65,7 +65,7 @@ var sprout = function (p) {
 		}
 	}
 
-	function recurse() {
+	recurse = function() {
 		var neuron = nnn.neurons[p.round(p.random(nnn.neurons.length))];
 		nnn.neurons.forEach(function(n) {
 		if (n.leaf) {
@@ -80,20 +80,20 @@ var sprout = function (p) {
 
 
 	// Quick Max Calc : Returns Integer
-	function max_node(n) {
+	max_node = function(n) {
 		if (n.nodes.length > mxn) mxn = n.nodes.length;
 		return mxn;
 	}
 
 	// Quick Avg Calc : Returns Integer
-	function avg_node(n) {
+	avg_node = function(n) {
 		all_nodes += n.nodes.length;
 		avg = p.round(all_nodes / (counter+1));
 		return avg;
 	}
 
 	// User Interactions
-	function mousePressed() {
+	mousePressed = function() {
 		mousePos = p.createVector(p.mouseX, p.mouseY);
 		nnn.add_neuronn(p.mousePos);
 	}

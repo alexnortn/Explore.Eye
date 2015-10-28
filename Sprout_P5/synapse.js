@@ -15,7 +15,7 @@ function Synapse(args) {
 	var p = args.p;
 
 	// 'this' keyword sets the variable to public visibility
-	this.position = args.position.get() || 0;
+	this.position = args.position.copy() || 0;
 
 	// Method to display the leaves :: "Boutons"
 	// 

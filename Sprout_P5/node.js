@@ -20,9 +20,9 @@ function Node (args) {
 	var p = args.p;
 
 	// Public P5.Vector objects
-	this.start = args.position.get() || p.createVector();
-	this.position = args.position.get() || p.createVector();
-	this.velocity = args.velocity.get() || p.createVector();
+	this.start = args.position.copy() || p.createVector();
+	this.position = args.position.copy() || p.createVector();
+	this.velocity = args.velocity.copy() || p.createVector();
 	// Public floats
 	this.neuron_timer = args.neuron_timer || 0;
 	this.max_depth = args.max_depth || 7;
@@ -30,6 +30,7 @@ function Node (args) {
 
 	// Not in constructor
 	this.acceleration = p.createVector(0,0);
+	this.timer = this.neuron_timer;
 
 	// Setup public arrays for children Nodes and Adjacency List
 	this.children = [];
@@ -41,7 +42,6 @@ function Node (args) {
 	this.parent == null;
 
 	// Public Booleans
-	this.growing = true;
 	this.leaf = true;
 	this.size = false;
 	this.start_point = false;
@@ -54,9 +54,8 @@ function Node (args) {
 	// Private variables
 	var wandertheta = 0;
 	var wan_const = 1.0;
-	var maxspeed = 1.5;       // Default 2
+	var maxspeed = 1.0;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
-	var timer = this.neuron_timer;
 
 	// Increment for each instantiation at a branch event
 	this.depth++;
@@ -82,8 +81,9 @@ function Node (args) {
 		var p_0 = p.createVector();
 		var isAlone =  this.parent.parent instanceof Node;
 		if (!isAlone) {
-			p_0 = this.start.get();       
+			p_0 = this.start.copy();       
 			return p_0;
+			console.log(true);
 		} 
 		else {
 			return p_0.set(this.parent.start.x,this.parent.start.y);
@@ -126,10 +126,11 @@ function Node (args) {
 		var wanderR = 25;         						// Radius for our "wander circle"
 		var wanderD = 80;         						// Distance for our "wander circle"
 		var change = 0.3;
-		this.wandertheta += p.random(-change,change);   // Randomly change wander theta
+		
+		wandertheta += p.random(-change,change);   // Randomly change wander theta
 
 		// Now we have to calculate the new position to steer towards on the wander circle
-		var circleloc = this.velocity.get();    		// Start with velocity
+		var circleloc = this.velocity.copy();    		// Start with velocity
 			circleloc.normalize();            			// Normalize to get heading
 			circleloc.mult(wanderD);          			// Multiply by distance
 			circleloc.add(this.position);               // Make it relative to boid's position
@@ -137,13 +138,13 @@ function Node (args) {
 		var h = this.velocity.heading();        		// We need to know the heading to offset wandertheta
 
 		var circleOffSet = p.createVector(
-			wanderR * p.cos(this.wandertheta + h), 
-			wanderR * p.sin(this.wandertheta + h)
+			wanderR * p.cos(wandertheta + h), 
+			wanderR * p.sin(wandertheta + h)
 		);
 		var target = p5.Vector.add(circleloc, circleOffSet);
 
 		// Render wandering circle, etc. 
-		if (this.dw) drawWanderStuff(this.position,circleloc,target,wanderR);
+		if (this.dw) this.drawWanderStuff(this.position, circleloc, target, wanderR);
 
 		// Returns call to seek() and a vector object
 		return this.seek(target);
@@ -151,14 +152,18 @@ function Node (args) {
 	}
 
 	// A method just to draw the circle associated with wandering
-	function drawWanderStuff(loc,circle,target,rad) {
+	 this.drawWanderStuff = function(loc,circle,target,rad) {
 		p.push();
 			p.stroke(100); 
 			p.noFill();
-			// p.ellipseMode(CENTER);
-			p.ellipse(circle.x,circle.y,rad*2,rad*2);
+			p.ellipseMode(p.CENTER);
+			// Outter Circle
+			p.ellipse(circle.x,circle.y,rad*2,rad*2); 
+			// Inner Circle
 			p.ellipse(target.x,target.y,4,4);
+			// Line At target location
 			p.line(loc.x,loc.y,circle.x,circle.y);
+			// Line from center of Circle to Target
 			p.line(circle.x,circle.y,target.x,target.y);
 		p.pop();
 	}  
@@ -174,10 +179,10 @@ function Node (args) {
 
 		// Normalize desired and scale to maximum speed
 		desired.normalize();
-		desired.mult(this.maxspeed);
+		desired.mult(maxspeed);
 		// Steering = Desired minus Velocity
 		var steer = p5.Vector.sub(desired, this.velocity);
-			steer.limit(this.maxforce);  // Limit to maximum steering force
+			steer.limit(maxforce);  // Limit to maximum steering force
 
 		return steer;
 	}
@@ -218,9 +223,9 @@ function Node (args) {
 		if (steer.mag() > 0) {
 			// Implement Reynolds: Steering = Desired - Velocity
 			steer.normalize();
-			steer.mult(this.maxspeed);
+			steer.mult(maxspeed);
 			steer.sub(this.velocity);
-			steer.limit(this.maxforce);
+			steer.limit(maxforce);
 		}
 
 		return steer;
@@ -242,7 +247,7 @@ function Node (args) {
 		// Carefully weight these forces
 		sep.mult(1.0);
 		ini.mult(1.5);
-		wan.mult(this.wan_const);
+		wan.mult(wan_const);
 
 		// Add the force vectors to acceleration
 		this.applyForce(sep);
@@ -255,7 +260,7 @@ function Node (args) {
 		// Update velocity
 		this.velocity.add(this.acceleration);
 		// Limit speed
-		this.velocity.limit(this.maxspeed);
+		this.velocity.limit(maxspeed);
 		this.position.add(this.velocity);
 		// Reset accelertion to 0 each cycle
 		this.acceleration.mult(0);
@@ -274,14 +279,14 @@ function Node (args) {
 			p.createVector(this.pt_3().x, this.pt_3().y)
 		];
 			
-		// p.line(start.x,start.y,position.x,position.y);
+		p.line(this.pt_1().x, this.pt_1().y, this.pt_2().x, this.pt_2().y);
 		// Render Curves
-		p.curve(
-			pts[0].x, pts[0].y,
-			pts[1].x, pts[1].y,
-			pts[2].x, pts[2].y,
-			pts[3].x, pts[3].y
-		);
+		// p.curve(
+		// 	pts[0].x, pts[0].y,
+		// 	pts[1].x, pts[1].y,
+		// 	pts[2].x, pts[2].y,
+		// 	pts[3].x, pts[3].y
+		// );
 
 		// For fun:
 		// pts = pts
@@ -324,10 +329,20 @@ function Node (args) {
 
 	// Accepts an Array of Node Objects
 	this.run = function(nodes) {
-		if (this.growing) {
+		if (this.isGrowing()) {
+			this.tick();
 			this.expand(nodes);
 			this.update();
+			// Display Wandering Debug
+
+			// Make leaves go crazy on final level
+			if (this.depth == (this.max_depth - 2)) {
+				wan_const = 3;
+			}
+		} else {
+			this.dw = false;
 		}
+
 		
 		this.render();
 	}
@@ -352,28 +367,22 @@ function Node (args) {
 
 	// Did the timer run out?
 	// Returns boolean --> Growing?
-	this.timeToNode = function () {
+	this.tick = function () {
 		if ((this.depth == 2) || (this.depth == 3)) {
-			this.timer -= p.floor(p.random(2,this.sub_t(this.max_depth)));
+			this.timer -= p.round(p.random(2,this.sub_t(this.max_depth)));;
 		} 
 		else {
 			this.timer--;
 		}
-		// Make leaves go crazy on final level
-		if (this.depth == (this.max_depth - 2)) {
-			this.wan_const = 3;
-		}
+	}
 
-		if (this.timer < 0 && this.growing) {
-		  // Display Wandering Debug
-		  this.dw = false;
-		  this.growing = false;
-		  // Set branch point
-		  return true;
+	this.isGrowing = function() {
+		if (this.timer >= 0) {
+			// Set branch point
+			return true;
 		} 
-		else {
-		  return false;
-		}
+
+		return false;
 	}
 
 	// Create a new dendrite at the current position, but change direction by a given angle
