@@ -315,7 +315,7 @@ function Node (args) {
 		// Draw Soma
 		p.push();
 			p.fill(200);
-			if (this.depth == 2) p.ellipse(this.start.x,this.start.y,25,25);
+			if (this.depth == 2) p.ellipse(this.start.x,this.start.y,15,15);
 		p.pop();
 		// Debug Neighborhood
 		// p.push();

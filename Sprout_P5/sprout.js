@@ -45,7 +45,7 @@ var sprout = function (p) {
 	network_start = function() {
 		// Initialize the nnn with args[0] = neuron amount, args[1] = general complexity, args[2] = 'p' instance
 		nnn = new Nnn ({
-			num_neurons: 1,
+			num_neurons: 15,
 			complexity:  13,
 			p:           p,
 		});

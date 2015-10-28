@@ -23,8 +23,8 @@ function Nnn(args) {
 		for (var i = 0; i < this.num_neurons; i++) {
 			// Set Neuron Soma Position (Root)
 			// Start all neurons in center: Repel()
-			var x = (window.innerWidth / 2) + p.random(1);
-			var y = (window.innerHeight / 2) + p.random(1);
+			var x = (p.random(window.innerWidth)) + p.random(1);
+			var y = (p.random(window.innerHeight)) + p.random(1);
 			this.position = p.createVector(x,y);
 			// Initialize Neuron
 			this.add_neuron(this.position);
@@ -49,7 +49,7 @@ function Nnn(args) {
 		// Given a constant branching speed, this controls neuron size
 		// does not effect morphology.
 		// Grow time is inversely proportional to num_branches
-		var neuron_timer = 750 / num_branches;
+		var neuron_timer = 600 / num_branches;
 		// var neuron_timer = 75;
 		// Initialize the Neuron Object:
 		// 		args[0] = Pvector position
