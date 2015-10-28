@@ -23,8 +23,8 @@ function Nnn(args) {
 		for (var i = 0; i < this.num_neurons; i++) {
 			// Set Neuron Soma Position (Root)
 			// Start all neurons in center: Repel()
-			var x = (p.random(window.innerWidth)) + p.random(1);
-			var y = (p.random(window.innerHeight)) + p.random(1);
+			var x = (window.innerWidth / 2) + p.random(1);
+			var y = (window.innerHeight / 2) + p.random(1);
 			this.position = p.createVector(x,y);
 			// Initialize Neuron
 			this.add_neuron(this.position);
