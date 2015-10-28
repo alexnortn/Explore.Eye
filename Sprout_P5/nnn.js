@@ -43,11 +43,14 @@ function Nnn(args) {
 	this.add_neuron = function(position) {
 		// Create Neurons with similar general levels of complexity
 		var num_branches = p.round(p.random(6,9));
+		// var num_branches = 1;
 		var max_depth = this.complexity - num_branches;
+		// var max_depth = 4;
 		// Given a constant branching speed, this controls neuron size
 		// does not effect morphology.
 		// Grow time is inversely proportional to num_branches
-		var neuron_timer = 400 / num_branches;
+		var neuron_timer = 750 / num_branches;
+		// var neuron_timer = 75;
 		// Initialize the Neuron Object:
 		// 		args[0] = Pvector position
 		// 		args[1] = int num_branches

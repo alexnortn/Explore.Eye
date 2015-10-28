@@ -27,16 +27,9 @@ var sprout = function (p) {
 		p.createCanvas(window.innerWidth, window.innerHeight);
 		// p.noCursor(); // Only enable this for desktop --> Kind of rude otherwise
 
-		// p.frameRate(5);
-		
-		// Initialize the nnn with args[0] = neuron amount, args[1] = general complexity, args[2] = 'p' instance
-		nnn = new Nnn ({
-			num_neurons: 1,
-			complexity:  13,
-			p:           p,
-		});
+		p.frameRate(30);
 
-		nnn.initialize();
+		network_start();
 	}
 
 	p.draw = function() {
@@ -47,6 +40,17 @@ var sprout = function (p) {
 		// plus_minus();
 		iterate();
 
+	}
+
+	network_start = function() {
+		// Initialize the nnn with args[0] = neuron amount, args[1] = general complexity, args[2] = 'p' instance
+		nnn = new Nnn ({
+			num_neurons: 1,
+			complexity:  13,
+			p:           p,
+		});
+
+		nnn.initialize();
 	}
 
 	plus_minus = function() {
@@ -60,8 +64,10 @@ var sprout = function (p) {
 	iterate = function() {
 		if (p.frameCount % 360 == 0) {
 			avg = avg_node(nnn.neurons[0]);
-			p.setup();
+			network_start();
 			counter++;
+			// p.noLoop();
+
 		}
 	}
 

@@ -45,7 +45,7 @@ function Node (args) {
 	this.leaf = true;
 	this.size = false;
 	this.start_point = false;
-	this.dw = true;
+	this.dw = false;
 
 	// Floats
 	var   inimult,     // Initial offset multiplier
@@ -82,8 +82,8 @@ function Node (args) {
 		var isAlone =  this.parent.parent instanceof Node;
 		if (!isAlone) {
 			p_0 = this.start.copy();       
-			return p_0;
 			console.log(true);
+			return p_0;
 		} 
 		else {
 			return p_0.set(this.parent.start.x,this.parent.start.y);
@@ -102,11 +102,8 @@ function Node (args) {
 
 	this.pt_3 = function() {
 		var p_3 = p.createVector();
-		if (this.children.length === 0) {
-			// If we're at the position, create a random vector
-			return p_3 = p5.Vector.random2D();
-		} 
-		else if (this.children.length == 1) {
+		if (this.children.length == 1) {
+			console.log("one child");
 			return p_3.set(this.children[0].position.x,this.children[0].position.y);
 		} 
 		else if (this.children.length > 1) {
@@ -114,9 +111,11 @@ function Node (args) {
 				p_3.add(this.children[i].position);
 			}
 			p_3.div(this.children.length);
+			console.log("many children");
 			return p_3;
 		} 
 		else { // While we're growing
+			console.log("still growing");
 			return p_3.set(this.position.x,this.position.y);
 		}
 
@@ -279,14 +278,14 @@ function Node (args) {
 			p.createVector(this.pt_3().x, this.pt_3().y)
 		];
 			
-		p.line(this.pt_1().x, this.pt_1().y, this.pt_2().x, this.pt_2().y);
+		// p.line(this.pt_1().x, this.pt_1().y, this.pt_2().x, this.pt_2().y);
 		// Render Curves
-		// p.curve(
-		// 	pts[0].x, pts[0].y,
-		// 	pts[1].x, pts[1].y,
-		// 	pts[2].x, pts[2].y,
-		// 	pts[3].x, pts[3].y
-		// );
+		p.curve(
+			pts[0].x, pts[0].y,
+			pts[1].x, pts[1].y,
+			pts[2].x, pts[2].y,
+			pts[3].x, pts[3].y
+		);
 
 		// For fun:
 		// pts = pts
@@ -319,12 +318,12 @@ function Node (args) {
 			if (this.depth == 2) p.ellipse(this.start.x,this.start.y,25,25);
 		p.pop();
 		// Debug Neighborhood
-		p.push();
-			p.noStroke();
-			p.fill(255,10);
-			p.ellipse(this.position.x,this.position.y,50,50);
-			p.fill(255,255);
-		p.pop();
+		// p.push();
+		// 	p.noStroke();
+		// 	p.fill(255,10);
+		// 	p.ellipse(this.position.x,this.position.y,50,50);
+		// 	p.fill(255,255);
+		// p.pop();
 	}
 
 	// Accepts an Array of Node Objects
