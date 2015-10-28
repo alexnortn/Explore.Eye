@@ -23,24 +23,24 @@ function Nnn(args) {
 		for (var i = 0; i < this.num_neurons; i++) {
 			// Set Neuron Soma Position (Root)
 			// Start all neurons in center: Repel()
-			var x = (p.width / 2) + p.random(1);
-			var y = (p.height / 2) + p.random(1);
-			this.neuron_pos = p.createVector(x,y);
+			var x = (window.innerWidth / 2) + p.random(1);
+			var y = (window.innerHeight / 2) + p.random(1);
+			this.position = p.createVector(x,y);
 			// Initialize Neuron
-			this.add_neuron(this.neuron_pos);
+			this.add_neuron(this.position);
 		}
 	}
 	
 	// Simple method for running the neurons
 	// Call this something like 'renderFrame'
-	function run() {
+	this.run = function() {
 		this.neurons.forEach(function(neuron) {
 			neuron.update();
 		});
 	}
 
 	// Add neuron to the network --> Accepts P5.Vector for Arg
-	this.add_neuron = function(location) {
+	this.add_neuron = function(position) {
 		// Create Neurons with similar general levels of complexity
 		var num_branches = p.round(p.random(6,9));
 		var max_depth = this.complexity - num_branches;
@@ -49,19 +49,19 @@ function Nnn(args) {
 		// Grow time is inversely proportional to num_branches
 		var neuron_timer = 400 / num_branches;
 		// Initialize the Neuron Object:
-		// 		args[0] = Pvector location
+		// 		args[0] = Pvector position
 		// 		args[1] = int num_branches
 		// 		args[2] = float neuron_timer
 		// 		args[3] = int max_depth
 		// 		args[4] = 'p' instance
 		this.neurons.push(
 			new Neuron ({
-				location: 		location,
+				position: 		position,
 				num_branches: 	num_branches,
 				neuron_timer: 	neuron_timer,
 				max_depth: 		max_depth,
 				p: 				p,
-			});	
+			})	
 		);
 
 

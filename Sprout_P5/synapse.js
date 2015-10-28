@@ -4,7 +4,7 @@
 
 // Recursive Tree (w/ ArrayList)
 
-// A class for a leaf that gets placed at the location of 
+// A class for a leaf that gets placed at the position of 
 // the last branches
 
 // Contructor: P5.Vector, P5.p
@@ -15,7 +15,7 @@ function Synapse(args) {
 	var p = args.p;
 
 	// 'this' keyword sets the variable to public visibility
-	this.loc = args.l.copy() || 0;
+	this.position = args.position.get() || 0;
 
 	// Method to display the leaves :: "Boutons"
 	// 
@@ -27,7 +27,7 @@ function Synapse(args) {
 	this.display = function() {
 		p.noStroke();
 		p.fill(200,200);
-		p.ellipse(loc.x,loc.y,5,5);   
+		p.ellipse(this.position.x, this.position.y,5,5);   
 	}
 }
 

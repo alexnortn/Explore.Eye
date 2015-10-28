@@ -25,9 +25,17 @@ var sprout = function (p) {
 
 	p.setup = function() {
 		p.createCanvas(window.innerWidth, window.innerHeight);
-		p.noCursor();
+		// p.noCursor(); // Only enable this for desktop --> Kind of rude otherwise
+
+		// p.frameRate(1);
+		
 		// Initialize the nnn with args[0] = neuron amount, args[1] = general complexity, args[2] = 'p' instance
-		nnn = new Nnn(1, 14, p);
+		nnn = new Nnn({
+			num_neurons: 1,
+			complexity:  13,
+			p:           p,
+		});
+
 		nnn.initialize();
 	}
 
@@ -35,10 +43,10 @@ var sprout = function (p) {
 		p.background(25);
 		// Run the nnn
 		nnn.run();
-		// Display meta data
-		meta(nnn.neurons[0]);
+
 		// plus_minus();
 		iterate();
+
 	}
 
 	function plus_minus() {
@@ -65,7 +73,7 @@ var sprout = function (p) {
 				nn.size = true;
 			});
 				console.log(neuron.adj(n));
-			break;
+			// break;
 		}
 		});
 	}
@@ -90,19 +98,9 @@ var sprout = function (p) {
 		nnn.add_neuronn(p.mousePos);
 	}
 
-	// .
-	// .
-	// .
-	// Classes
-	// .
-	// .
-	// .
-
-
-
 }
 
 // Instantiate the entire P5 sketch
-var annn = new p5(sprout);
+new p5(sprout);
 
 

@@ -4,7 +4,7 @@
 
 // Recursive Tree (w/ ArrayList)
 
-// A class for a leaf that gets placed at the location of 
+// A class for a leaf that gets placed at the position of 
 // the last branches
 
 // Contructor: P5.Vector, Integer, Float, Integer
@@ -15,7 +15,7 @@ function Neuron (args) {
 	var p = args.p;
 	
 	// Public arguments from constructor
-	this.location = args.location.get()    	|| p.createVector(0,0);
+	this.position = args.position.get()    	|| p.createVector(0,0);
 	this.num_branches = args.num_branches 	|| 7;
 	this.neuron_timer = args.neuron_timer 	|| 60;
 	this.max_depth = args.max_depth 	  	|| 6;
@@ -33,7 +33,7 @@ function Neuron (args) {
 		var n = new Node ({
 					neuron_timer: 	this.neuron_timer,
 					max_depth: 		this.max_depth,
-					location: 		this.location,
+					position: 		this.position,
 					velocity: 			 start_velocity,
 					depth: 				 0,
 					p: 					 p,
@@ -67,7 +67,12 @@ function Neuron (args) {
 			n.run(this.nodes);
 
 			if (!n.timeToNode()) {
-				this.leaves.push(new Synapse(n.location));
+				this.leaves.push(
+					new Synapse ({
+						position: n.position,
+						p:   p,
+					})
+				);
 				continue;
 			}
 			else if (n.depth >= this.max_depth) {

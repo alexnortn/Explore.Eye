@@ -66,6 +66,7 @@ class Node {
   // Set curve points
   PVector pt_0() {
     PVector p_0 = new PVector();
+
     if (this.parent.parent == null) {
       p_0 = this.start.get();       
       return p_0;
