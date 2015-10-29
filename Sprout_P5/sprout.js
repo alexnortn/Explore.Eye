@@ -15,6 +15,7 @@ var sprout = function (p) {
 	var mxn = 0;
 	var avg = 0;
 	var all_nodes = 0;
+	var nnn_count = 20;
 
 	// Preload any required assets
 	p.preload = function() {
@@ -41,7 +42,7 @@ var sprout = function (p) {
 	network_start = function() {
 		// Initialize the nnn with args[0] = neuron amount, args[1] = general complexity, args[2] = 'p' instance
 		nnn = new Nnn ({
-			num_neurons: 1,
+			num_neurons: nnn_count,
 			complexity:  12,
 			p:           p,
 		});
@@ -53,8 +54,8 @@ var sprout = function (p) {
 		if (p.frameCount % 240 == 0) {
 			if (counter > 0) console.log("Node #" + nnn.neurons[0].nodes.length);
 			console.log("");
-			nnn.remove_neuron(1);
-			nnn.add_neuron(1);
+			nnn.remove_neuron(nnn_count);
+			nnn.add_neuron(nnn_count);
 			counter++;
 			console.log("Neuron #" + counter);
 			console.log("Branches #" + nnn.neurons[0].num_branches);

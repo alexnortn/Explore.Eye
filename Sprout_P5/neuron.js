@@ -62,19 +62,54 @@ function Neuron (args) {
 			);
 		}
 	}
+	// Render the Neurons + Nodes
+	this.render = function() {
+		var _this = this;
+		var n;
+		
+		for (var i = _this.nodes.length - 1; i >= 1; i--) {
+			n = _this.nodes[i];
+			n.render();
+		}
+
+		// Add boutons --> Synapses to leaves of neuron :: Could definitely be improved
+		_this.leaves.forEach(function (synapse) {
+			synapse.display(); 
+		});
+	}
+
+	this.done = function() {
+		var _this = this;
+		var n;
+		
+		for (var i = _this.nodes.length - 1; i >= 1; i--) {
+			n = _this.nodes[i];
+			if (n.isGrowing()) {
+				return false;
+			}
+		}
+
+		return true;
+
+	}
 
 	this.update = function() {
 		var _this = this;
 		var n;
+
+		if (_this.done()) {
+			console.log("Is Done!");
+			return;
+		}
+
+		console.log("Still updating");
+
 		// Let's stop when the neuron gets too deep
 		// For every dendrite in the arraylist
 		for (var i = _this.nodes.length - 1; i >= 1; i--) {
 			// Get the Node object, update and draw it
 			n = _this.nodes[i];
 			n.run(_this.nodes);
-
-			// if (i === 5) console.log(n.isGrowing());
-			// console.log(n.depth);
 
 			if (n.isGrowing()) {
 				continue;
@@ -116,11 +151,6 @@ function Neuron (args) {
 				}
 			}
 		}
-
-		// Add boutons --> Synapses to leaves of neuron :: Could definitely be improved
-		_this.leaves.forEach(function (synapse) {
-			synapse.display(); 
-		});
 	}
 
 	// Recurse through nodes to root --> Returns an array

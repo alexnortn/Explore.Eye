@@ -199,7 +199,7 @@ function Node (args) {
 	// Accepts Array as input
 	this.separate = function(nodes) {
 		var _this = this;
-		var desiredseparation = 50.0;
+		var desiredseparation = 25.0;
 		var steer = p.createVector(0,0);
 		var count = 0;
 ;		// For every node in the system that is a leaf, check if it's too close
@@ -318,19 +318,19 @@ function Node (args) {
 		if (_this.size) {
 			p.noStroke();
 			p.fill(200,0,0);
-			p.ellipse(_this.start.x,_this.start.y,5,5);
-			p.ellipse(_this.position.x, _this.position.y, 5, 5);
+			// p.ellipse(_this.start.x,_this.start.y,5,5);
+			// p.ellipse(_this.position.x, _this.position.y, 5, 5);
 		}
 
 		if (_this.start_point) {
 			p.noStroke();
 			p.fill(200,0,0);
-			p.ellipse(_this.position.x, _this.position.y, 5, 5);
+			// p.ellipse(_this.position.x, _this.position.y, 5, 5);
 		}
 		// Draw Soma
 		p.push();
 			p.fill(200);
-			if (_this.depth == 2) p.ellipse(_this.start.x,_this.start.y,15,15);
+			// if (_this.depth == 2) p.ellipse(_this.start.x,_this.start.y,15,15);
 		p.pop();
 		// Debug Neighborhood
 		// p.push();
@@ -357,9 +357,6 @@ function Node (args) {
 		} else {
 			_this.dw = false;
 		}
-
-			_this.render();	
-
 	}
 
 	// Recurse through nodes to root
