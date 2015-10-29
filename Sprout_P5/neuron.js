@@ -15,10 +15,11 @@ function Neuron (args) {
 	var p = args.p;
 	
 	// Public arguments from constructor
-	this.position = args.position.copy()    	|| p.createVector(0,0);
-	this.num_branches = args.num_branches 	|| 7;
-	this.neuron_timer = args.neuron_timer 	|| 60;
-	this.max_depth = args.max_depth 	  	|| 6;
+	// this.position = args.position.copy()    	|| p.createVector(0,0);
+	this.position = p.createVector(args.x, args.y)    	|| p.createVector(0,0);
+	this.num_branches = args.num_branches 				|| 7;
+	this.neuron_timer = args.neuron_timer 				|| 60;
+	this.max_depth = args.max_depth 	  				|| 6;
 
 	// Generic public array variable : not an argument though
 	this.growing = true;
@@ -45,12 +46,13 @@ function Neuron (args) {
 		var theta = p.TWO_PI / _this.num_branches;  
 		// Random rotational offset constant
 		var theta_const = p.random(p.TWO_PI); 
+		var start_angle;
 
 		// Create seed dendritees
 		for (var i = 0; i < _this.num_branches; i++) {
 			// Create a unique initial offset velocity heading for each branch with respect to the total
 			// number of seed branches, for additional diversity, add a random rotational offset
-			var start_angle = (theta * i) + p.radians(p.random(-15, 15)) + theta_const;
+			start_angle = (theta * i) + p.radians(p.random(-15, 15)) + theta_const;
 			// Convert from polar to cartesian coordinates
 			// var x = p.cos(start_angle);
 			// var y = p.sin(start_angle);
@@ -63,12 +65,13 @@ function Neuron (args) {
 
 	this.update = function() {
 		var _this = this;
+		var n;
 		// Let's stop when the neuron gets too deep
 		// For every dendrite in the arraylist
 		for (var i = _this.nodes.length - 1; i >= 1; i--) {
 			// Get the Node object, update and draw it
-			var n = _this.nodes[i];
-				n.run(_this.nodes);
+			n = _this.nodes[i];
+			n.run(_this.nodes);
 
 			// if (i === 5) console.log(n.isGrowing());
 			// console.log(n.depth);

@@ -42,7 +42,7 @@ var sprout = function (p) {
 		// Initialize the nnn with args[0] = neuron amount, args[1] = general complexity, args[2] = 'p' instance
 		nnn = new Nnn ({
 			num_neurons: 1,
-			complexity:  13,
+			complexity:  12,
 			p:           p,
 		});
 
@@ -51,10 +51,14 @@ var sprout = function (p) {
 
 	plus_minus = function() {
 		if (p.frameCount % 240 == 0) {
-			recurse();
+			if (counter > 0) console.log("Node #" + nnn.neurons[0].nodes.length);
+			console.log("");
 			nnn.remove_neuron(1);
-			var new_position = p.createVector(window.innerWidth / 2, window.innerHeight / 2);
-			nnn.add_neuron(new_position);
+			nnn.add_neuron(1);
+			counter++;
+			console.log("Neuron #" + counter);
+			console.log("Branches #" + nnn.neurons[0].num_branches);
+			console.log("Max Depth #" + nnn.neurons[0].max_depth);
 		}
 	}
 

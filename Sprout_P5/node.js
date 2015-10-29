@@ -54,7 +54,7 @@ function Node (args) {
 	// Private variables
 	var wandertheta = 0;
 	var wan_const = 1.0;
-	var maxspeed = 1.0;       // Default 2
+	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
 
 	// Increment for each instantiation at a branch event
@@ -177,18 +177,21 @@ function Node (args) {
 	// Accepts P5.Vector for argument
 	this.seek = function(target) {
 		var _this = this;
-		var desired = p5.Vector.sub(target,_this.position);  // A vector pointing from the position to the target
+		var _target = target.copy();
+		
+		_target.sub(_this.position);  // A vector pointing from the position to the _target
+		
 		// float angle = degrees(desired.heading());
 		// inimult =  map(angle,0,180,0,5);  
 
-		// Normalize desired and scale to maximum speed
-		desired.normalize();
-		desired.mult(maxspeed);
+		// Normalize _target and scale to maximum speed
+		_target.normalize();
+		_target.mult(maxspeed);
 		// Steering = Desired minus Velocity
-		var steer = p5.Vector.sub(desired,_this.velocity);
-			steer.limit(maxforce);  // Limit to maximum steering force
+		_target.sub(_this.velocity);
+		_target.limit(maxforce);  // Limit to maximum steering force
 
-		return steer;
+		return _target;
 	}
 
 	// Separation
@@ -219,7 +222,8 @@ function Node (args) {
 			steer.div(count);
 		}
 		// As long as the vector is greater than 0
-		if (steer.mag() > 0) {
+		// Using magSq() --> to avoid square root
+		if (steer.magSq() > 0) {
 			// Implement Reynolds: Steering = Desired - Velocity
 			steer.normalize();
 			steer.mult(maxspeed);
@@ -246,7 +250,7 @@ function Node (args) {
 		var wan = _this.wander();             				// Wander
 
 		// Carefully weight these forces
-		sep.mult(1.0);
+		sep.mult(1);
 		ini.mult(1.5);
 		wan.mult(wan_const);
 
@@ -275,21 +279,28 @@ function Node (args) {
 		p.stroke(200);
 		p.noFill();
 		// Array to store curve points
-		var pts = [
-			p.createVector(_this.pt_0().x, _this.pt_0().y),
-			p.createVector(_this.pt_1().x, _this.pt_1().y),
-			p.createVector(_this.pt_2().x, _this.pt_2().y),
-			p.createVector(_this.pt_3().x, _this.pt_3().y)
-		];
+		// var pts = [
+		// 	p.createVector(_this.pt_0().x, _this.pt_0().y),
+		// 	p.createVector(_this.pt_1().x, _this.pt_1().y),
+		// 	p.createVector(_this.pt_2().x, _this.pt_2().y),
+		// 	p.createVector(_this.pt_3().x, _this.pt_3().y)
+		// ];
 			
 		// p.line(_this.pt_1().x, _this.pt_1().y, _this.pt_2().x, _this.pt_2().y);
 		// Render Curves
 		p.curve(
-			pts[0].x, pts[0].y,
-			pts[1].x, pts[1].y,
-			pts[2].x, pts[2].y,
-			pts[3].x, pts[3].y
+			_this.pt_0().x, _this.pt_0().y,
+			_this.pt_1().x, _this.pt_1().y,
+			_this.pt_2().x, _this.pt_2().y,
+			_this.pt_3().x, _this.pt_3().y
 		);
+
+		// p.curve(
+		// 	pts[0].x, pts[0].y,
+		// 	pts[1].x, pts[1].y,
+		// 	pts[2].x, pts[2].y,
+		// 	pts[3].x, pts[3].y
+		// );
 
 		// For fun:
 		// pts = pts
@@ -399,6 +410,7 @@ function Node (args) {
 		// What is my current heading
 		var theta = _this.velocity.heading();
 		// What is my current speed
+		// Can't see how this could be faster
 		var mag = _this.velocity.mag();
 		// Turn me
 		theta += p.radians(angle);
@@ -409,9 +421,9 @@ function Node (args) {
 			neuron_timer: 	_this.neuron_timer * p.random(0.8,0.85),
 			max_depth: 		_this.max_depth,
 			position: 		_this.position,
-			velocity: 			 newvel,
+			velocity: 			  newvel,
 			depth: 			_this.depth,
-			p: 					   p,
+			p: 					  p,
 		});
 		
 		_this.addChild(node);

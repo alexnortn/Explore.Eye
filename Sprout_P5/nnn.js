@@ -19,17 +19,14 @@ function Nnn(args) {
 	// Generic public array variable : not an argument though
 	this.neurons = [];
 
+	this.max_depth;
+	this.num_branches;
+
 	this.initialize = function() {
 		var _this = this;
-		for (var i = 0; i < _this.num_neurons; i++) {
-			// Set Neuron Soma Position (Root)
-			// Start all neurons in center: Repel()
-			var x = (window.innerWidth / 2) + p.random(1);
-			var y = (window.innerHeight / 2) + p.random(1);
-			_this.position = p.createVector(x,y);
-			// Initialize Neuron
-			_this.add_neuron(_this.position);
-		}
+
+		// Initialize Neuron
+		_this.add_neuron(_this.num_neurons);
 	}
 	
 	// Simple method for running the neurons
@@ -42,17 +39,33 @@ function Nnn(args) {
 	}
 
 	// Add neuron to the network --> Accepts P5.Vector for Arg
-	this.add_neuron = function(position) {
-		var _this = this; 
+	this.add_neuron = function(count) {
+		var _this = this;
+		var x, y;
+
+		for (var i = 0; i < count; i++) {
+			// Set Neuron Soma Position (Root)
+			// Start all neurons in center: Repel()
+			if (count == 1) {
+				x = (window.innerWidth / 2) + p.random(1);
+				y = (window.innerHeight / 2) + p.random(1);
+			}
+			else {
+				x = (p.random(window.innerWidth));
+				y = (p.random(window.innerHeight));
+			}
+		}
+
 		// Create Neurons with similar general levels of complexity
-		var num_branches = p.round(p.random(6,9));
+		// _this.num_branches = p.round(p.random(6,9));
+		_this.num_branches = p.floor(p.randomGaussian(7,1));
 		// var num_branches = 1;
-		var max_depth = _this.complexity - num_branches;
+		_this.max_depth = _this.complexity - _this.num_branches;
 		// var max_depth = 4;
 		// Given a constant branching speed, this controls neuron size
 		// does not effect morphology.
 		// Grow time is inversely proportional to num_branches
-		var neuron_timer = 800 / num_branches;
+		var neuron_timer = 800 / _this.num_branches;
 		// var neuron_timer = 75;
 		// Initialize the Neuron Object:
 		// 		args[0] = Pvector position
@@ -62,10 +75,11 @@ function Nnn(args) {
 		// 		args[4] = 'p' instance
 		_this.neurons.push(
 			new Neuron ({
-				position: 		position,
+				x: 				x,
+				y: 				y,
 				num_branches: 	_this.num_branches,
 				neuron_timer: 	_this.neuron_timer,
-				max_depth: 		max_depth,
+				max_depth: 		_this.max_depth,
 				p: 				p,
 			})	
 		);
@@ -76,9 +90,11 @@ function Nnn(args) {
 
 	// Remove neuron to the network
 	this.remove_neuron = function(count) {
-		var _this = this
+		var _this = this;
+		var j;
+		// splice() is a javascript method to working on arrays
 		for (var i = 0; i < count; i++) {
-			var j = p.floor(p.random(_this.neurons.length));
+			j = p.floor(p.random(_this.neurons.length));
 			_this.neurons.splice(j, 1);
 		}
 	}
