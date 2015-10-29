@@ -25,9 +25,10 @@ function Synapse(args) {
 	// By placing 'this' infront of the function name 'display'  it is now
 	// accessible outside of the scope of the object.
 	this.display = function() {
+		_this = this;
 		p.noStroke();
 		p.fill(200,200);
-		p.ellipse(this.position.x, this.position.y,5,5);   
+		p.ellipse(_this.position.x, _this.position.y,5,5);   
 	}
 }
 

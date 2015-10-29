@@ -62,66 +62,70 @@ function Node (args) {
 
 	// Ensures that the definition of leaf is fresh
 	this.isLeaf = function () {
-		return this.children.length === 0;
+		var _this = this;
+		return _this.children.length === 0;
 	};
 
 	// var n :: Node()
 	this.addChild = function(n) {
-		n.parent = this;
-		this.children.push(n);
+		var _this = this;
+		n.parent = _this;
+		_this.children.push(n);
 	} 
 
 	// var n :: Node()
 	this.addParent = function(n) {
-		n.addChild(this);
+		var _this = this;
+		n.addChild(_this);
 	}
 
 	// Set curve points
 	this.pt_0 = function() {
+		var _this = this;
 		var p_0 = p.createVector();
-		var isAlone =  this.parent.parent instanceof Node;
+		var isAlone =  _this.parent.parent instanceof Node;
 		if (!isAlone) {
-			p_0 = this.start.copy();       
-			console.log(true);
+			p_0 = _this.start.copy();       
 			return p_0;
 		} 
 		else {
-			return p_0.set(this.parent.start.x,this.parent.start.y);
+			return p_0.set(_this.parent.start.x,_this.parent.start.y);
 		}
 	}
 
 	this.pt_1 = function() {
+		var _this = this;
 		var p_1 = p.createVector();
-		return p_1.set(this.start.x, this.start.y);
+		return p_1.set(_this.start.x, _this.start.y);
 	}
 
 	this.pt_2 = function() {
+		var _this = this;
 		var p_2 = p.createVector();
-		return p_2.set(this.position.x, this.position.y);
+		return p_2.set(_this.position.x, _this.position.y);
 	}
 
 	this.pt_3 = function() {
+		var _this = this;
 		var p_3 = p.createVector();
-		if (this.children.length == 1) {
-			console.log("one child");
-			return p_3.set(this.children[0].position.x,this.children[0].position.y);
+		if (_this.children.length == 1) {
+			return p_3.set(_this.children[0].position.x,_this.children[0].position.y);
 		} 
 		else if (this.children.length > 1) {
-			for (var i = 0; i < this.children.length; i++) {
-				p_3.add(this.children[i].position);
+			for (var i = 0; i < _this.children.length; i++) {
+				p_3.add(_this.children[i].position);
 			}
-			p_3.div(this.children.length);
-			console.log("many children");
+			p_3.div(_this.children.length);
 			return p_3;
 		} 
 		else { // While we're growing
-			console.log("still growing");
-			return p_3.set(this.position.x,this.position.y);
+			return p_3.set(_this.position.x,_this.position.y);
 		}
 
 	}
 
 	this.wander = function() {
+		var _this = this;
 		var wanderR = 25;         						// Radius for our "wander circle"
 		var wanderD = 80;         						// Distance for our "wander circle"
 		var change = 0.3;
@@ -129,12 +133,12 @@ function Node (args) {
 		wandertheta += p.random(-change,change);   // Randomly change wander theta
 
 		// Now we have to calculate the new position to steer towards on the wander circle
-		var circleloc = this.velocity.copy();    		// Start with velocity
+		var circleloc = _this.velocity.copy();    		// Start with velocity
 			circleloc.normalize();            			// Normalize to get heading
 			circleloc.mult(wanderD);          			// Multiply by distance
-			circleloc.add(this.position);               // Make it relative to boid's position
+			circleloc.add(_this.position);               // Make it relative to boid's position
 
-		var h = this.velocity.heading();        		// We need to know the heading to offset wandertheta
+		var h = _this.velocity.heading();        		// We need to know the heading to offset wandertheta
 
 		var circleOffSet = p.createVector(
 			wanderR * p.cos(wandertheta + h), 
@@ -143,10 +147,10 @@ function Node (args) {
 		var target = p5.Vector.add(circleloc, circleOffSet);
 
 		// Render wandering circle, etc. 
-		if (this.dw) this.drawWanderStuff(this.position, circleloc, target, wanderR);
+		if (_this.dw) _this.drawWanderStuff(_this.position, circleloc, target, wanderR);
 
 		// Returns call to seek() and a vector object
-		return this.seek(target);
+		return _this.seek(target);
 
 	}
 
@@ -172,7 +176,8 @@ function Node (args) {
 	// Consider using to attract towards another cell or synapse
 	// Accepts P5.Vector for argument
 	this.seek = function(target) {
-		var desired = p5.Vector.sub(target,this.position);  // A vector pointing from the position to the target
+		var _this = this;
+		var desired = p5.Vector.sub(target,_this.position);  // A vector pointing from the position to the target
 		// float angle = degrees(desired.heading());
 		// inimult =  map(angle,0,180,0,5);  
 
@@ -180,7 +185,7 @@ function Node (args) {
 		desired.normalize();
 		desired.mult(maxspeed);
 		// Steering = Desired minus Velocity
-		var steer = p5.Vector.sub(desired, this.velocity);
+		var steer = p5.Vector.sub(desired,_this.velocity);
 			steer.limit(maxforce);  // Limit to maximum steering force
 
 		return steer;
@@ -190,23 +195,18 @@ function Node (args) {
 	// Method checks for nearby nodes and steers away
 	// Accepts Array as input
 	this.separate = function(nodes) {
+		var _this = this;
 		var desiredseparation = 50.0;
 		var steer = p.createVector(0,0);
 		var count = 0;
-		// myPosition is a temp vector to keep track of this objects position inside of
-		// the forEach loop --> Please improve
-		var myPosition = p.createVector(this.position.x,this.position.y);
 ;		// For every node in the system that is a leaf, check if it's too close
 		nodes.forEach(function(other) {
-		  // if (other.leaf) 
-		  	// console.log(p5.Vector);
-		  	// console.log(myPosition);
 		  	// var d = this.position.dist(other.position); // Alternative implementation
-			var d = p5.Vector.dist(myPosition, other.position);
+			var d = p5.Vector.dist(_this.position, other.position);
 			// If the distance is greater than 0 and less than an arbitrary amount (0 when you are yosurself)
 			if ((d > 0) && (d < desiredseparation)) {
 				// Calculate vector pointing away from neighbor
-				var diff = p5.Vector.sub(myPosition,other.position);
+				var diff = p5.Vector.sub(_this.position,other.position);
 					diff.normalize();
 					diff.div(d*d);        				// Weight by distance
 				sepmult = p.map((1/(d*d)),0,1,0,5);     // Proportional to Inverse Distance Squared
@@ -223,7 +223,7 @@ function Node (args) {
 			// Implement Reynolds: Steering = Desired - Velocity
 			steer.normalize();
 			steer.mult(maxspeed);
-			steer.sub(this.velocity);
+			steer.sub(_this.velocity);
 			steer.limit(maxforce);
 		}
 
@@ -233,15 +233,17 @@ function Node (args) {
 	// Simple method to sum forces
 	// Accepts P5.Vector
 	this.applyForce = function(force) {
-		this.acceleration.add(force);
+		var _this = this;
+		_this.acceleration.add(force);
 	}
 
 	// We accumulate a new acceleration each time based on three rules
 	// Accepts an Array of Node objects
 	this.expand = function(nodes) {
-		var sep = this.separate(nodes);      				// Separation
-		var ini = this.seek(this.findRoot(this)).mult(-1); 	// Root Node (multiply by -1 to repel)
-		var wan = this.wander();             				// Wander
+		var _this = this;
+		var sep = _this.separate(nodes);      				// Separation
+		var ini = _this.seek(_this.findRoot(_this)).mult(-1); 	// Root Node (multiply by -1 to repel)
+		var wan = _this.wander();             				// Wander
 
 		// Carefully weight these forces
 		sep.mult(1.0);
@@ -249,36 +251,38 @@ function Node (args) {
 		wan.mult(wan_const);
 
 		// Add the force vectors to acceleration
-		this.applyForce(sep);
-		this.applyForce(ini);
-		this.applyForce(wan);
+		_this.applyForce(sep);
+		_this.applyForce(ini);
+		_this.applyForce(wan);
 	}
 
 	// Method to update position
 	this.update = function() {
+		var _this = this;
 		// Update velocity
-		this.velocity.add(this.acceleration);
+		_this.velocity.add(_this.acceleration);
 		// Limit speed
-		this.velocity.limit(maxspeed);
-		this.position.add(this.velocity);
+		_this.velocity.limit(maxspeed);
+		_this.position.add(_this.velocity);
 		// Reset accelertion to 0 each cycle
-		this.acceleration.mult(0);
+		_this.acceleration.mult(0);
 	}
 
 	// Draw a dot at position
 	this.render = function() {
+		var _this = this;
 		// Basic Fractal Lines
 		p.stroke(200);
 		p.noFill();
 		// Array to store curve points
 		var pts = [
-			p.createVector(this.pt_0().x, this.pt_0().y),
-			p.createVector(this.pt_1().x, this.pt_1().y),
-			p.createVector(this.pt_2().x, this.pt_2().y),
-			p.createVector(this.pt_3().x, this.pt_3().y)
+			p.createVector(_this.pt_0().x, _this.pt_0().y),
+			p.createVector(_this.pt_1().x, _this.pt_1().y),
+			p.createVector(_this.pt_2().x, _this.pt_2().y),
+			p.createVector(_this.pt_3().x, _this.pt_3().y)
 		];
 			
-		// p.line(this.pt_1().x, this.pt_1().y, this.pt_2().x, this.pt_2().y);
+		// p.line(_this.pt_1().x, _this.pt_1().y, _this.pt_2().x, _this.pt_2().y);
 		// Render Curves
 		p.curve(
 			pts[0].x, pts[0].y,
@@ -300,61 +304,63 @@ function Node (args) {
 		// p.curve.apply(p, pts);
 
 		// Render Path Home
-		if (this.size) {
+		if (_this.size) {
 			p.noStroke();
 			p.fill(200,0,0);
-			p.ellipse(this.start.x,this.start.y,5,5);
-			p.ellipse(this.position.x, this.position.y, 5, 5);
+			p.ellipse(_this.start.x,_this.start.y,5,5);
+			p.ellipse(_this.position.x, _this.position.y, 5, 5);
 		}
 
-		if (this.start_point) {
+		if (_this.start_point) {
 			p.noStroke();
 			p.fill(200,0,0);
-			p.ellipse(this.position.x, this.position.y, 5, 5);
+			p.ellipse(_this.position.x, _this.position.y, 5, 5);
 		}
 		// Draw Soma
 		p.push();
 			p.fill(200);
-			if (this.depth == 2) p.ellipse(this.start.x,this.start.y,15,15);
+			if (_this.depth == 2) p.ellipse(_this.start.x,_this.start.y,15,15);
 		p.pop();
 		// Debug Neighborhood
 		// p.push();
 		// 	p.noStroke();
 		// 	p.fill(255,10);
-		// 	p.ellipse(this.position.x,this.position.y,50,50);
+		// 	p.ellipse(_this.position.x,_this.position.y,50,50);
 		// 	p.fill(255,255);
 		// p.pop();
 	}
 
 	// Accepts an Array of Node Objects
 	this.run = function(nodes) {
-		if (this.isGrowing()) {
-			this.tick();
-			this.expand(nodes);
-			this.update();
+		var _this = this;
+		if (_this.isGrowing()) {
+			_this.tick();
+			_this.expand(nodes);
+			_this.update();
 			// Display Wandering Debug
 
 			// Make leaves go crazy on final level
-			if (this.depth == (this.max_depth - 2)) {
+			if (_this.depth == (_this.max_depth - 2)) {
 				wan_const = 3;
 			}
 		} else {
-			this.dw = false;
+			_this.dw = false;
 		}
 
-		
-		this.render();
+			_this.render();	
+
 	}
 
 	// Recurse through nodes to root
 	// Accepts Node object
 	// Returns p5.Vector object
 	this.findRoot = function(n) {
+		var _this = this;
 		if (n.parent == null) {
 			return n.position;
 		}
 		else {
-			return this.findRoot(n.parent);
+			return _this.findRoot(n.parent);
 		}
 	}
 
@@ -367,16 +373,18 @@ function Node (args) {
 	// Did the timer run out?
 	// Returns boolean --> Growing?
 	this.tick = function () {
-		if ((this.depth == 2) || (this.depth == 3)) {
-			this.timer -= p.round(p.random(2,this.sub_t(this.max_depth)));;
+		var _this = this;
+		if ((_this.depth == 2) || (_this.depth == 3)) {
+			_this.timer -= p.round(p.random(2,_this.sub_t(_this.max_depth)));;
 		} 
 		else {
-			this.timer--;
+			_this.timer--;
 		}
 	}
 
 	this.isGrowing = function() {
-		if (this.timer >= 0) {
+		var _this = this;
+		if (_this.timer >= 0) {
 			// Set branch point
 			return true;
 		} 
@@ -387,26 +395,27 @@ function Node (args) {
 	// Create a new dendrite at the current position, but change direction by a given angle
 	// Returns a new Node object
 	this.branch = function(angle) {
+		var _this = this;
 		// What is my current heading
-		var theta = this.velocity.heading();
+		var theta = _this.velocity.heading();
 		// What is my current speed
-		var mag = this.velocity.mag();
+		var mag = _this.velocity.mag();
 		// Turn me
 		theta += p.radians(angle);
 		// Polar coordinates to cartesian!!
 		var newvel = p.createVector(mag * p.cos(theta),mag * p.sin(theta));
 		// Create a new Node instance
 		var node = new Node ({
-			neuron_timer: 	this.neuron_timer * p.random(0.8,0.85),
-			max_depth: 		this.max_depth,
-			position: 		this.position,
+			neuron_timer: 	_this.neuron_timer * p.random(0.8,0.85),
+			max_depth: 		_this.max_depth,
+			position: 		_this.position,
 			velocity: 			 newvel,
-			depth: 			this.depth,
+			depth: 			_this.depth,
 			p: 					   p,
 		});
 		
-		this.addChild(node);
-		this.leaf = false;
+		_this.addChild(node);
+		_this.leaf = false;
 		// Return a new Node
 		return node;
 	}

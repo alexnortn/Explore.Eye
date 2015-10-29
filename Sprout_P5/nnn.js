@@ -20,31 +20,34 @@ function Nnn(args) {
 	this.neurons = [];
 
 	this.initialize = function() {
-		for (var i = 0; i < this.num_neurons; i++) {
+		var _this = this;
+		for (var i = 0; i < _this.num_neurons; i++) {
 			// Set Neuron Soma Position (Root)
 			// Start all neurons in center: Repel()
 			var x = (window.innerWidth / 2) + p.random(1);
 			var y = (window.innerHeight / 2) + p.random(1);
-			this.position = p.createVector(x,y);
+			_this.position = p.createVector(x,y);
 			// Initialize Neuron
-			this.add_neuron(this.position);
+			_this.add_neuron(_this.position);
 		}
 	}
 	
 	// Simple method for running the neurons
 	// Call this something like 'renderFrame'
 	this.run = function() {
-		this.neurons.forEach(function(neuron) {
+		var _this = this;
+		_this.neurons.forEach(function(neuron) {
 			neuron.update();
 		});
 	}
 
 	// Add neuron to the network --> Accepts P5.Vector for Arg
 	this.add_neuron = function(position) {
+		var _this = this; 
 		// Create Neurons with similar general levels of complexity
 		var num_branches = p.round(p.random(6,9));
 		// var num_branches = 1;
-		var max_depth = this.complexity - num_branches;
+		var max_depth = _this.complexity - num_branches;
 		// var max_depth = 4;
 		// Given a constant branching speed, this controls neuron size
 		// does not effect morphology.
@@ -57,25 +60,26 @@ function Nnn(args) {
 		// 		args[2] = float neuron_timer
 		// 		args[3] = int max_depth
 		// 		args[4] = 'p' instance
-		this.neurons.push(
+		_this.neurons.push(
 			new Neuron ({
 				position: 		position,
-				num_branches: 	num_branches,
-				neuron_timer: 	neuron_timer,
+				num_branches: 	_this.num_branches,
+				neuron_timer: 	_this.neuron_timer,
 				max_depth: 		max_depth,
 				p: 				p,
 			})	
 		);
 
 
-		this.neurons[this.neurons.length - 1].neuron_setup();
+		_this.neurons[_this.neurons.length - 1].neuron_setup();
 	}
 
 	// Remove neuron to the network
 	this.remove_neuron = function(count) {
+		var _this = this
 		for (var i = 0; i < count; i++) {
-			var j = p.floor(p.random(this.neurons.length));
-			this.neurons.splice(j, 1);
+			var j = p.floor(p.random(_this.neurons.length));
+			_this.neurons.splice(j, 1);
 		}
 	}
 

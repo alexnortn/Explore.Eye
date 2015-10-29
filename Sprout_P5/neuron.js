@@ -28,25 +28,26 @@ function Neuron (args) {
 
 	// Call methods to access outside of class this way!
 	this.neuron_setup = function() {
+		var _this = this;
 		var start_velocity = p.createVector(2,2); // Change this value to determine simulation speed
 		// Create a new Node instance
 		var n = new Node ({
-					neuron_timer: 	this.neuron_timer,
-					max_depth: 		this.max_depth,
-					position: 		this.position,
+					neuron_timer: 	_this.neuron_timer,
+					max_depth: 		_this.max_depth,
+					position: 		_this.position,
 					velocity: 			 start_velocity,
 					depth: 				 0,
 					p: 					 p,
 				});	
 		// Add to arraylist
-		this.nodes.push(n); 
+		_this.nodes.push(n); 
 
-		var theta = p.TWO_PI / this.num_branches;  
+		var theta = p.TWO_PI / _this.num_branches;  
 		// Random rotational offset constant
 		var theta_const = p.random(p.TWO_PI); 
 
 		// Create seed dendritees
-		for (var i = 0; i < this.num_branches; i++) {
+		for (var i = 0; i < _this.num_branches; i++) {
 			// Create a unique initial offset velocity heading for each branch with respect to the total
 			// number of seed branches, for additional diversity, add a random rotational offset
 			var start_angle = (theta * i) + p.radians(p.random(-15, 15)) + theta_const;
@@ -54,19 +55,20 @@ function Neuron (args) {
 			// var x = p.cos(start_angle);
 			// var y = p.sin(start_angle);
 			// Branch a bunch of times
-			this.nodes.push(
+			_this.nodes.push(
 				n.branch(p.degrees(start_angle))
 			);
 		}
 	}
 
 	this.update = function() {
+		var _this = this;
 		// Let's stop when the neuron gets too deep
 		// For every dendrite in the arraylist
-		for (var i = this.nodes.length - 1; i >= 1; i--) {
+		for (var i = _this.nodes.length - 1; i >= 1; i--) {
 			// Get the Node object, update and draw it
-			var n = this.nodes[i];
-				n.run(this.nodes);
+			var n = _this.nodes[i];
+				n.run(_this.nodes);
 
 			// if (i === 5) console.log(n.isGrowing());
 			// console.log(n.depth);
@@ -75,8 +77,8 @@ function Neuron (args) {
 				continue;
 			}
 
-			if (n.depth >= this.max_depth) {
-				this.leaves.push(
+			if (n.depth >= _this.max_depth) {
+				_this.leaves.push(
 					new Synapse ({
 						position: n.position,
 						p: p,
@@ -89,22 +91,22 @@ function Neuron (args) {
 				// For every other node added: add one or two branches to create natural form
 				// Could definitely have a better way of accessing neuron depth.. that would improve branching
 				if (((n.depth + 1) % 2 == 0) && (n.depth != 2)) {
-					this.nodes.push(n.branch(10));    // Add one going right
-					this.nodes.push(n.branch(-10));   // Add one going left
+					_this.nodes.push(n.branch(10));    // Add one going right
+					_this.nodes.push(n.branch(-10));   // Add one going left
 				} 
 				else {
 					// Additional method for probabalistic branching
 					// Default rnd = 15% : could be push higher
 					// Neuron feels slightly over complicated given complexity: 13 & min [5] branches
 					var rnd = p.random(1);
-					if ((rnd < 0.15) && ((n.depth + 1) < this.max_depth )) {
-						this.nodes.push(n.branch(10));    // Add one going right
-						this.nodes.push(n.branch(-10));   // Add one going left
+					if ((rnd < 0.15) && ((n.depth + 1) < _this.max_depth )) {
+						_this.nodes.push(n.branch(10));    // Add one going right
+						_this.nodes.push(n.branch(-10));   // Add one going left
 					} 
 					else {
 						// Added leaves to end of Neuron --> Can be vastly improved to consider
 						// the entire 'distal' zone of the neuron.
-						this.nodes.push(
+						_this.nodes.push(
 							n.branch(p.round(p.random(-20,20)))
 						);
 					} 
@@ -113,7 +115,7 @@ function Neuron (args) {
 		}
 
 		// Add boutons --> Synapses to leaves of neuron :: Could definitely be improved
-		this.leaves.forEach(function (synapse) {
+		_this.leaves.forEach(function (synapse) {
 			synapse.display(); 
 		});
 	}
@@ -136,8 +138,11 @@ function Neuron (args) {
 		}
 
 		// Make a 'shallow' copy of an array
-		n.start_point = true;
-		return recurseMore(n, []);
+		// I see what I'm doing, but it requires refactoring
+		// n.start_point = true;
+		var parent_arr = [];
+			parent_arr.push(n.parent);
+		return recurseMore(n, parent_arr);
 	}
 }
 

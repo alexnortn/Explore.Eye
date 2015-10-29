@@ -15,20 +15,16 @@ var sprout = function (p) {
 	var mxn = 0;
 	var avg = 0;
 	var all_nodes = 0;
-	// boolean
-	var loop = true;
 
 	// Preload any required assets
-	// p.preload = function() {
+	p.preload = function() {
 
-	// }
+	}
 
 	p.setup = function() {
 		p.createCanvas(window.innerWidth, window.innerHeight);
-		// p.noCursor(); // Only enable this for desktop --> Kind of rude otherwise
-
 		p.frameRate(30);
-
+		
 		network_start();
 	}
 
@@ -37,8 +33,8 @@ var sprout = function (p) {
 		// Run the nnn
 		nnn.run();
 
-		// plus_minus();
-		iterate();
+		plus_minus();
+		// iterate();
 
 	}
 
@@ -54,10 +50,11 @@ var sprout = function (p) {
 	}
 
 	plus_minus = function() {
-		if (p.frameCount % 120 == 0) {
-			nnn.rmv_neuron(1);
-			nnn.add_neuron(1);
+		if (p.frameCount % 240 == 0) {
 			recurse();
+			nnn.remove_neuron(1);
+			var new_position = p.createVector(window.innerWidth / 2, window.innerHeight / 2);
+			nnn.add_neuron(new_position);
 		}
 	}
 
@@ -72,15 +69,15 @@ var sprout = function (p) {
 	}
 
 	recurse = function() {
-		var neuron = nnn.neurons[p.round(p.random(nnn.neurons.length))];
-		nnn.neurons.forEach(function(n) {
-		if (n.leaf) {
-			neuron.adj(n).forEach(function(nn) {
-				nn.size = true;
-			});
+		// var neuron = nnn.neurons[p.round(p.random(nnn.neurons.length))];
+		var neuron = nnn.neurons[0];
+		neuron.nodes.forEach(function(n) {
+			if (n.leaf) {
+				neuron.adj(n).forEach(function(nn) {
+					nn.size = true;
+				});
 				console.log(neuron.adj(n));
-			// break;
-		}
+			}
 		});
 	}
 
@@ -102,6 +99,13 @@ var sprout = function (p) {
 	mousePressed = function() {
 		mousePos = p.createVector(p.mouseX, p.mouseY);
 		nnn.add_neuronn(p.mousePos);
+	}
+
+	p.keyPressed = function() {
+		if (p.keyCode == p.UP_ARROW) {
+			recurse();
+		} 
+		return false; // prevent default
 	}
 
 }
