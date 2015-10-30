@@ -23,18 +23,20 @@ function Node (args) {
 	this.start = args.position.copy() || p.createVector();
 	this.position = args.position.copy() || p.createVector();
 	this.velocity = args.velocity.copy() || p.createVector();
+	
 	// Public floats
 	this.neuron_timer = args.neuron_timer || 0;
 	this.max_depth = args.max_depth || 7;
 	this.depth = args.depth || 0;
-
+	
 	// Not in constructor
 	this.acceleration = p.createVector(0,0);
 	this.timer = this.neuron_timer;
-
+	
 	// Setup public arrays for children Nodes and Adjacency List
 	this.children = [];
 	this.adj_list = [];
+	
 	// Public array of vectors to contain coordinates for Catmull Rom paths
 	this.curve_pts = []; // 4 pts
 	
@@ -330,15 +332,15 @@ function Node (args) {
 		// Draw Soma
 		p.push();
 			p.fill(200);
-			// if (_this.depth == 2) p.ellipse(_this.start.x,_this.start.y,15,15);
+			if (_this.depth == 2) p.ellipse(_this.start.x,_this.start.y,15,15);
 		p.pop();
 		// Debug Neighborhood
-		// p.push();
-		// 	p.noStroke();
-		// 	p.fill(255,10);
-		// 	p.ellipse(_this.position.x,_this.position.y,50,50);
-		// 	p.fill(255,255);
-		// p.pop();
+		p.push();
+			// p.noStroke();
+			// p.fill(255,10);
+			// p.ellipse(_this.position.x,_this.position.y,50,50);
+			// p.fill(255,255);
+		p.pop();
 	}
 
 	// Accepts an Array of Node Objects

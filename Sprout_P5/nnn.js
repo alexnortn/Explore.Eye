@@ -27,6 +27,7 @@ function Nnn(args) {
 
 		// Initialize Neuron
 		_this.add_neuron(_this.num_neurons);
+
 	}
 	
 	// Simple method for running the neurons
@@ -36,9 +37,8 @@ function Nnn(args) {
 		_this.neurons.forEach(function(neuron) {
 
 			if (!_this.done()) {
-				p.frameRate(1);
+				p.noLoop();
 			}
-
 			neuron.update();
 			neuron.render();
 		});

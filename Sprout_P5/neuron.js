@@ -62,6 +62,7 @@ function Neuron (args) {
 			);
 		}
 	}
+
 	// Render the Neurons + Nodes
 	this.render = function() {
 		var _this = this;
