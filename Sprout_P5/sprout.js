@@ -15,7 +15,7 @@ var sprout = function (p) {
 	var mxn = 0;
 	var avg = 0;
 	var all_nodes = 0;
-	var nnn_count = 1;
+	var nnn_count = 15;
 
 	// Preload any required assets
 	p.preload = function() {
@@ -34,8 +34,11 @@ var sprout = function (p) {
 		// Run the nnn
 		nnn.run();
 
+
 		plus_minus();
 		// iterate();
+
+		if (nnn.done()) recurse();
 
 	}
 
@@ -51,15 +54,15 @@ var sprout = function (p) {
 	}
 
 	plus_minus = function() {
-		if (p.frameCount % 240 == 0) {
-			if (counter > 0) console.log("Node #" + nnn.neurons[0].nodes.length);
-			console.log("");
+		if (p.frameCount % 360 == 0) {
+			// if (counter > 0) console.log("Node #" + nnn.neurons[0].nodes.length);
+			// console.log("");
 			nnn.remove_neuron(nnn_count);
 			nnn.add_neuron(nnn_count);
 			counter++;
-			console.log("Neuron #" + counter);
-			console.log("Branches #" + nnn.neurons[0].num_branches);
-			console.log("Max Depth #" + nnn.neurons[0].max_depth);
+			// console.log("Neuron #" + counter);
+			// console.log("Branches #" + nnn.neurons[0].num_branches);
+			// console.log("Max Depth #" + nnn.neurons[0].max_depth);
 		}
 	}
 
@@ -75,14 +78,15 @@ var sprout = function (p) {
 
 	recurse = function() {
 		// var neuron = nnn.neurons[p.round(p.random(nnn.neurons.length))];
-		var neuron = nnn.neurons[0];
-		neuron.nodes.forEach(function(n) {
-			if (n.leaf) {
-				neuron.adj(n).forEach(function(nn) {
-					nn.size = true;
-				});
-				console.log(neuron.adj(n));
-			}
+		nnn.neurons.forEach(function(neuron){
+			neuron.nodes.forEach(function(n) {
+				if (n.leaf) {
+					neuron.adj(n).forEach(function(nn) {
+						nn.size = true;
+					});
+					// console.log(neuron.adj(n));
+				}
+			});
 		});
 	}
 

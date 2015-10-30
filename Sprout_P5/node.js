@@ -49,13 +49,9 @@ function Node (args) {
 	this.start_point = false;
 	this.dw = false;
 
-	// Floats
-	var   inimult,     // Initial offset multiplier
-		  sepmult;     // Separation multiplier
-
 	// Private variables
 	var wandertheta = 0;
-	var wan_const = 1.0;
+	var wan_const = 0;
 	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
 
@@ -182,9 +178,6 @@ function Node (args) {
 		var _target = target.copy();
 		
 		_target.sub(_this.position);  // A vector pointing from the position to the _target
-		
-		// float angle = degrees(desired.heading());
-		// inimult =  map(angle,0,180,0,5);  
 
 		// Normalize _target and scale to maximum speed
 		_target.normalize();
@@ -204,7 +197,7 @@ function Node (args) {
 		var desiredseparation = 25.0;
 		var steer = p.createVector(0,0);
 		var count = 0;
-;		// For every node in the system that is a leaf, check if it's too close
+		// For every node in the system that is a leaf, check if it's too close
 		nodes.forEach(function(other) {
 		  	// var d = this.position.dist(other.position); // Alternative implementation
 			var d = p5.Vector.dist(_this.position, other.position);
@@ -214,7 +207,6 @@ function Node (args) {
 				var diff = p5.Vector.sub(_this.position,other.position);
 					diff.normalize();
 					diff.div(d*d);        				// Weight by distance
-				sepmult = p.map((1/(d*d)),0,1,0,5);     // Proportional to Inverse Distance Squared
 				steer.add(diff);
 				count++;             					// Keep track of how many
 			}
@@ -253,7 +245,7 @@ function Node (args) {
 
 		// Carefully weight these forces
 		sep.mult(1);
-		ini.mult(1.5);
+		ini.mult(1);
 		wan.mult(wan_const);
 
 		// Add the force vectors to acceleration
@@ -288,7 +280,7 @@ function Node (args) {
 		// 	p.createVector(_this.pt_3().x, _this.pt_3().y)
 		// ];
 			
-		// p.line(_this.pt_1().x, _this.pt_1().y, _this.pt_2().x, _this.pt_2().y);
+		// p.line(_this.start.x, _this.start.y, _this.position.x, _this.position.y);
 		// Render Curves
 		p.curve(
 			_this.pt_0().x, _this.pt_0().y,
@@ -320,14 +312,14 @@ function Node (args) {
 		if (_this.size) {
 			p.noStroke();
 			p.fill(200,0,0);
-			// p.ellipse(_this.start.x,_this.start.y,5,5);
-			// p.ellipse(_this.position.x, _this.position.y, 5, 5);
+			p.ellipse(_this.start.x,_this.start.y,5,5);
+			p.ellipse(_this.position.x, _this.position.y, 5, 5);
 		}
 
 		if (_this.start_point) {
 			p.noStroke();
 			p.fill(200,0,0);
-			// p.ellipse(_this.position.x, _this.position.y, 5, 5);
+			p.ellipse(_this.position.x, _this.position.y, 5, 5);
 		}
 		// Draw Soma
 		p.push();
@@ -335,12 +327,12 @@ function Node (args) {
 			if (_this.depth == 2) p.ellipse(_this.start.x,_this.start.y,15,15);
 		p.pop();
 		// Debug Neighborhood
-		p.push();
-			// p.noStroke();
-			// p.fill(255,10);
-			// p.ellipse(_this.position.x,_this.position.y,50,50);
-			// p.fill(255,255);
-		p.pop();
+		// p.push();
+		// 	p.noStroke();
+		// 	p.fill(255,10);
+		// 	p.ellipse(_this.position.x,_this.position.y,50,50);
+		// 	p.fill(255,255);
+		// p.pop();
 	}
 
 	// Accepts an Array of Node Objects
@@ -353,8 +345,8 @@ function Node (args) {
 			// Display Wandering Debug
 
 			// Make leaves go crazy on final level
-			if (_this.depth == (_this.max_depth - 2)) {
-				wan_const = 3;
+			if (_this.depth == (_this.max_depth - 1)) {
+				wan_const = 0.5;
 			}
 		} else {
 			_this.dw = false;
@@ -408,13 +400,16 @@ function Node (args) {
 		var _this = this;
 		// What is my current heading
 		var theta = _this.velocity.heading();
+
 		// What is my current speed
 		// Can't see how this could be faster
 		var mag = _this.velocity.mag();
 		// Turn me
 		theta += p.radians(angle);
+		// console.log(theta);
 		// Polar coordinates to cartesian!!
 		var newvel = p.createVector(mag * p.cos(theta),mag * p.sin(theta));
+
 		// Create a new Node instance
 		var node = new Node ({
 			neuron_timer: 	_this.neuron_timer * p.random(0.8,0.85),

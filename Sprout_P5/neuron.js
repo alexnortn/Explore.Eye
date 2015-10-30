@@ -89,7 +89,7 @@ function Neuron (args) {
 				return false;
 			}
 		}
-
+		console.log("Neuron done");
 		return true;
 
 	}
@@ -99,11 +99,11 @@ function Neuron (args) {
 		var n;
 
 		if (_this.done()) {
-			console.log("Is Done!");
+			// console.log("Is Done!");
 			return;
 		}
 
-		console.log("Still updating");
+		// console.log("Still updating");
 
 		// Let's stop when the neuron gets too deep
 		// For every dendrite in the arraylist
@@ -146,7 +146,8 @@ function Neuron (args) {
 						// Added leaves to end of Neuron --> Can be vastly improved to consider
 						// the entire 'distal' zone of the neuron.
 						_this.nodes.push(
-							n.branch(p.round(p.random(-20,20)))
+							// n.branch(p.round(p.random(-20,20)))
+							n.branch(0)
 						);
 					} 
 				}

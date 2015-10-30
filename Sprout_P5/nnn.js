@@ -34,11 +34,15 @@ function Nnn(args) {
 	// Call this something like 'renderFrame'
 	this.run = function() {
 		var _this = this;
+
+		if (_this.done()) {
+			console.log("NNN Complete");
+			console.log(_this.neurons.length);
+			// p.noLoop();
+		}
+
 		_this.neurons.forEach(function(neuron) {
 
-			if (!_this.done()) {
-				p.noLoop();
-			}
 			neuron.update();
 			neuron.render();
 		});
@@ -46,12 +50,20 @@ function Nnn(args) {
 
 	this.done = function() {
 		var _this = this;
-		
-		_this.neurons.forEach(function(neuron) {
-			if (!neuron.done()) {
+
+		var n;
+		for (var i = 0; i < _this.neurons.length; i++) {
+			n = _this.neurons[i];
+			if (!n.done()) {
 				return false;
 			}
-		});
+		}
+		
+		// _this.neurons.forEach(function(neuron) {
+		// 	if (!neuron.done()) {
+		// 		return false;
+		// 	}
+		// });
 
 		return true;
 
@@ -75,8 +87,8 @@ function Nnn(args) {
 			}
 
 			// Create Neurons with similar general levels of complexity
-			// _this.num_branches = p.round(p.random(6,9));
-			_this.num_branches = p.floor(p.randomGaussian(7,1));
+			_this.num_branches = p.round(p.random(6,8));
+			// _this.num_branches = p.floor(p.randomGaussian(7,1));
 			// var num_branches = 1;
 			_this.max_depth = _this.complexity - _this.num_branches;
 			// var max_depth = 4;
@@ -101,7 +113,6 @@ function Nnn(args) {
 					p: 				p,
 				})	
 			);
-
 
 			_this.neurons[_this.neurons.length - 1].neuron_setup();
 
