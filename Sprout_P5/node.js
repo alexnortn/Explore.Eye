@@ -412,24 +412,46 @@ function Node (args) {
 	// comprised of a parent, children and 2 closest non-related nodes
 	this.springify = function(nodes) {
 		var _this = this;
-		var n;
-		var min1 = _this.positon.dist(nodes[0].position); 	// Inititial + Arbitrary Min Distance Values
-		var min2 = _this.positon.dist(nodes[1].position); 	// Inititial + Arbitrary Min Distance Values
+		var neighbor,
+			ndist,
+			n;
+		var min1_ref = nodes[0]; 	// Inititial + Arbitrary Min Distance Values
+		var min2_ref = nodes[1]; 	// Inititial + Arbitrary Min Distance Values
+
+		// Internal method to find distance between 'this' and given node
+		function distFrom(node) {
+			return _this.positon.dist(node.position);
+		};
+
+		// Create neighbor object + add to neighborhood array
+		function neighborhood(node) {
+			var _this = this;
+
+			// Make neighbor object
+			neighbor = {
+				"node" 		: node,
+				"id"   		: node.id,
+				"distance"  : distFrom(node)
+			};
+
+			// Add neighbor node to adjacency list
+			_this.neighbor_nodes.push(neighbor);
+		}
 
 		// Check for child nodes, add to the adjacency list
 		for (var i = 0; i < _this.children.length; i++) {
-			_this.neighbor_nodes.push(_this.children[i]);
+			neighborhood(_this.children[i]);
 		}
 
 		// Check for parent nodes, add to adjaceny list
 		if (_this.parent) {
-			_this.neighbor_nodes.push(_this.parent);
+			neighborhood(_this.parent);
 		}
 
 		// First sort
-		if (min2 < min1) {
-			min1 = nodes[1];
-			min2 = nodes[0];
+		if (distFrom(min2_ref) < distFrom(min1_ref)) {
+			min1_ref = nodes[1];
+			min2_ref = nodes[0];
 		}
 
 		for (var i = 2; i < nodes.length; i++){
@@ -441,18 +463,18 @@ function Node (args) {
 					continue;
 				}	
 				// Check for 2 closest nodes that are not also parent or child
-				var ndist = _this.position.dist(n.position);
-				if (ndist < min1) {
-					min2 = min1;
-					min1 = n;
+				if (distFrom(n) < distFrom(min1_ref)) {
+					min2_ref = min1_ref;
+					min1_ref = n;
 				} 
-				else if (ndist < min2) {
-					min2 = n;
+				else if (distFrom(n) < distFrom(min2_ref)) {
+					min2_ref = n;
 				}
-
 			}
 
-			_this.neighbor_nodes.push(min1, min2);
+			// Add closest 2 neurons to neighborhood
+			neighborhood(min1_ref);
+			neighborhood(min2_ref);
 
 		}
 
