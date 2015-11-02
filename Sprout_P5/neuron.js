@@ -36,9 +36,10 @@ function Neuron (args) {
 					neuron_timer: 	_this.neuron_timer,
 					max_depth: 		_this.max_depth,
 					position: 		_this.position,
-					velocity: 			 start_velocity,
-					depth: 				 0,
-					p: 					 p,
+					velocity: 			  start_velocity,
+					depth: 				  0,
+					id: 				  0,
+					p: 					  p,
 				});	
 		// Add to arraylist
 		_this.nodes.push(n); 
@@ -58,7 +59,7 @@ function Neuron (args) {
 			// var y = p.sin(start_angle);
 			// Branch a bunch of times
 			_this.nodes.push(
-				n.branch(p.degrees(start_angle))
+				n.branch(p.degrees(start_angle, _this.nodes.length))
 			);
 		}
 	}
@@ -130,8 +131,8 @@ function Neuron (args) {
 				// For every other node added: add one or two branches to create natural form
 				// Could definitely have a better way of accessing neuron depth.. that would improve branching
 				if (((n.depth + 1) % 2 == 0) && (n.depth != 2)) {
-					_this.nodes.push(n.branch(10));    // Add one going right
-					_this.nodes.push(n.branch(-10));   // Add one going left
+					_this.nodes.push(n.branch(0, _this.nodes.length));    // Add one going right
+					_this.nodes.push(n.branch(0,_this.nodes.length));   // Add one going left
 				} 
 				else {
 					// Additional method for probabalistic branching
@@ -139,15 +140,15 @@ function Neuron (args) {
 					// Neuron feels slightly over complicated given complexity: 13 & min [5] branches
 					var rnd = p.random(1);
 					if ((rnd < 0.15) && ((n.depth + 1) < _this.max_depth )) {
-						_this.nodes.push(n.branch(10));    // Add one going right
-						_this.nodes.push(n.branch(-10));   // Add one going left
+						_this.nodes.push(n.branch(0, _this.nodes.length));    // Add one going right
+						_this.nodes.push(n.branch(0, _this.nodes.length));   // Add one going left
 					} 
 					else {
 						// Added leaves to end of Neuron --> Can be vastly improved to consider
 						// the entire 'distal' zone of the neuron.
 						_this.nodes.push(
 							// n.branch(p.round(p.random(-20,20)))
-							n.branch(0)
+							n.branch(0, _this.nodes.length) // Not missing ';'
 						);
 					} 
 				}

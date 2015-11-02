@@ -28,6 +28,9 @@ function Node (args) {
 	this.neuron_timer = args.neuron_timer || 0;
 	this.max_depth = args.max_depth || 7;
 	this.depth = args.depth || 0;
+
+	// Node ID
+	this.id = args.id || 0;
 	
 	// Not in constructor
 	this.acceleration = p.createVector(0,0);
@@ -36,6 +39,9 @@ function Node (args) {
 	// Setup public arrays for children Nodes and Adjacency List
 	this.children = [];
 	this.adj_list = [];
+
+	// Public array to contain nodes for spring calculations
+	this.neighbor_nodes = [];
 	
 	// Public array of vectors to contain coordinates for Catmull Rom paths
 	this.curve_pts = []; // 4 pts
@@ -48,6 +54,7 @@ function Node (args) {
 	this.size = false;
 	this.start_point = false;
 	this.dw = false;
+	this.spring = false;
 
 	// Private variables
 	var wandertheta = 0;
@@ -173,6 +180,7 @@ function Node (args) {
 	// STEER = DESIRED MINUS VELOCITY
 	// Consider using to attract towards another cell or synapse
 	// Accepts P5.Vector for argument
+
 	this.seek = function(target) {
 		var _this = this;
 		var _target = target.copy();
@@ -189,9 +197,10 @@ function Node (args) {
 		return _target;
 	}
 
-	// Separation
+	// Separation | Can be tuned to work like a spring
 	// Method checks for nearby nodes and steers away
 	// Accepts Array as input
+
 	this.separate = function(nodes) {
 		var _this = this;
 		var desiredseparation = 25.0;
@@ -199,8 +208,13 @@ function Node (args) {
 		var count = 0;
 		// For every node in the system that is a leaf, check if it's too close
 		nodes.forEach(function(other) {
+
 		  	// var d = this.position.dist(other.position); // Alternative implementation
 			var d = p5.Vector.dist(_this.position, other.position);
+			
+			// If we're in spring mode, desired separation = distance from this to other
+			if (_this.spring) desiredseparation = d;
+			
 			// If the distance is greater than 0 and less than an arbitrary amount (0 when you are yosurself)
 			if ((d > 0) && (d < desiredseparation)) {
 				// Calculate vector pointing away from neighbor
@@ -394,9 +408,59 @@ function Node (args) {
 		return false;
 	}
 
+	// Calculates adjacency list for generating tensive graph between a neighborhood of nodes
+	// comprised of a parent, children and 2 closest non-related nodes
+	this.springify = function(nodes) {
+		var _this = this;
+		var n;
+		var min1 = _this.positon.dist(nodes[0].position); 	// Inititial + Arbitrary Min Distance Values
+		var min2 = _this.positon.dist(nodes[1].position); 	// Inititial + Arbitrary Min Distance Values
+
+		// Check for child nodes, add to the adjacency list
+		for (var i = 0; i < _this.children.length; i++) {
+			_this.neighbor_nodes.push(_this.children[i]);
+		}
+
+		// Check for parent nodes, add to adjaceny list
+		if (_this.parent) {
+			_this.neighbor_nodes.push(_this.parent);
+		}
+
+		// First sort
+		if (min2 < min1) {
+			min1 = nodes[1];
+			min2 = nodes[0];
+		}
+
+		for (var i = 2; i < nodes.length; i++){
+			n = nodes[i];
+			
+			// Make sure the node isn't already in our list
+			for (var j = 0; j < _this.neighbor_nodes.length; j++) {
+				if (n.id == _this.neighbor_nodes[j].id) {
+					continue;
+				}	
+				// Check for 2 closest nodes that are not also parent or child
+				var ndist = _this.position.dist(n.position);
+				if (ndist < min1) {
+					min2 = min1;
+					min1 = n;
+				} 
+				else if (ndist < min2) {
+					min2 = n;
+				}
+
+			}
+
+			_this.neighbor_nodes.push(min1, min2);
+
+		}
+
+	}
+
 	// Create a new dendrite at the current position, but change direction by a given angle
 	// Returns a new Node object
-	this.branch = function(angle) {
+	this.branch = function(angle, id) {
 		var _this = this;
 		// What is my current heading
 		var theta = _this.velocity.heading();
@@ -417,6 +481,7 @@ function Node (args) {
 			position: 		_this.position,
 			velocity: 			  newvel,
 			depth: 			_this.depth,
+			id:   				  id,
 			p: 					  p,
 		});
 		
