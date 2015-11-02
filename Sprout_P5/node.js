@@ -461,6 +461,9 @@ function Node (args) {
 					console.log("continue: already in list");
 					console.log(n.id + " sames " + _this.neighbor_nodes[j].id);
 					continue NEIGHBOR;
+					// Add closest 2 neurons to neighborhood
+					neighborhood(min1_ref);
+					neighborhood(min2_ref);
 				}
 			}
 			if (n.id == _this.id) {
@@ -475,11 +478,6 @@ function Node (args) {
 				min2_ref = n;
 			}
 		}
-
-		// Add closest 2 neurons to neighborhood
-		neighborhood(min1_ref);
-		neighborhood(min2_ref);
-
 	}
 
 	// Create a new dendrite at the current position, but change direction by a given angle

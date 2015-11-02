@@ -102,22 +102,22 @@ function Neuron (args) {
 		var n;
 
 		if ((_this.done()) && (!list)) {
-			// console.log("Is Done!");
+			console.log("Is Done!");
 			// Once neuron has completed, create adjacency list
-			// _this.nodes.forEach(function(n){
-			// 	n.springify(_this.nodes);
-			// 	n.neighbor_nodes.forEach(function(neighbor) {
-			// 		console.log("Node #" + n.id + " : Neighbor : " + neighbor.node + " ID : " + neighbor.id + " Distance From : " +neighbor.distance);
-			// 	});
-			// });
-			n = _this.nodes[20];
-			n.springify(_this.nodes);
-			console.log(n.id);
-			console.log(n.parent.id);
-			console.log(n.children[0].id);
-			n.neighbor_nodes.forEach(function(nn){
-				console.log(nn);
+			_this.nodes.forEach(function(n){
+				n.springify(_this.nodes);
+				n.neighbor_nodes.forEach(function(neighbor) {
+					console.log("Node #" + n.id + " : Neighbor : " + neighbor.node + " ID : " + neighbor.id + " Distance From : " +neighbor.distance);
+				});
 			});
+			// n = _this.nodes[20];
+			// n.springify(_this.nodes);
+			// console.log(n.id);
+			// console.log(n.parent.id);
+			// console.log(n.children[0].id);
+			// n.neighbor_nodes.forEach(function(nn){
+			// 	console.log(nn);
+			// });
 			list = true;
 			return;
 		}
