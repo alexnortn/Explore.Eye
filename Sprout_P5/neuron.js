@@ -27,6 +27,8 @@ function Neuron (args) {
 	this.nodes = [];
 	this.leaves = [];
 
+	var list = false;
+
 	// Call methods to access outside of class this way!
 	this.neuron_setup = function() {
 		var _this = this;
@@ -59,7 +61,7 @@ function Neuron (args) {
 			// var y = p.sin(start_angle);
 			// Branch a bunch of times
 			_this.nodes.push(
-				n.branch(p.degrees(start_angle, _this.nodes.length))
+				n.branch(p.degrees(start_angle, _this.nodes.length), i + 1) // No need for ';'
 			);
 		}
 	}
@@ -99,8 +101,24 @@ function Neuron (args) {
 		var _this = this;
 		var n;
 
-		if (_this.done()) {
+		if ((_this.done()) && (!list)) {
 			// console.log("Is Done!");
+			// Once neuron has completed, create adjacency list
+			// _this.nodes.forEach(function(n){
+			// 	n.springify(_this.nodes);
+			// 	n.neighbor_nodes.forEach(function(neighbor) {
+			// 		console.log("Node #" + n.id + " : Neighbor : " + neighbor.node + " ID : " + neighbor.id + " Distance From : " +neighbor.distance);
+			// 	});
+			// });
+			n = _this.nodes[20];
+			n.springify(_this.nodes);
+			console.log(n.id);
+			console.log(n.parent.id);
+			console.log(n.children[0].id);
+			n.neighbor_nodes.forEach(function(nn){
+				console.log(nn);
+			});
+			list = true;
 			return;
 		}
 

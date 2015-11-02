@@ -412,21 +412,19 @@ function Node (args) {
 	// comprised of a parent, children and 2 closest non-related nodes
 	this.springify = function(nodes) {
 		var _this = this;
-		var neighbor,
-			ndist,
+		var neighbor = {};
+		var ndist,
 			n;
 		var min1_ref = nodes[0]; 	// Inititial + Arbitrary Min Distance Values
 		var min2_ref = nodes[1]; 	// Inititial + Arbitrary Min Distance Values
 
 		// Internal method to find distance between 'this' and given node
 		function distFrom(node) {
-			return _this.positon.dist(node.position);
+			return _this.position.dist(node.position);
 		};
 
 		// Create neighbor object + add to neighborhood array
 		function neighborhood(node) {
-			var _this = this;
-
 			// Make neighbor object
 			neighbor = {
 				"node" 		: node,
@@ -454,29 +452,33 @@ function Node (args) {
 			min2_ref = nodes[0];
 		}
 
-		for (var i = 2; i < nodes.length; i++){
+		NEIGHBOR: for (var i = 2; i < nodes.length; i++){
 			n = nodes[i];
 			
 			// Make sure the node isn't already in our list
 			for (var j = 0; j < _this.neighbor_nodes.length; j++) {
 				if (n.id == _this.neighbor_nodes[j].id) {
-					continue;
-				}	
-				// Check for 2 closest nodes that are not also parent or child
-				if (distFrom(n) < distFrom(min1_ref)) {
-					min2_ref = min1_ref;
-					min1_ref = n;
-				} 
-				else if (distFrom(n) < distFrom(min2_ref)) {
-					min2_ref = n;
+					console.log("continue: already in list");
+					console.log(n.id + " sames " + _this.neighbor_nodes[j].id);
+					continue NEIGHBOR;
 				}
 			}
-
-			// Add closest 2 neurons to neighborhood
-			neighborhood(min1_ref);
-			neighborhood(min2_ref);
-
+			if (n.id == _this.id) {
+				continue NEIGHBOR;
+			} 
+			// Check for 2 closest nodes that are not also parent or child
+			if (distFrom(n) < distFrom(min1_ref)) {
+				min2_ref = min1_ref;
+				min1_ref = n;
+			} 
+			else if (distFrom(n) < distFrom(min2_ref)) {
+				min2_ref = n;
+			}
 		}
+
+		// Add closest 2 neurons to neighborhood
+		neighborhood(min1_ref);
+		neighborhood(min2_ref);
 
 	}
 
@@ -492,7 +494,6 @@ function Node (args) {
 		var mag = _this.velocity.mag();
 		// Turn me
 		theta += p.radians(angle);
-		// console.log(theta);
 		// Polar coordinates to cartesian!!
 		var newvel = p.createVector(mag * p.cos(theta),mag * p.sin(theta));
 

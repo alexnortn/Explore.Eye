@@ -38,7 +38,7 @@ function Nnn(args) {
 		if (_this.done()) {
 			console.log("NNN Complete");
 			console.log(_this.neurons.length);
-			// p.noLoop();
+			p.noLoop();
 		}
 
 		_this.neurons.forEach(function(neuron) {
