@@ -39,6 +39,7 @@ function Node (args) {
 	// Setup public arrays for children Nodes and Adjacency List
 	this.children = [];
 	this.adj_list = [];
+	this.springs = [];
 
 	// Public array to contain nodes for spring calculations
 	this.neighbor_nodes = [];
@@ -367,7 +368,7 @@ function Node (args) {
 	}
 
 	// Accepts an Array of Node Objects
-	this.run = function(nodes) {
+	this.grow = function(nodes) {
 		var _this = this;
 		if (_this.isGrowing()) {
 			_this.tick();
@@ -461,14 +462,31 @@ function Node (args) {
 			_this.neighbor_nodes.push(neighbor);
 		}
 
+		// Create + Add a Spring object to springs array
+		function getSprung(node) {
+			// Make new Spring object
+			var s = new Spring ({
+				node1: _this,
+				node2: node,
+				rest_length: distFrom(node),
+				p: p,
+			});
+			// Add a new spring 
+			springs.push(s);
+		}
+
 		// Check for child nodes, add to the adjacency list
 		for (var i = 0; i < _this.children.length; i++) {
 			neighborhood(_this.children[i]);
+			// Create a new spring 
+			getSprung(_this.children[i]);
 		}
 
 		// Check for parent nodes, add to adjaceny list
 		if (_this.parent) {
 			neighborhood(_this.parent);
+			// Create a new spring 
+			getSprung(_this.parent);
 		}
 
 		// First sort
@@ -500,6 +518,10 @@ function Node (args) {
 		}
 
 		// Add closest 2 neurons to neighborhood
+		getSprung(min1_ref);
+		getSprung(min2_ref);
+
+		// Add closest 2 neurons to neighborhood
 		neighborhood(min1_ref);
 		neighborhood(min2_ref);
 
@@ -510,19 +532,18 @@ function Node (args) {
 	this.repel = function() {
 		var _this = this;
 		var mousePos = p.createVector(p.mouseX, p.mouseY);
-
-		var rep = _this.seek(mousePos).mult(-1); 	// Mouse Pos (multiply by -1 to repel)
-		// var sep = _this.separate(_this.neighbor_nodes);		// Separation + Tension 
-
-		// _this.neighbor_nodes.forEach(function(neighbor) {
-		// 	var home = neighbor.
-		// })
+		// Mouse Pos (multiply by -1 to repel)
+		var rep = _this.seek(mousePos).mult(-1); 	
 
 		rep.mult(1);
-		// sep.mult(1);
+
+		// Update spring positions --> Run through array
+		_this.springs.forEach(function(s) {
+			s.update();
+			s.display();
+		});
 			
 		_this.applyForce(rep);
-		// _this.applyForce(sep);
 	}
 
 	// Method to shift nodes around

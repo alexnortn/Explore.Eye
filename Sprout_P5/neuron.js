@@ -131,7 +131,7 @@ function Neuron (args) {
 		for (var i = _this.nodes.length - 1; i >= 1; i--) {
 			// Get the Node object, update and draw it
 			n = _this.nodes[i];
-			n.run(_this.nodes);
+			n.grow(_this.nodes);
 
 			if (n.isGrowing()) {
 				continue;
