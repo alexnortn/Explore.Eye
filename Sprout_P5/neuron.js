@@ -92,30 +92,39 @@ function Neuron (args) {
 				return false;
 			}
 		}
-		console.log("Neuron done");
+
+		// When we're finished growing, springify all the nodes
+		if (!list) {
+			// Once neuron has completed, create adjacency list
+			_this.nodes.forEach(function(n){
+				n.springify(_this.nodes);
+				// n.neighbor_nodes.forEach(function(neighbor) {
+				// 	console.log("Node #" + n.id + " : Neighbor : " + neighbor.node + " ID : " + neighbor.id + " Distance From : " +neighbor.distance);
+				// });
+			});
+
+			list = true;
+
+		}
+
 		return true;
 
 	}
 
+	// Following growing, we update
 	this.update = function() {
 		var _this = this;
+		
+		// Once neuron has completed, create adjacency list
+		_this.nodes.forEach(function(n){
+			n.relax();
+		});	
+
+	}
+
+	this.grow = function() {
+		var _this = this;
 		var n;
-
-		if ((_this.done()) && (!list)) {
-			// Once neuron has completed, create adjacency list
-			_this.nodes.forEach(function(n){
-				n.springify(_this.nodes);
-				n.neighbor_nodes.forEach(function(neighbor) {
-					console.log("Node #" + n.id + " : Neighbor : " + neighbor.node + " ID : " + neighbor.id + " Distance From : " +neighbor.distance);
-				});
-			});
-
-			list = true;
-			return;
-
-		}
-
-		// console.log("Still updating");
 
 		// Let's stop when the neuron gets too deep
 		// For every dendrite in the arraylist

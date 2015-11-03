@@ -53,7 +53,7 @@ function Node (args) {
 	this.leaf = true;
 	this.size = false;
 	this.start_point = false;
-	this.dw = false;
+	this.dw = true;
 	this.spring = false;
 
 	// Private variables
@@ -90,18 +90,25 @@ function Node (args) {
 		var p_0 = p.createVector();
 		var isAlone =  _this.parent.parent instanceof Node;
 		if (!isAlone) {
-			p_0 = _this.start.copy();       
+			p_0 = _this.start.copy(); 
 			return p_0;
 		} 
 		else {
-			return p_0.set(_this.parent.start.x,_this.parent.start.y);
+			return p_0.set(_this.parent.parent.position.x,_this.parent.parent.position.y);
 		}
 	}
 
 	this.pt_1 = function() {
 		var _this = this;
 		var p_1 = p.createVector();
-		return p_1.set(_this.start.x, _this.start.y);
+		var isAlone =  _this.parent instanceof Node;
+		if (!isAlone) {
+			p_1 = _this.start.copy(); 
+			return p_1;
+		} 
+		else {
+			return p_1.set(_this.parent.position.x,_this.parent.position.y);
+		}
 	}
 
 	this.pt_2 = function() {
@@ -197,23 +204,33 @@ function Node (args) {
 		return _target;
 	}
 
-	// Separation | Can be tuned to work like a spring
+	// Separation
 	// Method checks for nearby nodes and steers away
 	// Accepts Array as input
+	// If called as spring, accepts neighbor_nodes object
 
 	this.separate = function(nodes) {
 		var _this = this;
 		var desiredseparation = 25.0;
 		var steer = p.createVector(0,0);
 		var count = 0;
+		var node;
+
 		// For every node in the system that is a leaf, check if it's too close
 		nodes.forEach(function(other) {
 
-		  	// var d = this.position.dist(other.position); // Alternative implementation
-			var d = p5.Vector.dist(_this.position, other.position);
-			
-			// If we're in spring mode, desired separation = distance from this to other
-			if (_this.spring) desiredseparation = d;
+		  	if (_this.spring) {
+		  		// If we're in spring mode, desired separation = distance from this to other
+		  		// Update desiredseparation to match starting position of adjacency list
+		  		desiredseparation = other.distance;
+		  		// This is so bullshit I hope it works
+		  		other = other.node;
+		  	}
+	  		
+	  		// Calc distance from growing nodes
+	  		// Or the displacement of the system given a window resize event
+	  		// Maybe even a mouse over c:
+			var d = p5.Vector.dist(_this.position, other.position);	
 			
 			// If the distance is greater than 0 and less than an arbitrary amount (0 when you are yosurself)
 			if ((d > 0) && (d < desiredseparation)) {
@@ -360,9 +377,9 @@ function Node (args) {
 
 			// Make leaves go crazy on final level
 			if (_this.depth == (_this.max_depth - 1)) {
-				wan_const = 0.5;
+				wan_const = 1;
 			}
-		} else {
+		} else  {
 			_this.dw = false;
 		}
 	}
@@ -410,6 +427,11 @@ function Node (args) {
 
 	// Calculates adjacency list for generating tensive graph between a neighborhood of nodes
 	// comprised of a parent, children and 2 closest non-related nodes
+	/*
+
+		There is a mini bug in here~!
+
+	*/
 	this.springify = function(nodes) {
 		var _this = this;
 		var neighbor = {};
@@ -418,7 +440,10 @@ function Node (args) {
 		var min1_ref = nodes[0]; 	// Inititial + Arbitrary Min Distance Values
 		var min2_ref = nodes[1]; 	// Inititial + Arbitrary Min Distance Values
 
-		// Internal method to find distance between 'this' and given node
+		// Set neuron to be a spring
+		_this.spring = true;
+
+		// Method to find distance between 'this' and given node
 		function distFrom(node) {
 			return _this.position.dist(node.position);
 		};
@@ -476,7 +501,37 @@ function Node (args) {
 
 		// Add closest 2 neurons to neighborhood
 		neighborhood(min1_ref);
-		neighborhood(min2_ref); 
+		neighborhood(min2_ref);
+
+	}
+
+	// Method to be called on window resize to keep nodes in tension
+	// MousePos for debugging 
+	this.repel = function() {
+		var _this = this;
+		var mousePos = p.createVector(p.mouseX, p.mouseY);
+
+		var rep = _this.seek(mousePos).mult(-1); 	// Mouse Pos (multiply by -1 to repel)
+		// var sep = _this.separate(_this.neighbor_nodes);		// Separation + Tension 
+
+		// _this.neighbor_nodes.forEach(function(neighbor) {
+		// 	var home = neighbor.
+		// })
+
+		rep.mult(1);
+		// sep.mult(1);
+			
+		_this.applyForce(rep);
+		// _this.applyForce(sep);
+	}
+
+	// Method to shift nodes around
+	// Only to be called once growing has completed!
+	// Only to be called once springify has completed!
+	this.relax = function() {
+		var _this = this;
+		_this.repel();
+		_this.update();
 	}
 
 	// Create a new dendrite at the current position, but change direction by a given angle

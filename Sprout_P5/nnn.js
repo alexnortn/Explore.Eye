@@ -34,17 +34,19 @@ function Nnn(args) {
 	// Call this something like 'renderFrame'
 	this.run = function() {
 		var _this = this;
-
-		if (_this.done()) {
-			console.log("NNN Complete");
-			console.log(_this.neurons.length);
-			p.noLoop();
-		}
-
 		_this.neurons.forEach(function(neuron) {
+			if (_this.done()) {
+				// console.log("NNN Complete");
+				// console.log(_this.neurons.length);
+				// p.noLoop();
+				neuron.update();
+			} 
+			else {
+				neuron.grow();
+			}
 
-			neuron.update();
 			neuron.render();
+			
 		});
 	}
 
@@ -58,12 +60,6 @@ function Nnn(args) {
 				return false;
 			}
 		}
-		
-		// _this.neurons.forEach(function(neuron) {
-		// 	if (!neuron.done()) {
-		// 		return false;
-		// 	}
-		// });
 
 		return true;
 
@@ -89,14 +85,14 @@ function Nnn(args) {
 			// Create Neurons with similar general levels of complexity
 			_this.num_branches = p.round(p.random(6,8));
 			// _this.num_branches = p.floor(p.randomGaussian(7,1));
-			// var num_branches = 1;
+			// _this.num_branches = 1; 
 			_this.max_depth = _this.complexity - _this.num_branches;
-			// var max_depth = 4;
+			// _this.max_depth = 4;    
 			// Given a constant branching speed, this controls neuron size
 			// does not effect morphology.
 			// Grow time is inversely proportional to num_branches
 			var neuron_timer = 650 / _this.num_branches;
-			// var neuron_timer = 75;
+			// _this.neuron_timer = 75;
 			// Initialize the Neuron Object:
 			// 		args[0] = Pvector position
 			// 		args[1] = int num_branches
