@@ -53,14 +53,18 @@ function Spring(args) {
 		// What is distance --> In this case anything > 0 is a displacement
 		var displacement = force.mag();
 
-		// Calculate force according to Hooke's Law
-		// F = k * stretch
-		force.normalize();
-		force.mult(-1 * k * displacement);
-		// console.log(force);
+		if (displacement > 0) {
 
-		// Apply a force pointing towards starting
-		_this.node1.applyForce(force);
+			// Calculate force according to Hooke's Law
+			// F = k * stretch
+			force.normalize();
+			force.mult(-1 * k * displacement);
+			// console.log(force);
+
+			// Apply a force pointing towards starting
+			_this.node1.applyForce(force);
+
+		}
 	}
 
 	this.update = function() {
