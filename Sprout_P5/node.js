@@ -59,7 +59,7 @@ function Node (args) {
 	var wan_const = 0;
 	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
-	var damping = 0.5;
+	var damping = 0.95;
 
 	// Increment for each instantiation at a branch event
 	this.depth++;
@@ -560,7 +560,6 @@ function Node (args) {
 
 			// Move soma
 			var soma = _this.findSoma(_this);
-			console.log(soma);
 			soma.position = mousePos;
 
 			return false;

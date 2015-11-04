@@ -23,7 +23,7 @@ function Spring(args) {
 	var node1_start_pos = this.node1.position.copy();
 
 	// Spring constant
-	var k = 0.2;
+	var k = 0.002;
 
 	// Calculate spring force between neighbors
 	this.neighbor = function() {
