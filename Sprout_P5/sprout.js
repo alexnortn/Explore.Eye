@@ -15,7 +15,7 @@ var sprout = function (p) {
 	var mxn = 0;
 	var avg = 0;
 	var all_nodes = 0;
-	var nnn_count = 1;
+	var nnn_count = 10;
 
 	// Preload any required assets
 	p.preload = function() {
@@ -35,7 +35,7 @@ var sprout = function (p) {
 		nnn.run();
 
 
-		plus_minus();
+		// plus_minus();
 		// iterate();
 
 		if (nnn.done()) recurse();

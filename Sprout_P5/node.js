@@ -59,7 +59,7 @@ function Node (args) {
 	var wan_const = 0;
 	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
-	var damping = 0.85;
+	var damping = 0.5;
 
 	// Increment for each instantiation at a branch event
 	this.depth++;
@@ -292,6 +292,7 @@ function Node (args) {
 		// If we are a spring, at friction (lower energy)
 		if(_this.sprung) {
 			_this.velocity.mult(damping);
+			maxspeed = 100;
 		}
 		// Limit speed
 		_this.velocity.limit(maxspeed);
@@ -415,6 +416,19 @@ function Node (args) {
 		}
 	}
 
+	// Recurse through nodes to root
+	// Accepts Node object
+	// Returns Node object
+	this.findSoma = function(n) {
+		var _this = this;
+		if (n.parent == null) {
+			return n;
+		}
+		else {
+			return _this.findSoma(n.parent);
+		}
+	}
+
 	// Calc T(--)
 	this.sub_t = function (mxd) {
 		var tt = mxd / 1.5;
@@ -534,15 +548,20 @@ function Node (args) {
 	// MousePos for debugging 
 	this.repel = function() {
 		var _this = this;
-		p.mousePressed = function() {
+		if(p.mouseIsPressed) {
 			var mousePos = p.createVector(p.mouseX, p.mouseY);
-			// Mouse Pos (multiply by -1 to repel)
-			var rep = _this.seek(mousePos).mult(-1); 	
+			// // Mouse Pos (multiply by -1 to repel)
+			// var rep = _this.seek(mousePos).mult(-1); 	
 
-			rep.mult(1);
+			// rep.mult(1);
 
-			_this.applyForce(rep);
-			console.log("Mouse Pressed");
+			// _this.applyForce(rep);
+			// console.log("Mouse Pressed");
+
+			// Move soma
+			var soma = _this.findSoma(_this);
+			console.log(soma);
+			soma.position = mousePos;
 
 			return false;
 		}
@@ -550,7 +569,7 @@ function Node (args) {
 		// Update spring positions --> Run through array
 		_this.springs.forEach(function(s) {
 			s.update();
-			// s.display();
+			s.display();
 		});
 	}
 
