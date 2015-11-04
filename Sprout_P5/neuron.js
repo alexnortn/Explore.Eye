@@ -15,7 +15,6 @@ function Neuron (args) {
 	var p = args.p;
 	
 	// Public arguments from constructor
-	// this.position = args.position.copy()    	|| p.createVector(0,0);
 	this.position = p.createVector(args.x, args.y)    	|| p.createVector(0,0);
 	this.num_branches = args.num_branches 				|| 7;
 	this.neuron_timer = args.neuron_timer 				|| 60;

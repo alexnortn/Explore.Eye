@@ -40,9 +40,6 @@ function Node (args) {
 	this.children = [];
 	this.adj_list = [];
 	this.springs = [];
-
-	// Public array to contain nodes for spring calculations
-	this.neighbor_nodes = [];
 	
 	// Public array of vectors to contain coordinates for Catmull Rom paths
 	this.curve_pts = []; // 4 pts
@@ -55,7 +52,7 @@ function Node (args) {
 	this.size = false;
 	this.start_point = false;
 	this.dw = true;
-	this.spring = false;
+	this.sprung = false;
 
 	// Private variables
 	var wandertheta = 0;
@@ -220,7 +217,7 @@ function Node (args) {
 		// For every node in the system that is a leaf, check if it's too close
 		nodes.forEach(function(other) {
 
-		  	if (_this.spring) {
+		  	if (_this.sprung) {
 		  		// If we're in spring mode, desired separation = distance from this to other
 		  		// Update desiredseparation to match starting position of adjacency list
 		  		desiredseparation = other.distance;
@@ -344,19 +341,34 @@ function Node (args) {
 		if (_this.size) {
 			p.noStroke();
 			p.fill(200,0,0);
-			p.ellipse(_this.start.x,_this.start.y,5,5);
-			p.ellipse(_this.position.x, _this.position.y, 5, 5);
+			p.ellipse(
+				_this.pt_1().x,
+				_this.pt_1().y,
+				5,
+				5
+			);
+			p.ellipse(
+				_this.position.x,
+				_this.position.y,
+				5,
+				5
+			);
 		}
 
 		if (_this.start_point) {
 			p.noStroke();
 			p.fill(200,0,0);
-			p.ellipse(_this.position.x, _this.position.y, 5, 5);
+			p.ellipse(
+				_this.position.x,
+				_this.position.y,
+				5,
+				5
+			);
 		}
 		// Draw Soma
 		p.push();
 			p.fill(200);
-			if (_this.depth == 2) p.ellipse(_this.start.x,_this.start.y,15,15);
+			if (_this.depth == 2) p.ellipse(_this.pt_1().x,_this.pt_1().y,15,15);
 		p.pop();
 		// Debug Neighborhood
 		// p.push();
@@ -435,32 +447,18 @@ function Node (args) {
 	*/
 	this.springify = function(nodes) {
 		var _this = this;
-		var neighbor = {};
 		var ndist,
 			n;
 		var min1_ref = nodes[0]; 	// Inititial + Arbitrary Min Distance Values
 		var min2_ref = nodes[1]; 	// Inititial + Arbitrary Min Distance Values
 
 		// Set neuron to be a spring
-		_this.spring = true;
+		_this.sprung = true;
 
 		// Method to find distance between 'this' and given node
 		function distFrom(node) {
 			return _this.position.dist(node.position);
 		};
-
-		// Create neighbor object + add to neighborhood array
-		function neighborhood(node) {
-			// Make neighbor object
-			neighbor = {
-				"node" 		: node,
-				"id"   		: node.id,
-				"distance"  : distFrom(node)
-			};
-
-			// Add neighbor node to adjacency list
-			_this.neighbor_nodes.push(neighbor);
-		}
 
 		// Create + Add a Spring object to springs array
 		function getSprung(node) {
@@ -472,19 +470,17 @@ function Node (args) {
 				p: p,
 			});
 			// Add a new spring 
-			springs.push(s);
+			_this.springs.push(s);
 		}
 
 		// Check for child nodes, add to the adjacency list
 		for (var i = 0; i < _this.children.length; i++) {
-			neighborhood(_this.children[i]);
 			// Create a new spring 
 			getSprung(_this.children[i]);
 		}
 
 		// Check for parent nodes, add to adjaceny list
 		if (_this.parent) {
-			neighborhood(_this.parent);
 			// Create a new spring 
 			getSprung(_this.parent);
 		}
@@ -496,15 +492,21 @@ function Node (args) {
 		}
 
 		NEIGHBOR: for (var i = 2; i < nodes.length; i++){
+			
 			n = nodes[i];
 			
 			// Make sure the node isn't already in our list
-			for (var j = 0; j < _this.neighbor_nodes.length; j++) {
-				if (n.id == _this.neighbor_nodes[j].id) {
+			for (var j = 0; j < _this.springs.length; j++) {
+				if (n.id == _this.springs[j].node2.id) {
 					continue NEIGHBOR;
 				}
 			}
+			// Avoid adding self to list
 			if (n.id == _this.id) {
+				continue NEIGHBOR;
+			}
+			// Check only nodes on same level
+			if (n.depth !== _this.depth) {
 				continue NEIGHBOR;
 			}
 			// Check for 2 closest nodes that are not also parent or child
@@ -520,10 +522,6 @@ function Node (args) {
 		// Add closest 2 neurons to neighborhood
 		getSprung(min1_ref);
 		getSprung(min2_ref);
-
-		// Add closest 2 neurons to neighborhood
-		neighborhood(min1_ref);
-		neighborhood(min2_ref);
 
 	}
 

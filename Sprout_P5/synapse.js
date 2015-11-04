@@ -28,7 +28,12 @@ function Synapse(args) {
 		_this = this;
 		p.noStroke();
 		p.fill(200,200);
-		p.ellipse(_this.position.x, _this.position.y,5,5);   
+		p.ellipse(
+			_this.position.x,
+			_this.position.y,
+			5,
+			5
+		);   
 	}
 }
 
