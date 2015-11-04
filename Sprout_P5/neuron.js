@@ -39,6 +39,7 @@ function Neuron (args) {
 					position: 		_this.position,
 					velocity: 			  start_velocity,
 					depth: 				  0,
+					mass: 				  128, //Huge mass for soma!
 					id: 				  0,
 					p: 					  p,
 				});	
@@ -77,7 +78,7 @@ function Neuron (args) {
 
 		// Add boutons --> Synapses to leaves of neuron :: Could definitely be improved
 		_this.leaves.forEach(function (synapse) {
-			synapse.display(); 
+			// synapse.display(); 
 		});
 	}
 
@@ -150,8 +151,8 @@ function Neuron (args) {
 				// For every other node added: add one or two branches to create natural form
 				// Could definitely have a better way of accessing neuron depth.. that would improve branching
 				if (((n.depth + 1) % 2 == 0) && (n.depth != 2)) {
-					_this.nodes.push(n.branch(0, _this.nodes.length));    // Add one going right
-					_this.nodes.push(n.branch(0,_this.nodes.length));   // Add one going left
+					_this.nodes.push(n.branch(-10, _this.nodes.length));    // Add one going right
+					_this.nodes.push(n.branch(10,_this.nodes.length));   // Add one going left
 				} 
 				else {
 					// Additional method for probabalistic branching
@@ -159,8 +160,8 @@ function Neuron (args) {
 					// Neuron feels slightly over complicated given complexity: 13 & min [5] branches
 					var rnd = p.random(1);
 					if ((rnd < 0.15) && ((n.depth + 1) < _this.max_depth )) {
-						_this.nodes.push(n.branch(0, _this.nodes.length));    // Add one going right
-						_this.nodes.push(n.branch(0, _this.nodes.length));   // Add one going left
+						_this.nodes.push(n.branch(-10, _this.nodes.length));    // Add one going right
+						_this.nodes.push(n.branch(10, _this.nodes.length));   // Add one going left
 					} 
 					else {
 						// Added leaves to end of Neuron --> Can be vastly improved to consider

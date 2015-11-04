@@ -17,15 +17,24 @@ var sprout = function (p) {
 	var all_nodes = 0;
 	var nnn_count = 1;
 
+	// Global font reference
+	var fontRegular;
+
 	// Preload any required assets
 	p.preload = function() {
-
+		// Load font
+		fontRegular = p.loadFont("assets/WhitneyHTF-Medium.otf");
 	}
 
 	p.setup = function() {
 		p.createCanvas(window.innerWidth, window.innerHeight);
 		p.frameRate(30);
-		
+
+		// Set font characterists
+		p.push();
+			p.textFont(fontRegular);
+		p.pop();
+
 		network_start();
 	}
 
@@ -38,7 +47,7 @@ var sprout = function (p) {
 		// plus_minus();
 		// iterate();
 
-		if (nnn.done()) recurse();
+		// if (nnn.done()) recurse();
 
 	}
 

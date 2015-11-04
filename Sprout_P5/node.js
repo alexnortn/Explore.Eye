@@ -28,6 +28,7 @@ function Node (args) {
 	this.neuron_timer = args.neuron_timer || 0;
 	this.max_depth = args.max_depth || 7;
 	this.depth = args.depth || 0;
+	this.mass = args.mass || 5;
 
 	// Node ID
 	this.id = args.id || 0;
@@ -51,7 +52,7 @@ function Node (args) {
 	this.leaf = true;
 	this.size = false;
 	this.start_point = false;
-	this.dw = true;
+	this.dw = false;
 	this.sprung = false;
 
 	// Private variables
@@ -59,7 +60,7 @@ function Node (args) {
 	var wan_const = 0;
 	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
-	var damping = 0.95;
+	var damping = 0.8;
 
 	// Increment for each instantiation at a branch event
 	this.depth++;
@@ -89,7 +90,7 @@ function Node (args) {
 		var p_0 = p.createVector();
 		var isAlone =  _this.parent.parent instanceof Node;
 		if (!isAlone) {
-			p_0 = _this.start.copy(); 
+			p_0 = _this.position; 
 			return p_0;
 		} 
 		else {
@@ -262,7 +263,12 @@ function Node (args) {
 	// Accepts P5.Vector
 	this.applyForce = function(force) {
 		var _this = this;
-		_this.acceleration.add(force);
+		var _force = force;
+		// In spring mode, weight each nodes response by mass
+		if (_this.sprung) {
+			_force.div(_this.mass);
+		}
+		_this.acceleration.add(_force);
 	}
 
 	// We accumulate a new acceleration each time based on three rules
@@ -457,6 +463,33 @@ function Node (args) {
 		return false;
 	}
 
+	this.parentIdx = function() {
+		var _this = this;
+
+		if (_this.parent) {
+			var c;
+			for (var i = 0; i < _this.parent.children.length; i++) {
+				c = _this.parent.children[i];
+				if (c.id == _this.id) {
+					return i;
+				}
+			}
+		} 
+		else {
+			return "potato";
+		}
+	}
+
+	this.meta = function() {
+		var _this = this;
+		// Render meta information on vertex
+		var str_id = String(_this.id + ":" + _this.parentIdx());
+		p.push();
+			p.fill(0,255,0).strokeWeight(0).textSize(10);
+			p.text(str_id, _this.position.x, _this.position.y - 15);
+		p.pop();
+	}
+
 	// Calculates adjacency list for generating tensive graph between a neighborhood of nodes
 	// comprised of a parent, children and 2 closest non-related nodes
 	/*
@@ -474,35 +507,33 @@ function Node (args) {
 		// Set neuron to be a spring
 		_this.sprung = true;
 
-		// Method to find distance between 'this' and given node
-		function distFrom(node) {
-			return _this.position.dist(node.position);
-		};
-
 		// Create + Add a Spring object to springs array
 		function getSprung(node) {
 			// Make new Spring object
 			var s = new Spring ({
 				node1: _this,
 				node2: node,
-				rest_length: distFrom(node),
 				p: p,
 			});
 			// Add a new spring 
 			_this.springs.push(s);
 		}
 
-		// Check for child nodes, add to the adjacency list
-		for (var i = 0; i < _this.children.length; i++) {
-			// Create a new spring 
-			getSprung(_this.children[i]);
-		}
+		
 
-		// Check for parent nodes, add to adjaceny list
+		// Check for child nodes, add to the adjacency list
+		// for (var i = 0; i < _this.children.length; i++) {
+		// 	// Create a new spring 
+		// 	getSprung(_this.children[i]);
+		// }
+
+		// // Check for parent nodes, add to adjaceny list
 		if (_this.parent) {
 			// Create a new spring 
 			getSprung(_this.parent);
 		}
+
+		/*
 
 		// First sort
 		if (distFrom(min2_ref) < distFrom(min1_ref)) {
@@ -542,6 +573,59 @@ function Node (args) {
 		getSprung(min1_ref);
 		getSprung(min2_ref);
 
+		*/
+
+		
+
+		var new_spring = _this.leftNode();
+
+
+		if (new_spring && new_spring.id !== _this.id) {
+			console.log(new_spring);
+
+			getSprung(new_spring);
+		}
+		
+	}
+
+	this.leftNode = function (depthx) {
+
+		if (this.id === 0) {
+			return null;
+		}
+
+	    depthx = depthx === undefined ? 0 : depthx;
+
+	    var parentsC = this.parent.children;
+	    var parentIdx = null;
+
+	    for (var i = 0; i < parentsC.length; i++) {
+	        var other = parentsC[i];
+
+	        if (other.id === this.id) {
+	            parentIdx = i;
+	        }
+	    };
+
+	    // left most = 0
+
+	    if (parentIdx > 0 || this.parent.parent === undefined) {
+            // console.log('left this idx', (parentIdx - 1).mod(parentsC.length));
+	        // console.log(parentsC[(parentIdx - 1).mod(parentsC.length)].toString());
+	        return parentsC[(parentIdx - 1).mod(parentsC.length)].rightMost(depthx);
+	    } else {
+	        // console.log('going up');
+	        return this.parent.leftNode(depthx + 1);
+	    }
+	}
+
+	this.rightMost = function (depthx) {
+	    // console.log('rightMost', this.toString(), depthx);
+	    if (depthx === 0) {
+	        return this;
+	    }
+
+	    return this.children[this.children.length - 1].rightMost(depthx - 1);
 	}
 
 	// Method to be called on window resize to keep nodes in tension
@@ -568,7 +652,7 @@ function Node (args) {
 		// Update spring positions --> Run through array
 		_this.springs.forEach(function(s) {
 			s.update();
-			s.display();
+			// s.display();
 		});
 	}
 
@@ -579,6 +663,7 @@ function Node (args) {
 		var _this = this;
 		_this.repel();
 		_this.update();
+		// _this.meta();
 	}
 
 	// Create a new dendrite at the current position, but change direction by a given angle
@@ -587,6 +672,9 @@ function Node (args) {
 		var _this = this;
 		// What is my current heading
 		var theta = _this.velocity.heading();
+
+		// New mass = square root of previous (hopefully all single operations :)
+		var new_mass = p.sqrt(_this.mass);
 
 		// What is my current speed
 		// Can't see how this could be faster
@@ -603,6 +691,7 @@ function Node (args) {
 			position: 		_this.position,
 			velocity: 			  newvel,
 			depth: 			_this.depth,
+			mass: 				  new_mass,
 			id:   				  id,
 			p: 					  p,
 		});
@@ -614,3 +703,7 @@ function Node (args) {
 	}
 }
 
+
+Number.prototype.mod = function(n) {
+    return ((this%n)+n)%n;
+};
