@@ -27,7 +27,6 @@ function Spring(args) {
 
 	// Starting delta (p5.Vector)
 	this.rest_delta = this.delta_position();
-	console.log("once");
 
 	// Spring constant
 	var k = 0.2;

@@ -60,7 +60,7 @@ function Node (args) {
 	var wan_const = 0;
 	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
-	var damping = 0.8;
+	var damping = 0.9;
 
 	// Increment for each instantiation at a branch event
 	this.depth++;
@@ -483,7 +483,7 @@ function Node (args) {
 	this.meta = function() {
 		var _this = this;
 		// Render meta information on vertex
-		var str_id = String(_this.id + ":" + _this.parentIdx());
+		var str_id = String(_this.id + ":" + _this.mass);
 		p.push();
 			p.fill(0,255,0).strokeWeight(0).textSize(10);
 			p.text(str_id, _this.position.x, _this.position.y - 15);
@@ -652,7 +652,7 @@ function Node (args) {
 		// Update spring positions --> Run through array
 		_this.springs.forEach(function(s) {
 			s.update();
-			// s.display();
+			s.display();
 		});
 	}
 
@@ -663,7 +663,7 @@ function Node (args) {
 		var _this = this;
 		_this.repel();
 		_this.update();
-		// _this.meta();
+		_this.meta();
 	}
 
 	// Create a new dendrite at the current position, but change direction by a given angle
@@ -674,7 +674,7 @@ function Node (args) {
 		var theta = _this.velocity.heading();
 
 		// New mass = square root of previous (hopefully all single operations :)
-		var new_mass = p.sqrt(_this.mass);
+		var new_mass = Math.max(1,(_this.mass /2));
 
 		// What is my current speed
 		// Can't see how this could be faster

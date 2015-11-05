@@ -47,7 +47,7 @@ var sprout = function (p) {
 		// plus_minus();
 		// iterate();
 
-		// if (nnn.done()) recurse();
+		if (nnn.done()) recurse();
 
 	}
 

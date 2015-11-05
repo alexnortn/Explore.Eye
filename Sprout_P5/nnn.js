@@ -91,7 +91,7 @@ function Nnn(args) {
 			// Given a constant branching speed, this controls neuron size
 			// does not effect morphology.
 			// Grow time is inversely proportional to num_branches
-			var neuron_timer = 650 / _this.num_branches;
+			var neuron_timer = 1000 / _this.num_branches;
 			// _this.neuron_timer = 75;
 			// Initialize the Neuron Object:
 			// 		args[0] = Pvector position
