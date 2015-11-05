@@ -15,7 +15,7 @@ var sprout = function (p) {
 	var mxn = 0;
 	var avg = 0;
 	var all_nodes = 0;
-	var nnn_count = 1;
+	var nnn_count = 100;
 
 	// Global font reference
 	var fontRegular;
@@ -63,7 +63,7 @@ var sprout = function (p) {
 	}
 
 	plus_minus = function() {
-		if (p.frameCount % 360 == 0) {
+		if (p.frameCount % 1080 == 0) {
 			// if (counter > 0) console.log("Node #" + nnn.neurons[0].nodes.length);
 			// console.log("");
 			nnn.remove_neuron(nnn_count);

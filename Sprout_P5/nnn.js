@@ -22,11 +22,20 @@ function Nnn(args) {
 	this.max_depth;
 	this.num_branches;
 
+	// Array of all somas included in the NNN
+	var somas = [];
+
 	this.initialize = function() {
 		var _this = this;
 
 		// Initialize Neuron
 		_this.add_neuron(_this.num_neurons);
+
+		// Fill up the somas array
+		_this.neurons.forEach(function(neuron) {
+			// Find soma for each neuron
+			somas.push(neuron.nodes[0]);
+		});
 
 	}
 	
@@ -40,13 +49,15 @@ function Nnn(args) {
 				// console.log(_this.neurons.length);
 				// p.noLoop();
 				neuron.update();
+				var radius = neuron.radius();
+				neuron.nodes[0].spread(somas, radius);
 			} 
 			else {
 				neuron.grow();
 			}
 
 			neuron.render();
-			
+
 		});
 	}
 
@@ -83,16 +94,16 @@ function Nnn(args) {
 			}
 
 			// Create Neurons with similar general levels of complexity
-			_this.num_branches = p.round(p.random(6,8));
+			// _this.num_branches = p.round(p.random(6,8));
 			// _this.num_branches = p.floor(p.randomGaussian(7,1));
-			// _this.num_branches = 1; 
-			_this.max_depth = _this.complexity - _this.num_branches;
-			// _this.max_depth = 4;    
+			_this.num_branches = 1; 
+			// _this.max_depth = _this.complexity - _this.num_branches;
+			_this.max_depth = 1;    
 			// Given a constant branching speed, this controls neuron size
 			// does not effect morphology.
 			// Grow time is inversely proportional to num_branches
-			var neuron_timer = 1000 / _this.num_branches;
-			// _this.neuron_timer = 75;
+			// var neuron_timer = 1000 / _this.num_branches;
+			_this.neuron_timer = 75;
 			// Initialize the Neuron Object:
 			// 		args[0] = Pvector position
 			// 		args[1] = int num_branches
@@ -124,6 +135,17 @@ function Nnn(args) {
 			j = p.floor(p.random(_this.neurons.length));
 			_this.neurons.splice(j, 1);
 		}
+	}
+
+	// Calculate initial separation forces for NNN
+	this.spread = function() {
+		var _this = this;
+
+		somas.forEach(function(soma) {
+			// Find soma for each neuron
+			soma.separate(somas);
+			soma
+		});
 	}
 
 }

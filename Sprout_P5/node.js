@@ -54,13 +54,15 @@ function Node (args) {
 	this.start_point = false;
 	this.dw = false;
 	this.sprung = false;
+	this.distribute = false;
 
 	// Private variables
+	var radius = 0;
 	var wandertheta = 0;
 	var wan_const = 0;
 	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
-	var damping = 0.9;
+	var damping = 0.85;
 
 	// Increment for each instantiation at a branch event
 	this.depth++;
@@ -196,6 +198,14 @@ function Node (args) {
 
 		// Normalize _target and scale to maximum speed
 		_target.normalize();
+
+		if (_this.distribute) {
+			// Calculate distance from center
+			var center = p.createVector(p.width/2, p.height/2);
+			var cd = p.abs(p5.Vector.dist(_this.position, center));
+			target.div(cd*cd*cd*cd*cd); // Weight by distance
+		}
+
 		_target.mult(maxspeed);
 		// Steering = Desired minus Velocity
 		_target.sub(_this.velocity);
@@ -219,12 +229,10 @@ function Node (args) {
 		// For every node in the system that is a leaf, check if it's too close
 		nodes.forEach(function(other) {
 
-		  	if (_this.sprung) {
+		  	if (_this.distribute) {
 		  		// If we're in spring mode, desired separation = distance from this to other
 		  		// Update desiredseparation to match starting position of adjacency list
-		  		desiredseparation = other.distance;
-		  		// This is so bullshit I hope it works
-		  		other = other.node;
+		  		desiredseparation = radius * 5;
 		  	}
 	  		
 	  		// Calc distance from growing nodes
@@ -259,16 +267,109 @@ function Node (args) {
 		return steer;
 	}
 
-	// Simple method to sum forces
-	// Accepts P5.Vector
-	this.applyForce = function(force) {
+	// Calculate force away from area
+	// Weight by Distance
+	// Inverse Square
+	this.check_edges = function() {
 		var _this = this;
-		var _force = force;
-		// In spring mode, weight each nodes response by mass
-		if (_this.sprung) {
-			_force.div(_this.mass);
+		var x,y;
+		var force = p.createVector();
+		var mult_x = 1;
+		var mult_y = 1;
+
+		// Calculate 'x' edge offset
+		if (_this.position.x < p.width / 2) {
+			x = _this.position.x - radius;
 		}
-		_this.acceleration.add(_force);
+		else {
+			x = p.width - _this.position.x - radius;
+			mult_x = -1;
+		}
+
+		// Calculate 'y' edge offset
+		if (_this.position.y < p.height / 2) {
+			y = _this.position.y - radius;
+		}
+		else {
+			y = p.height - _this.position.y - radius;
+			mult_y = -1;
+		}
+
+		x = Math.max(x, 0.01);
+		y = Math.max(y, 0.01);
+
+		// Inverse Square
+		x = mult_x / x;
+		y = mult_y / y;
+
+		// Set position
+		force.set(x,y);
+
+		return force;
+	}
+
+	// Calculate force away from area
+	// Weight by Distance
+	// Inverse Square
+	/*
+	this.check_area = function(u,v) {
+		var _this = this;
+		var x,y;
+		var force = p.createVector();
+
+		// Calculate 'x' edge offset
+		if (_this.position.x < p.width / 2) {
+			x = _this.position.x;
+		}
+		else {
+			x = p.width - _this.position.y;
+		}
+
+		// Calculate 'y' edge offset
+		if (_this.position.y < p.height / 2) {
+			y = _this.position.y;
+		}
+		else {
+			y = p.height - _this.position.y;
+		}
+
+		// Inverse Square
+		x = 1 / x * x;
+		y = 1 / y * y;
+
+		// Set position
+		force.set(x,y);
+
+		// Apply the force!
+		_this.applyForce(force);
+	}
+	*/
+
+	// Calculate initial distribution forces
+	// !Important --> Must be called outside of node 
+	// !Important --> Requires list of nodes
+	this.spread = function(somas, rad) {
+		var _this = this;
+		radius = rad;
+		// Center point
+		var center = p.createVector(p.width/2, p.height/2);
+
+		// Set distribute to true
+		_this.distribute = true;
+		
+		var cen = _this.seek(center).mult(-1); // Simply seek away from center
+		var edg = _this.check_edges(); // Move away from edges
+		var sep = _this.separate(somas); // Move away from eachother
+
+		// Carefully weight these forces
+		cen.mult(1);
+		edg.mult(5);
+		sep.mult(5);
+
+		// Add the force vectors to acceleration
+		// _this.applyForce(cen);
+		_this.applyForce(edg);
+		_this.applyForce(sep);
 	}
 
 	// We accumulate a new acceleration each time based on three rules
@@ -288,6 +389,18 @@ function Node (args) {
 		_this.applyForce(sep);
 		_this.applyForce(ini);
 		_this.applyForce(wan);
+	}
+
+	// Simple method to sum forces
+	// Accepts P5.Vector
+	this.applyForce = function(force) {
+		var _this = this;
+		var _force = force;
+		// In spring mode, weight each nodes response by mass
+		if (_this.sprung) {
+			// _force.div(_this.mass);
+		}
+		_this.acceleration.add(_force);
 	}
 
 	// Method to update position
@@ -664,6 +777,8 @@ function Node (args) {
 		_this.repel();
 		_this.update();
 		_this.meta();
+		// Find position, then stop moving! --> Each resize event
+		// if (damping > 0.1) damping *= 0.98;
 	}
 
 	// Create a new dendrite at the current position, but change direction by a given angle
@@ -691,7 +806,7 @@ function Node (args) {
 			position: 		_this.position,
 			velocity: 			  newvel,
 			depth: 			_this.depth,
-			mass: 				  new_mass,
+			mass: 				  1,
 			id:   				  id,
 			p: 					  p,
 		});

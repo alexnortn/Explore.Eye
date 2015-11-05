@@ -200,5 +200,46 @@ function Neuron (args) {
 			parent_arr.push(n.parent);
 		return recurseMore(n, parent_arr);
 	}
+
+	// Calculate the average radius of neuron
+	this.radius = function() {
+		var _this = this;
+		var avg_radius = 0;
+		var total_radius = 0;
+
+		// Look through all the leaf nodes
+		_this.nodes.forEach(function(node) {
+			if (node.leaf) {
+				// Calculate the distance from leaf to soma
+				total_radius += p5.Vector.dist(node.position, _this.nodes[0].position);
+			}
+		});
+
+		// Take average of total radius
+		avg_radius = total_radius / _this.nodes.length;
+
+		return avg_radius;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

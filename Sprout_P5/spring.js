@@ -29,7 +29,7 @@ function Spring(args) {
 	this.rest_delta = this.delta_position();
 
 	// Spring constant
-	var k = 0.2;
+	var k = 0.5;
 	// Calculate spring force between neighbors
 	this.neighbor = function() {
 		var _this = this;
@@ -67,31 +67,6 @@ function Spring(args) {
 			p.strokeWeight(1);
 			p.stroke(255,0,0,100);
 		// 	// Direction Lines
-		// 	p.push();
-		// 		p.stroke(0,255,0);
-		// 		var theta = mid_heading;
-
-		// 		p.translate(midpt.x, midpt.y);
-		// 		p.push();
-		// 			p.rotate(theta);
-		// 			p.line(
-		// 				0,
-		// 				0,
-		// 				5,
-		// 				0
-		// 			);
-		// 		p.pop();
-		// 		// p.push();
-		// 		// 	p.rotate(-theta);
-		// 		// 	p.line(
-		// 		// 		0,
-		// 		// 		0,
-		// 		// 		5,
-		// 		// 		0
-		// 		// 	);
-		// 		// p.pop();
-		// 	p.pop();
-			// Spring Line
 			p.line(
 				_this.node1.position.x,
 				_this.node1.position.y,
