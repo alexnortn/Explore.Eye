@@ -29,7 +29,7 @@ function Spring(args) {
 	this.rest_delta = this.delta_position();
 
 	// Spring constant
-	var k = 0.5;
+	var k = 0.2;
 	// Calculate spring force between neighbors
 	this.neighbor = function() {
 		var _this = this;

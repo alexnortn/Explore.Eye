@@ -15,7 +15,7 @@ var sprout = function (p) {
 	var mxn = 0;
 	var avg = 0;
 	var all_nodes = 0;
-	var nnn_count = 100;
+	var nnn_count = 7;
 
 	// Global font reference
 	var fontRegular;
@@ -39,7 +39,7 @@ var sprout = function (p) {
 	}
 
 	p.draw = function() {
-		p.background(25);
+		p.background(27,39,49);
 		// Run the nnn
 		nnn.run();
 

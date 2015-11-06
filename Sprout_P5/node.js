@@ -63,6 +63,7 @@ function Node (args) {
 	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
 	var damping = 0.85;
+	var pow = 1000; // Huge starting multipliers!
 
 	// Increment for each instantiation at a branch event
 	this.depth++;
@@ -362,14 +363,19 @@ function Node (args) {
 		var sep = _this.separate(somas); // Move away from eachother
 
 		// Carefully weight these forces
-		cen.mult(1);
-		edg.mult(5);
-		sep.mult(5);
+		cen.mult(pow);
+		edg.mult(pow);
+		sep.mult(5*pow);
 
 		// Add the force vectors to acceleration
-		// _this.applyForce(cen);
+		_this.applyForce(cen);
 		_this.applyForce(edg);
 		_this.applyForce(sep);
+
+		pow *= 0.9;
+		if (pow <= 1) {
+			pow = 0;
+		}
 	}
 
 	// We accumulate a new acceleration each time based on three rules
@@ -424,7 +430,8 @@ function Node (args) {
 	this.render = function() {
 		var _this = this;
 		// Basic Fractal Lines
-		p.stroke(200);
+		p.stroke(41,59,73);
+		p.strokeWeight(2);
 		p.noFill();
 		// Array to store curve points
 		// var pts = [
@@ -465,7 +472,7 @@ function Node (args) {
 		// Render Path Home
 		if (_this.size) {
 			p.noStroke();
-			p.fill(200,0,0);
+			p.fill(41,59,73);
 			p.ellipse(
 				_this.pt_1().x,
 				_this.pt_1().y,
@@ -492,7 +499,7 @@ function Node (args) {
 		}
 		// Draw Soma
 		p.push();
-			p.fill(200);
+			p.stroke(41,59,73);
 			if (_this.depth == 2) p.ellipse(_this.pt_1().x,_this.pt_1().y,15,15);
 		p.pop();
 		// Debug Neighborhood
@@ -765,7 +772,7 @@ function Node (args) {
 		// Update spring positions --> Run through array
 		_this.springs.forEach(function(s) {
 			s.update();
-			s.display();
+			// s.display();
 		});
 	}
 
@@ -776,7 +783,7 @@ function Node (args) {
 		var _this = this;
 		_this.repel();
 		_this.update();
-		_this.meta();
+		// _this.meta();
 		// Find position, then stop moving! --> Each resize event
 		// if (damping > 0.1) damping *= 0.98;
 	}
