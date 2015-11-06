@@ -37,7 +37,7 @@ var sprout = function (p) {
 
 		// Calculate nnn_count based on width
 		// 2000 yields 20
-		nnn_count = p.width / 100;
+		nnn_count = p.ceil(p.min((p.width / 100), 25));
 
 		network_start();
 	}
