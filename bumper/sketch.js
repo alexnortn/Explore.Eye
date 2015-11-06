@@ -13,7 +13,10 @@ var bump = function (p) {
 
 	var E, E2;
 	var dot, dot2;
-	var angle;
+
+	// Animation constants || should I return from the animation (yes)  
+	var a_e; // Animate Es scale
+
 
 	p.preload = function() {
 		E = p.loadImage("assets/E.png");
@@ -25,7 +28,14 @@ var bump = function (p) {
 	p.setup = function() {
 		p.createCanvas(window.innerWidth, window.innerHeight);
 		p.frameRate(30);
-		angle = 0;
+
+		// Let's try to objectify this without breaking everything else!!! ok?
+		a_e = new Ani_scale_e ({
+			start: 0, 		// animation starting value
+			end: 1, 		// value to increment towards
+			msec: 2500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			easing: springFactory(0.15, 12), // Default
+		});
 	}
 
 	p.draw = function () {
@@ -34,7 +44,9 @@ var bump = function (p) {
 		// Draw E
 		draw_e();
 
-		angle += 0.05;
+		if (p.frameCount == 120) {
+			a_e.animate();
+		}
 
 	}
 
@@ -79,7 +91,8 @@ var bump = function (p) {
 			// All rotations must occur here!!!!
 			//
 			p.rotate(p.PI/4);	
-			// p.scale(10,10); 
+			console.log(a_e.value);
+			p.scale(a_e.value, a_e.value); 
 			p.translate(-41.25,-57.5);
 			p.scale(0.15,0.15);
 				// Top Dot
@@ -103,6 +116,7 @@ var bump = function (p) {
 					p.translate(200, 200);
 					p.image(E2, 0, 0);
 				p.pop();
+
 		p.pop();
 
 		p.push();
@@ -113,61 +127,14 @@ var bump = function (p) {
 
 	}
 
-	/* Example animation function 
-	 * 
-	 * Interpolate between a start and end position.
-	 *
-	 * obj.x represents a position parameter (e.g. 12.2)
-	 * end_pos is the value obj.x will have at the end of the animation
-	 * msec is the number of milliseconds we want to run the animation for
-	 * easing is a timing function that accepts a number between 0 to 1 
-	 *    and returns the proportion of the interpolation between start and end to move the object to. 
-	 * 
-	 * Returns: void (performs animation as a side effect)
-	 */
-	animate_scale_e = function(args) {
-		args = args || {};
 
-	  	var easing = args.easing || function (t) { return t }; // default to linear easing
-	  	var prop = args.prop;
-	  	var start_pos = args.start || 0;
-	  	var end_pos = args.end || 1;
-	  	var timer = args.frames
-
-		var start_pos = parseInt(style.top.replace("%", ""), 10),
-			end_pos = args.end !== undefined ? args.end : start_pos,
-	  		msec = args.msec || 1000;
-
-		// performance.now is guaranteed to increase and gives sub-millisecond resolution
-		// Date.now is susceptible to system clock changes and gives some number of milliseconds resolution
-		var start = window.performance.now(), 
-		  delta = end_pos - start_pos; // displacement
-
-		function frame () {
-			var now = window.performance.now();
-			var t = (now - start) / msec; // normalize to 0..1
-
-			if (t >= 1) { // if animation complete or running over
-			  obj.style.top = end_pos + "%"; // ensure the animation terminates in the specified state
-			  return;
-			}
-
-			var proportion = easing(t);
-			obj.style.top = (start_pos + proportion * delta) + "%"; // delta is our multiplier | this decides our current position relative to starting position
-																	// update your animation based on this value
-																	// trig functions are naturally really excited about this,
-																	// Can I make the whole thing less imperitive? --> Stateless?
-
-			requestAnimationFrame(frame); // next frame!
-		}
-
-		requestAnimationFrame(frame); // you can use setInterval, but this will give a smoother animation --> Call it the first time and it loops forever until return
-	}
-
+	// Helper Function
 	function clamp (x, min, max) {
 	    return Math.min(Math.max(x, min), max);
 	}
 
+
+	// Generic easing function --> super abstract simply returns a t
 	function springFactory (zeta, k) {
 		if (zeta < 0 || zeta >= 1) {
 			throw new Error("Parameter 1 (zeta) must be in range [0, 1). Given: " + zeta);
@@ -188,18 +155,59 @@ var bump = function (p) {
 		};
 	}
 
+	// OOP --> Generic animation function
+	// Accepts any range and returns a springified value c:
+	function Ani_scale_e(args) {
+		args = args || {};
 
-	// Animate E scale --> Call
-	animate_scale_e = function() {
-		// Call animation
-		scale({
-			prop: _scale,   // value to increment
-			start: 0, 		// animation starting value
-			end: 1, 		// value to increment towards
-			frames: 2500, 	// Number of update steps (30 frames == 1 sec: 60 frames == 2 sec: 75 frames == 2.5 sec)
-			easing: springFactory(0.15, 12), // Default
-		});
-	};
+	  	var easing = args.easing || function (t) { return t }; // default to linear easing
+	  	var start_pos = args.start || 0;
+	  	var end_pos = args.end || 1;
+	  	var msec = args.msec || 1000; // default to 1000msec --> 1s
+
+	  	var start,
+	  		delta = end_pos - start_pos; // displacement
+
+
+	  	// Value to be returned
+	  	this.value = 0;
+	  	console.log(this);
+
+	  	// Global (local) reference to 'this'
+	  	var _this = this;
+	  	
+
+		// performance.now is guaranteed to increase and gives sub-millisecond resolution
+		// Date.now is susceptible to system clock changes and gives some number of milliseconds resolution
+		var start = window.performance.now(), 
+			delta = end_pos - start_pos; // displacement
+
+		function frame() {
+			console.log(_this);
+			var now = window.performance.now();
+			var t = (now - start) / msec; // normalize to 0..1
+
+			if (t >= 1) { // if animation complete or running over
+				_this.value = end_pos; // ensure the animation terminates in the specified state
+			  	return;
+			}
+
+			var proportion = easing(t); // Call upon the strange magic of the spring factory
+			_this.value = start_pos + proportion * delta; 	// delta is our multiplier | this decides our current position relative to starting position
+															// update your animation based on this value
+															// trig functions are naturally really excited about this,
+															// Can I make the whole thing less imperitive? --> Stateless?
+			// console.log("object" + _this.value);
+			requestAnimationFrame(frame); // next frame!
+
+		}
+
+		this.animate = function() {
+			start = window.performance.now();
+			requestAnimationFrame(frame); // you can use setInterval, but this will give a smoother animation --> Call it the first time and it loops forever until return
+		}
+
+	}
 
 }
 
