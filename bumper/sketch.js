@@ -15,7 +15,8 @@ var bump = function (p) {
 	var dot, dot2;
 
 	// Animation constants || should I return from the animation (yes)  
-	var a_e; // Animate Es scale
+	var a_e_s; // Animate Es scale
+	var a_e_r; // Animate Es rotation
 
 
 	p.preload = function() {
@@ -29,10 +30,18 @@ var bump = function (p) {
 		p.createCanvas(window.innerWidth, window.innerHeight);
 		p.frameRate(30);
 
-		// Let's try to objectify this without breaking everything else!!! ok?
-		a_e = new Ani_scale_e ({
+		// Spring animation object for Es scale
+		a_e_s = new Ani_scale_e ({
 			start: 0, 		// animation starting value
 			end: 1, 		// value to increment towards
+			msec: 2500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			easing: springFactory(0.15, 12), // Default
+		});
+
+		// Spring animation object for Es rotate
+		a_e_r = new Ani_scale_e ({
+			start: 0, 		// animation starting value
+			end: p.PI/4, 		// value to increment towards
 			msec: 2500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
 			easing: springFactory(0.15, 12), // Default
 		});
@@ -45,7 +54,11 @@ var bump = function (p) {
 		draw_e();
 
 		if (p.frameCount == 120) {
-			a_e.animate();
+			a_e_s.animate();
+		}
+
+		if (p.frameCount == 150) {
+			a_e_r.animate();
 		}
 
 	}
@@ -90,9 +103,9 @@ var bump = function (p) {
 			//
 			// All rotations must occur here!!!!
 			//
-			p.rotate(p.PI/4);	
-			console.log(a_e.value);
-			p.scale(a_e.value, a_e.value); 
+			p.rotate(a_e_r.value);	
+			console.log(a_e_s.value);
+			p.scale(a_e_s.value, a_e_s.value); 
 			p.translate(-41.25,-57.5);
 			p.scale(0.15,0.15);
 				// Top Dot
