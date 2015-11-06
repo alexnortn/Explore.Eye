@@ -13,13 +13,17 @@ var bump = function (p) {
 
 	var E, E2;
 	var dot, dot2;
+	var angle;
 
 	// Animation constants || should I return from the animation (yes)  
-	var a_e_s; // Animate Es scale
-	var a_e_r; // Animate Es rotation
+	var a_e_s, // Animate scale Es 
+		a_d_s, // Animate scale dots
+		a_ed_r, // Animate rotation Es + Dots 
+		a_d_r; // Animate rotation dots 
 
 
 	p.preload = function() {
+		// Load image assets
 		E = p.loadImage("assets/E.png");
 		E2 = p.loadImage("assets/E2.png");
 		dot = p.loadImage("assets/dot.png");
@@ -30,6 +34,8 @@ var bump = function (p) {
 		p.createCanvas(window.innerWidth, window.innerHeight);
 		p.frameRate(30);
 
+		angle = 0;
+
 		// Spring animation object for Es scale
 		a_e_s = new Ani_scale_e ({
 			start: 0, 		// animation starting value
@@ -38,13 +44,30 @@ var bump = function (p) {
 			easing: springFactory(0.15, 12), // Default
 		});
 
-		// Spring animation object for Es rotate
-		a_e_r = new Ani_scale_e ({
+		// Spring animation object for dots scale
+		a_d_s = new Ani_scale_e ({
+			start: 0, 		// animation starting value
+			end: 1, 		// value to increment towards
+			msec: 2500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			easing: springFactory(0.15, 12), // Default
+		});
+
+		// Spring animation object for Dots rotate
+		a_d_s = new Ani_scale_e ({
 			start: 0, 		// animation starting value
 			end: p.PI/4, 		// value to increment towards
 			msec: 2500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
 			easing: springFactory(0.15, 12), // Default
 		});
+
+		// Spring animation object for Es + Dots rotate
+		a_ed_r = new Ani_scale_e ({
+			start: 0, 		// animation starting value
+			end: p.PI/4, 		// value to increment towards
+			msec: 2500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			easing: springFactory(0.15, 12), // Default
+		});
+
 	}
 
 	p.draw = function () {
@@ -57,9 +80,15 @@ var bump = function (p) {
 			a_e_s.animate();
 		}
 
-		if (p.frameCount == 150) {
-			a_e_r.animate();
+		if (p.frameCount == 130) {
+			a_d_s.animate();
 		}
+
+		if (p.frameCount == 150) {
+			// a_e_r.animate();
+		}
+
+		debug();
 
 	}
 
@@ -68,23 +97,17 @@ var bump = function (p) {
 
 		p.stroke(255, 25);
 		p.strokeWeight(1);
-		p.line(p.width/2, 0, p.width/2, p.height);
-		p.line(0, p.height/2, p.width, p.height/2);
-		// Half Lines
-		p.line(p.width/2 -300, 0, p.width/2 -300, p.height);
-		p.line(p.width/2 +300, 0, p.width/2 +300, p.height);
-		// Quarter Lines
-		p.line(p.width/2 -119, 0, p.width/2 -119, p.height);
-		p.line(p.width/2 +119, 0, p.width/2 +119, p.height);
-		p.line(p.width/2 + 200, 0, p.width/2 + 200, p.height);
-		p.line(p.width/2 - 200, 0, p.width/2 - 200, p.height);
-		// Latitude
-		p.line(0, p.height/2 + 200, p.width, p.height/2 + 200);
-		p.line(0, p.height/2 - 200, p.width, p.height/2 - 200);
-		p.line(0, p.height/2 + 300, p.width, p.height/2 + 300);
-		p.line(0, p.height/2 - 300, p.width, p.height/2 - 300);
-		p.line(0, p.height/2 + 387, p.width, p.height/2 + 387);
-		p.line(0, p.height/2 - 387, p.width, p.height/2 - 387);
+
+		// Make a simple grid
+		var horz,
+			vert;
+		var num_lines = 10;
+		for (var i = 0; i < num_lines; i++) {
+			horz = p.width / num_lines;
+			vert = p.height / num_lines;
+			p.line(horz  * i, 0, horz * i, p.height);
+			p.line(0, vert * i, p.width, vert * i);
+		}
 
 	}
 
@@ -97,36 +120,51 @@ var bump = function (p) {
 		// Rotate E
 		p.push();
 
-			p.tint(255, 255); // Opacity (255)
+			p.tint(255, 100); // Opacity (255)
 			
 			p.translate(p.width/2, p.height/2);
 			//
 			// All rotations must occur here!!!!
 			//
-			p.rotate(a_e_r.value);	
-			console.log(a_e_s.value);
-			p.scale(a_e_s.value, a_e_s.value); 
-			p.translate(-41.25,-57.5);
+			p.rotate(0);	
+			p.scale(10, 10); 
+			p.translate(-41.25,-42.5);
 			p.scale(0.15,0.15);
-				// Top Dot
-				p.push();
-					p.translate(278, 75);
-					p.image(dot, 0, 0);
-				p.pop();
 
-				// Bottom Dot
-				p.push();
-					p.translate(175, 593);
-					p.image(dot2, 0, 0);
-				p.pop();
+			// Polar Coordinates
+			// For Dots
+				var r = 265;						// Origin Offset  	{start: 300, end: 265}
+				angle = p.radians(77);				// Angle Offset		{start: 0, end: 77}
+				x = p.cos(angle) * r;				// Multiply r * -1 for other Dot
+				y = p.sin(angle) * r;
+
+					// Top Dot
+					p.push();
+						p.scale(1, 1);
+						// p.translate(278, 75);  	// Dot final position
+						p.translate(x,y);
+						p.translate(276,283); 		// Center on Es
+						p.image(dot, -50, -50); 	// Center around origin
+						// p.ellipse(-1,1,2,2);		// Debugging Center pt
+					p.pop();
+
+					// Bottom Dot
+					p.push();
+						p.scale(1, 1);
+						// p.translate(175, 593);  	// Dot final position
+						p.translate(-x,-y);
+						p.translate(276,283); 		// Center on Es
+						p.image(dot2, -50, -50); 	// Center around origin
+						// p.ellipse(-1,1,2,2);		// Debugging Center pt
+					p.pop();
 
 				
-				// Top E
+				// Bottom E
 				p.image(E, 100, 100);
 
-				// Bottom E
+				// Top E
 				p.push();
-					p.translate(200, 200);
+					p.translate(200, 0);
 					p.image(E2, 0, 0);
 				p.pop();
 
@@ -167,6 +205,17 @@ var bump = function (p) {
 			return 1 - Math.exp(-t * zeta * omega) * Math.cos(Math.sqrt(1 - zeta * zeta) * omega * t);
 		};
 	}
+
+	//  Definition for Ease In Out timing function
+	function easeInOut (t) {
+		t = clamp(t, 0, 1);
+
+		var a = -1.067,
+			b = 1.6,
+			c = 0.467;
+
+		return t * (t * ((a * t) + b) + c);
+	};
 
 	// OOP --> Generic animation function
 	// Accepts any range and returns a springified value c:
