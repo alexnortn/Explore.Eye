@@ -15,7 +15,7 @@ var sprout = function (p) {
 	var mxn = 0;
 	var avg = 0;
 	var all_nodes = 0;
-	var nnn_count = 25;
+	var nnn_count;
 
 	// Global font reference
 	var fontRegular;
@@ -34,6 +34,10 @@ var sprout = function (p) {
 		p.push();
 			p.textFont(fontRegular);
 		p.pop();
+
+		// Calculate nnn_count based on width
+		// 2000 yields 20
+		nnn_count = p.width / 100;
 
 		network_start();
 	}
