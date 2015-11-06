@@ -15,7 +15,7 @@ var sprout = function (p) {
 	var mxn = 0;
 	var avg = 0;
 	var all_nodes = 0;
-	var nnn_count = 7;
+	var nnn_count = 25;
 
 	// Global font reference
 	var fontRegular;
@@ -45,7 +45,7 @@ var sprout = function (p) {
 
 
 		// plus_minus();
-		// iterate();
+		iterate();
 
 		if (nnn.done()) recurse();
 
@@ -76,7 +76,7 @@ var sprout = function (p) {
 	}
 
 	iterate = function() {
-		if (p.frameCount % 360 == 0) {
+		if (p.frameCount % 1000 == 0) {
 			avg = avg_node(nnn.neurons[0]);
 			network_start();
 			counter++;
