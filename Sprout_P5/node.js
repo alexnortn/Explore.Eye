@@ -430,7 +430,8 @@ function Node (args) {
 	this.render = function() {
 		var _this = this;
 		// Basic Fractal Lines
-		p.stroke(41,59,73);
+		// p.stroke(41,59,73); // blue
+		p.stroke(200); // white
 		p.strokeWeight(2);
 		p.noFill();
 		// Array to store curve points
@@ -472,7 +473,8 @@ function Node (args) {
 		// Render Path Home
 		if (_this.size) {
 			p.noStroke();
-			p.fill(41,59,73);
+			// p.fill(41,59,73); // blue
+			p.fill(200); // white
 			p.ellipse(
 				_this.pt_1().x,
 				_this.pt_1().y,
@@ -499,7 +501,8 @@ function Node (args) {
 		}
 		// Draw Soma
 		p.push();
-			p.fill(41,59,73);
+			// p.fill(41,59,73); // blue
+			p.fill(200); // white
 			if (_this.depth == 2) p.ellipse(_this.pt_1().x,_this.pt_1().y,15,15);
 		p.pop();
 		// Debug Neighborhood
@@ -754,13 +757,6 @@ function Node (args) {
 		var _this = this;
 		if(p.mouseIsPressed) {
 			var mousePos = p.createVector(p.mouseX, p.mouseY);
-			// // Mouse Pos (multiply by -1 to repel)
-			// var rep = _this.seek(mousePos).mult(-1); 	
-
-			// rep.mult(1);
-
-			// _this.applyForce(rep);
-			// console.log("Mouse Pressed");
 
 			// Move soma
 			var soma = _this.findSoma(_this);
@@ -772,7 +768,7 @@ function Node (args) {
 		// Update spring positions --> Run through array
 		_this.springs.forEach(function(s) {
 			s.update();
-			// s.display();
+			s.display();
 		});
 	}
 
@@ -783,7 +779,7 @@ function Node (args) {
 		var _this = this;
 		_this.repel();
 		_this.update();
-		// _this.meta();
+		_this.meta();
 		// Find position, then stop moving! --> Each resize event
 		// if (damping > 0.1) damping *= 0.98;
 	}
