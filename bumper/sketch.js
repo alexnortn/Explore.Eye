@@ -22,6 +22,8 @@ var bump = function (p) {
 		a_ed_r, // Animate rotation Es + Dots 
 		global_animator; 	//Global animation controller!
 
+	var t_cl; 	// Global Time Controller
+
 
 	p.preload = function() {
 		// Load image assets
@@ -34,6 +36,8 @@ var bump = function (p) {
 	p.setup = function() {
 		p.createCanvas(window.innerWidth, window.innerHeight);
 		p.frameRate(30);
+
+		t_cl = 1;			// Default to 1
 
 		// Global Animator Returns following animations in linear step
 		global_animator = new Animator ({
@@ -50,38 +54,38 @@ var bump = function (p) {
 			start: 0, 		// animation starting value
 			end: 1, 		// value to increment towards
 			ratio: 0.25,	// ratio to total animation
-			msec: 500, 		// Number of update steps : microseconds --> 1000 / second | 2.5sec
-			order: 1,		// Order to Call
-			easing: springFactory(0.15, 12), // Spring Timing Function
+			msec: 1500,		// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			order: 0,		// Order to Call
+			easing: springFactory(0.25, 7), // Spring Timing Function
 		});
 
 		// Spring animation object for dots scale
 		a_d_s = new Animator ({
 			start: 0, 		// animation starting value
 			end: 1, 		// value to increment towards
-			ratio: 0.25,	// ratio to total animation
-			msec: 500, 		// Number of update steps : microseconds --> 1000 / second | 2.5sec
-			order: 2,		// Order to Call
-			easing: springFactory(0.15, 12), // Spring Timing Function
+			ratio: 0.035,	// ratio to total animation
+			msec: 1000, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			order: 1,		// Order to Call
+			easing: springFactory(0.25, 5), // Spring Timing Function
 		});
 
 		// Spring animation object for Dots rotate
 		a_d_r = new Animator ({
 			start: 0, 		// animation starting value
 			end: 77, 		// value to increment towards
-			ratio: 0.25,	// ratio to total animation
-			msec: 500, 		// Number of update steps : microseconds --> 1000 / second | 2.5sec
-			order: 3,		// Order to Call
+			ratio: 0.04,	// ratio to total animation
+			msec: 350, 		// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			order: 2,		// Order to Call
 			easing: easeInOut(), // Cubic Timing Function
 		});
 
 		// Spring animation object for Dots radius
 		a_d_d = new Animator ({
-			start: 300, 	// animation starting value
+			start: 325, 	// animation starting value
 			end: 265, 		// value to increment towards
-			ratio: 0.25,	// ratio to total animation
-			msec: 500, 		// Number of update steps : microseconds --> 1000 / second | 2.5sec
-			order: 3,		// Order to Call
+			ratio: 0.04,	// ratio to total animation
+			msec: 350, 		// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			order: 2,		// Order to Call
 			easing: easeInOut(), // Cubic Timing Function
 		});
 
@@ -89,10 +93,10 @@ var bump = function (p) {
 		a_ed_r = new Animator ({
 			start: 0, 		// animation starting value
 			end: 45, 		// value to increment towards
-			ratio: 0.25,	// ratio to total animation
-			msec: 500, 		// Number of update steps : microseconds --> 1000 / second | 2.5sec
-			order: 4,		// Order to Call
-			easing: springFactory(0.15, 7), // Spring Timing Function
+			ratio: 0.0475,	// ratio to total animation
+			msec: 1500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			order: 3,		// Order to Call
+			easing: springFactory(0.35, 5), // Spring Timing Function
 		});
 
 	}
@@ -100,15 +104,15 @@ var bump = function (p) {
 	// Consider this Update
 	p.draw = function () {
 		p.background(27,39,49);
-
-		// Render Graphics
-		render();
+		
+		// Draw Grid
+		// debug();
 
 		// Animation Controller
 		step();
 
-		// Draw Grid
-		debug();
+		// Render Graphics
+		render();
 
 	}
 
@@ -123,39 +127,39 @@ var bump = function (p) {
 		}
 
 		// Animate the Es to Scale
-		if (global_animator.value >= a_e_s.ratio * a_e_s.order && !a_e_s.started) {
+		if (global_animator.value >= (a_e_s.ratio * a_e_s.order) && !a_e_s.started) {
 			console.log(global_animator.value);
-			a_e_s.msec = global_animator.msec * a_e_s.ratio;
+			// a_e_s.msec = global_animator.msec * a_e_s.ratio;
 			// console.log("Es scale");
 			// console.log(a_e_s.delta);
 			a_e_s.animate();
 		}
 
 		// // Animate the Dots to Scale
-		if (global_animator.value >= a_d_s.ratio * a_d_s.order && !a_d_s.started) {
-			a_d_s.msec = global_animator.msec * a_d_s.ratio;
-			console.log("Dots scale");
+		if (global_animator.value >= (a_d_s.ratio * a_d_s.order) && !a_d_s.started) {
+			// a_d_s.msec = global_animator.msec * a_d_s.ratio;
+			// console.log("Dots scale");
 			a_d_s.animate();
 		}
 		
 		// // Animate the Dots to Rotate
-		if (global_animator.value >= a_d_r.ratio * a_d_r.order && !a_d_r.started) {
-			a_d_r.msec = global_animator.msec * a_d_r.ratio;
-			console.log("Dots rotate");
+		if (global_animator.value >= (a_d_r.ratio * a_d_r.order) && !a_d_r.started) {
+			// a_d_r.msec = global_animator.msec * a_d_r.ratio;
+			// console.log("Dots rotate");
 			a_d_r.animate();
 		}
 
 		// // Animate the Dots to Change Diameter
-		if (global_animator.value >= a_d_d.ratio * a_d_d.order && !a_d_d.started) {
-			a_d_d.msec = global_animator.msec * a_d_d.ratio;
-			console.log("Dots diamter");
+		if (global_animator.value >= (a_d_d.ratio * a_d_d.order) && !a_d_d.started) {
+			// a_d_d.msec = global_animator.msec * a_d_d.ratio;
+			// console.log("Dots diamter");
 			a_d_d.animate();
 		}
 
 		// // Animate both the Dots & Es to Rotate
-		if (global_animator.value >= a_ed_r.ratio * a_ed_r.order && !a_ed_r.started) {
-			a_ed_r.msec = global_animator.msec * a_ed_r.ratio;
-			console.log("Both rotate");
+		if (global_animator.value >= (a_ed_r.ratio * a_ed_r.order) && !a_ed_r.started) {
+			// a_ed_r.msec = global_animator.msec * a_ed_r.ratio;
+			// console.log("Both rotate");
 			a_ed_r.animate();
 		}
 
@@ -189,16 +193,15 @@ var bump = function (p) {
 		// Rotate E
 		p.push();
 
-			p.tint(255, 100); // Opacity (255)
+			p.tint(255, 255); // Opacity (255)
 			
 			p.translate(p.width/2, p.height/2);
 			p.rotate(p.radians(a_ed_r.value));					// All rotations must occur here!!!
-			p.scale(5,5);
+			p.scale(1,1);
 
 			// For Dots
 			p.push();
 
-				p.scale(a_d_s.value, a_d_s.value); 						// Global scale
 				p.translate(-41.25,-42.65); 		// Center offset
 				p.scale(0.15,0.15);
 
@@ -214,6 +217,7 @@ var bump = function (p) {
 						// p.translate(278, 75);  	// Dot final position
 						p.translate(x,y);
 						p.translate(276,283); 		// Center on Es
+						p.scale(a_d_s.value, a_d_s.value); 	// Each scale <-- Parametric
 						p.image(dot, -50, -50); 	// Center around origin
 						// p.ellipse(-1,1,2,2);		// Debugging Center pt
 					p.pop();
@@ -224,6 +228,7 @@ var bump = function (p) {
 						// p.translate(175, 593);  	// Dot final position
 						p.translate(-x,-y);
 						p.translate(276,283); 		// Center on Es
+						p.scale(a_d_s.value, a_d_s.value); 	// Each scale <-- Parametric
 						p.image(dot2, -50, -50); 	// Center around origin
 						// p.ellipse(-1,1,2,2);		// Debugging Center pt
 					p.pop();
@@ -312,7 +317,7 @@ var bump = function (p) {
 	  	this.end_pos = args.end || 1;
 	  	this.ratio = args.ratio || 0.25; // ratio to total animation --> normalize to 1
 	  	this.msec = args.msec || 1000; // default to 1000msec --> 1s
-	  	this.order = args.order || 1;
+	  	this.order = args.order || 0;
 
 	  	// Called Flag
 	  	this.started = false;
@@ -355,6 +360,10 @@ var bump = function (p) {
 			requestAnimationFrame(frame); // you can use setInterval, but this will give a smoother animation --> Call it the first time and it loops forever until return
 		}
 
+	}
+
+	p.mousePressed = function() {
+		p.setup();
 	}
 
 }
