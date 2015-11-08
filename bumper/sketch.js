@@ -90,19 +90,19 @@ var bump = function (p) {
 		// Spring animation object for Line expansion start
 		a_l_ds = new Animator ({
 			start: 0, 		// animation starting value
-			end: 45, 		// value to increment towards
-			ratio: 0.0275,	// ratio to total animation
-			msec: 1500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			end: 1, 		// value to increment towards
+			ratio: 0.0300,	// ratio to total animation
+			msec: 1000, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
 			order: 3,		// Order to Call
-			easing: sigmoidFactory(19, -0.1), // Custom Timing Function
+			easing: sigmoidFactory(12, -0.1), // Custom Timing Function
 		});
 
 		// Spring animation object for Line expansion end
 		a_l_de = new Animator ({
 			start: 0, 		// animation starting value
-			end: 45, 		// value to increment towards
-			ratio: 0.0450,	// ratio to total animation
-			msec: 1500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			end: 1, 		// value to increment towards
+			ratio: 0.0475,	// ratio to total animation
+			msec: 1000, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
 			order: 3,		// Order to Call
 			easing: sigmoidFactory(19, 0.1), // Custom Timing Function
 		});
@@ -222,22 +222,25 @@ var bump = function (p) {
 
 		// Draw Horizontal Lines
 		p.push();
+
 			p.strokeCap(p.ROUND);
 			p.stroke(121, 192, 242);				// Light Blue
 			p.translate(p.width/2, p.height/2);		// Translate to center
 
 			// Set strokeweight to decrease proportionally to the stretch factor
-			var base_stroke_weight = 3;
+			var base_stroke_weight = 5;
 			var stroke_weight = base_stroke_weight - (a_l_de.value * base_stroke_weight);
+				stroke_weight = p.max(stroke_weight, 0.25);
+			
 			p.strokeWeight(stroke_weight);
 
 			var spacing = 75;						// Set space around Es
 			// Mult by -1 for left line
-			var displacement_start = a_l_ds.value * (p.width / 2) + spacing;
-			var displacement_end = a_l_de.value * (p.width / 2) + spacing;
+			var x_1 = a_l_ds.value * (p.width / 2) + spacing; 	// Displacement Start
+			var x_2 = a_l_de.value * (p.width / 2) + spacing;		// Displacement End
 
-			p.line(-displacement_end, 0, -displacement_start, 0);		// Left Line
-			p.line(displacement_end, 0, displacement_start, 0);		// Right Line
+			p.line(-x_1, 0, -x_2, 0);		// Left Line
+			p.line(x_1, 0, x_2, 0);		// Right Line
 
 		p.pop();
 
