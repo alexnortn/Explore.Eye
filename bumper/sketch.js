@@ -2,11 +2,6 @@
 // Alex Norton
 // http://eyewire.org
 
-
-
-
-
-
 // Running the sketch in instance mode, don't forget to preface all P5 methods with { p }
 var bump = function (p) {
 // Global Variables
@@ -38,7 +33,7 @@ var bump = function (p) {
 
 	p.setup = function() {
 		p.createCanvas(window.innerWidth, window.innerHeight);
-		p.frameRate(30);
+		p.frameRate(60);
 
 		t_cl = 1;			// Default to 1
 
@@ -230,6 +225,11 @@ var bump = function (p) {
 			p.strokeCap(p.ROUND);
 			p.stroke(121, 192, 242);				// Light Blue
 			p.translate(p.width/2, p.height/2);		// Translate to center
+
+			// Set strokeweight to decrease proportionally to the stretch factor
+			var base_stroke_weight = 3;
+			var stroke_weight = base_stroke_weight - (a_l_de.value * base_stroke_weight);
+			p.strokeWeight(stroke_weight);
 
 			var spacing = 75;						// Set space around Es
 			// Mult by -1 for left line
