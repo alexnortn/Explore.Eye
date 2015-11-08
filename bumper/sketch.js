@@ -22,6 +22,7 @@ var bump = function (p) {
 		a_ed_r, // Animate rotation Es + Dots 
 		a_l_ds, // Animate lines distance start
 		a_l_de, // Animate lines distance end
+
 		global_animator; 	//Global animation controller!
 
 	var t_cl; 	// Global Time Controller
@@ -95,20 +96,20 @@ var bump = function (p) {
 		a_l_ds = new Animator ({
 			start: 0, 		// animation starting value
 			end: 45, 		// value to increment towards
-			ratio: 0.0475,	// ratio to total animation
+			ratio: 0.0275,	// ratio to total animation
 			msec: 1500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
 			order: 3,		// Order to Call
-			easing: sigmoidFactory(19, -0.1);, // Custom Timing Function
+			easing: sigmoidFactory(19, -0.1), // Custom Timing Function
 		});
 
 		// Spring animation object for Line expansion end
 		a_l_de = new Animator ({
 			start: 0, 		// animation starting value
 			end: 45, 		// value to increment towards
-			ratio: 0.0475,	// ratio to total animation
+			ratio: 0.0450,	// ratio to total animation
 			msec: 1500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
 			order: 3,		// Order to Call
-			easing: sigmoidFactory(19, 0.1);, // Custom Timing Function
+			easing: sigmoidFactory(19, 0.1), // Custom Timing Function
 		});
 
 		// Spring animation object for Es + Dots rotate
@@ -187,15 +188,15 @@ var bump = function (p) {
 
 		// // Animate both the Line start positons
 		if (global_animator.value >= (a_l_ds.ratio * a_l_ds.order) && !a_l_ds.started) {
-			// a_ed_r.msec = global_animator.msec * a_ed_r.ratio;
-			// console.log("Both rotate");
+			// a_l_ds.msec = global_animator.msec * a_l_ds.ratio;
+			// console.log("Line Start");
 			a_l_ds.animate();
 		}
 
 		// // Animate both the Line end positons
 		if (global_animator.value >= (a_l_de.ratio * a_l_de.order) && !a_l_de.started) {
-			// a_ed_r.msec = global_animator.msec * a_ed_r.ratio;
-			// console.log("Both rotate");
+			// a_l_de.msec = global_animator.msec * a_l_de.ratio;
+			// console.log("Line End");
 			a_l_de.animate();
 		}
 
@@ -229,14 +230,14 @@ var bump = function (p) {
 			p.strokeCap(p.ROUND);
 			p.stroke(121, 192, 242);				// Light Blue
 			p.translate(p.width/2, p.height/2);		// Translate to center
-			var offset_x = 75;
 
+			var spacing = 75;						// Set space around Es
 			// Mult by -1 for left line
-			var start = 75;
-			var end = p.width / 2 + offset_x;
+			var displacement_start = a_l_ds.value * (p.width / 2) + spacing;
+			var displacement_end = a_l_de.value * (p.width / 2) + spacing;
 
-			p.line(-offset_x, 0, -p.width/2 -offset_x, 0);		// Left Line
-			p.line(offset_x, 0, p.width/2 + offset_x, 0);		// Right Line
+			p.line(-displacement_end, 0, -displacement_start, 0);		// Left Line
+			p.line(displacement_end, 0, displacement_start, 0);		// Right Line
 
 		p.pop();
 
