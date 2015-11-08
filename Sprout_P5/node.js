@@ -52,7 +52,7 @@ function Node (args) {
 	this.leaf = true;
 	this.size = false;
 	this.start_point = false;
-	this.dw = false;
+	this.dw = true;
 	this.sprung = false;
 	this.distribute = false;
 
@@ -506,11 +506,11 @@ function Node (args) {
 			if (_this.depth == 2) p.ellipse(_this.pt_1().x,_this.pt_1().y,15,15);
 		p.pop();
 		// Debug Neighborhood
-		// p.push();
-		// 	p.noStroke();
-		// 	p.fill(255,10);
-		// 	p.ellipse(_this.position.x,_this.position.y,50,50);
-		// 	p.fill(255,255);
+		p.push();
+			p.noStroke();
+			p.fill(255,10);
+			p.ellipse(_this.position.x,_this.position.y,50,50);
+			p.fill(255,255);
 		// p.pop();
 	}
 

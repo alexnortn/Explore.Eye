@@ -20,6 +20,8 @@ var bump = function (p) {
 		a_d_r, 	// Animate rotation dots 
 		a_d_d,	// Animate diameter dots
 		a_ed_r, // Animate rotation Es + Dots 
+		a_l_ds, // Animate lines distance start
+		a_l_de, // Animate lines distance end
 		global_animator; 	//Global animation controller!
 
 	var t_cl; 	// Global Time Controller
@@ -87,6 +89,26 @@ var bump = function (p) {
 			msec: 350, 		// Number of update steps : microseconds --> 1000 / second | 2.5sec
 			order: 2,		// Order to Call
 			easing: easeInOut(), // Cubic Timing Function
+		});
+
+		// Spring animation object for Line expansion start
+		a_l_ds = new Animator ({
+			start: 0, 		// animation starting value
+			end: 45, 		// value to increment towards
+			ratio: 0.0475,	// ratio to total animation
+			msec: 1500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			order: 3,		// Order to Call
+			easing: sigmoidFactory(19, -0.1);, // Custom Timing Function
+		});
+
+		// Spring animation object for Line expansion end
+		a_l_de = new Animator ({
+			start: 0, 		// animation starting value
+			end: 45, 		// value to increment towards
+			ratio: 0.0475,	// ratio to total animation
+			msec: 1500, 	// Number of update steps : microseconds --> 1000 / second | 2.5sec
+			order: 3,		// Order to Call
+			easing: sigmoidFactory(19, 0.1);, // Custom Timing Function
 		});
 
 		// Spring animation object for Es + Dots rotate
@@ -163,6 +185,20 @@ var bump = function (p) {
 			a_ed_r.animate();
 		}
 
+		// // Animate both the Line start positons
+		if (global_animator.value >= (a_l_ds.ratio * a_l_ds.order) && !a_l_ds.started) {
+			// a_ed_r.msec = global_animator.msec * a_ed_r.ratio;
+			// console.log("Both rotate");
+			a_l_ds.animate();
+		}
+
+		// // Animate both the Line end positons
+		if (global_animator.value >= (a_l_de.ratio * a_l_de.order) && !a_l_de.started) {
+			// a_ed_r.msec = global_animator.msec * a_ed_r.ratio;
+			// console.log("Both rotate");
+			a_l_de.animate();
+		}
+
 	}
 
 	// Draw grid
@@ -188,6 +224,22 @@ var bump = function (p) {
 	// Consider applying a transformation stack on top of this
 	render = function() {
 
+		// Draw Horizontal Lines
+		p.push();
+			p.strokeCap(p.ROUND);
+			p.stroke(121, 192, 242);				// Light Blue
+			p.translate(p.width/2, p.height/2);		// Translate to center
+			var offset_x = 75;
+
+			// Mult by -1 for left line
+			var start = 75;
+			var end = p.width / 2 + offset_x;
+
+			p.line(-offset_x, 0, -p.width/2 -offset_x, 0);		// Left Line
+			p.line(offset_x, 0, p.width/2 + offset_x, 0);		// Right Line
+
+		p.pop();
+
 		// Assemble Logo!
 
 		// Rotate E
@@ -196,7 +248,7 @@ var bump = function (p) {
 			p.tint(255, 255); // Opacity (255)
 			
 			p.translate(p.width/2, p.height/2);
-			p.rotate(p.radians(a_ed_r.value));					// All rotations must occur here!!!
+			p.rotate(p.radians(a_ed_r.value));		// All rotations must occur here!!!
 			p.scale(1,1);
 
 			// For Dots
@@ -293,14 +345,51 @@ var bump = function (p) {
 	}
 
 	//  Definition for Ease In Out timing function
+	// function easeInOut (t) {
+	// 	t = clamp(t, 0, 1) || 0;
+
+	// 	var a = -1.067,
+	// 		b = 1.6,
+	// 		c = 0.467;
+
+	// 	return t * (t * ((a * t) + b) + c);
+	// };
+
 	function easeInOut (t) {
-		t = clamp(t, 0, 1) || 0;
+		var fn = sigmoidFactory(12);
+		return fn(t);
+	}
 
-		var a = -1.067,
-			b = 1.6,
-			c = 0.467;
+	function easeOutIn (t) {
+		return 1 - easeInOut(t);
+	}
 
-		return t * (t * ((a * t) + b) + c);
+	/* sigmoidFactory
+	 * 
+	 * Note: Values of alpha below 9 start to show artifacts
+	 *
+	 * Optional:
+	 *	 [0] alpha: (default 12) controls steepness of easing
+	 *
+	 * Return: f(t), t in 0..1
+	 */
+	function sigmoidFactory (alpha, offset) {
+		offset = offset || 0;
+
+		return function (t) {
+			t = clamp(t, 0, 1);
+
+			if (t <= 0) {
+				return 1;
+			}
+			else if (t >= 1) {
+				return 0;
+			}
+
+
+			return 1 / (1 + Math.exp(-alpha * (t - 0.5)));
+
+		};
 	};
 
 	// Simple linear timing function
