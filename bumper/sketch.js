@@ -136,7 +136,7 @@ var bump = function (p) {
 
 	// Global Animator Controls
 	// Step through animations in given order
-	step = function() {
+	function step() {
 
 		// Kick off animation
 		if(!global_animator.started) {
@@ -198,7 +198,7 @@ var bump = function (p) {
 	}
 
 	// Draw grid
-	debug = function() {
+	function debug() {
 
 		p.stroke(255, 25);
 		p.strokeWeight(1);
@@ -218,7 +218,7 @@ var bump = function (p) {
 
 	// Draw basic E logo in center of screen
 	// Consider applying a transformation stack on top of this
-	render = function() {
+	function render() {
 
 		// Draw Horizontal Lines
 		p.push();
@@ -228,7 +228,7 @@ var bump = function (p) {
 			p.translate(p.width/2, p.height/2);		// Translate to center
 
 			// Set strokeweight to decrease proportionally to the stretch factor
-			var base_stroke_weight = 5;
+			var base_stroke_weight = 3;
 			var stroke_weight = base_stroke_weight - (a_l_de.value * base_stroke_weight);
 				stroke_weight = p.max(stroke_weight, 0.25);
 			
@@ -428,21 +428,20 @@ var bump = function (p) {
 		var delta = _this.end_pos - _this.start_pos; // displacement
 
 		function frame() {
-			// console.log(_this);
 			var now = window.performance.now();
 			var t = (now - _this.start) / _this.msec; // normalize to 0..1
 
 			if (t >= 1) { // if animation complete or running over
 				_this.value = _this.end_pos; // ensure the animation terminates in the specified state
-			  	return;
+			  	return;`
 			}
 
 			var proportion = _this.easing(t); // Call upon the strange magic of your timing function
 			_this.value = _this.start_pos + proportion * delta; 	// delta is our multiplier | this decides our current position relative to starting position
-															// update your animation based on this value
-															// trig functions are naturally really excited about this,
-															// Can I make the whole thing less imperitive? --> Stateless?
-
+																	// update your animation based on this value
+																	// trig functions are naturally really excited about this,
+																	// Can I make the whole thing less imperitive? --> Stateless?
+		
 			requestAnimationFrame(frame); // next frame!
 
 		}

@@ -44,19 +44,22 @@ function Nnn(args) {
 	this.run = function() {
 		var _this = this;
 		_this.neurons.forEach(function(neuron) {
+
+			neuron.render();
+
 			if (_this.done()) {
 				// console.log("NNN Complete");
 				// console.log(_this.neurons.length);
 				// p.noLoop();
 				neuron.update();
+
 				var radius = neuron.radius();
+				
 				neuron.nodes[0].spread(somas, radius);
 			} 
 			else {
-				neuron.grow();
+				// neuron.grow();
 			}
-
-			neuron.render();
 
 		});
 	}
@@ -122,6 +125,7 @@ function Nnn(args) {
 			);
 
 			_this.neurons[_this.neurons.length - 1].neuron_setup();
+			_this.neurons[_this.neurons.length - 1].network_setup();
 
 		}
 	}

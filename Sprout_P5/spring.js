@@ -18,7 +18,7 @@ function Spring(args) {
 	this.node1 = args.node1 || {};
 	this.node2 = args.node2 || {};
 
-	console.log("1: " + this.node1.id + " + 2: " + this.node2.id);
+	// console.log("1: " + this.node1.id + " + 2: " + this.node2.id);
 
 	this.delta_position = function() {
 		var _this = this;

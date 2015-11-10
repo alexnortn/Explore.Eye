@@ -31,7 +31,7 @@ function Neuron (args) {
 	// Call methods to access outside of class this way!
 	this.neuron_setup = function() {
 		var _this = this;
-		var start_velocity = p.createVector(2,2); // Change this value to determine simulation speed
+		var start_velocity = p.createVector(0,0); // Change this value to determine simulation speed
 		// Create a new Node instance
 		var n = new Node ({
 					neuron_timer: 	_this.neuron_timer,
@@ -45,6 +45,16 @@ function Neuron (args) {
 				});	
 		// Add to arraylist
 		_this.nodes.push(n); 
+
+	}
+
+	this.network_setup = function() {
+		var _this = this;
+		 
+		 // Get things moving
+		 var n = _this.nodes[0];
+		n.velocity.set(2,2);
+		n.size == true;
 
 		var theta = p.TWO_PI / _this.num_branches;  
 		// Random rotational offset constant
@@ -64,12 +74,16 @@ function Neuron (args) {
 				n.branch(p.degrees(start_angle, _this.nodes.length), i + 1) // No need for ';'
 			);
 		}
+
 	}
 
 	// Render the Neurons + Nodes
 	this.render = function() {
 		var _this = this;
 		var n;
+
+		// Special Case for Soma
+		_this.nodes[0].render();
 		
 		for (var i = _this.nodes.length - 1; i >= 1; i--) {
 			n = _this.nodes[i];
@@ -151,8 +165,8 @@ function Neuron (args) {
 				// For every other node added: add one or two branches to create natural form
 				// Could definitely have a better way of accessing neuron depth.. that would improve branching
 				if (((n.depth + 1) % 2 == 0) && (n.depth != 2)) {
-					_this.nodes.push(n.branch(-10, _this.nodes.length));    // Add one going right
-					_this.nodes.push(n.branch(10,_this.nodes.length));   // Add one going left
+					_this.nodes.push(n.branch(-20, _this.nodes.length));    // Add one going right
+					_this.nodes.push(n.branch(20,_this.nodes.length));   // Add one going left
 				} 
 				else {
 					// Additional method for probabalistic branching
@@ -160,8 +174,8 @@ function Neuron (args) {
 					// Neuron feels slightly over complicated given complexity: 13 & min [5] branches
 					var rnd = p.random(1);
 					if ((rnd < 0.15) && ((n.depth + 1) < _this.max_depth )) {
-						_this.nodes.push(n.branch(-10, _this.nodes.length));    // Add one going right
-						_this.nodes.push(n.branch(10, _this.nodes.length));   // Add one going left
+						_this.nodes.push(n.branch(-20, _this.nodes.length));    // Add one going right
+						_this.nodes.push(n.branch(20, _this.nodes.length));   // Add one going left
 					} 
 					else {
 						// Added leaves to end of Neuron --> Can be vastly improved to consider
@@ -202,24 +216,29 @@ function Neuron (args) {
 	}
 
 	// Calculate the average radius of neuron
-	this.radius = function() {
+	// Wrap it in cacheify() to cache first returned value
+	this.radius = Utils.cacheify(function() {
 		var _this = this;
 		var avg_radius = 0;
 		var total_radius = 0;
+		var leaf_count = 0;
 
 		// Look through all the leaf nodes
 		_this.nodes.forEach(function(node) {
 			if (node.leaf) {
 				// Calculate the distance from leaf to soma
 				total_radius += p5.Vector.dist(node.position, _this.nodes[0].position);
+				leaf_count++;
 			}
 		});
 
 		// Take average of total radius
-		avg_radius = total_radius / _this.nodes.length;
+		avg_radius = p.floor(total_radius / leaf_count);
+		console.log(avg_radius);
 
 		return avg_radius;
-	}
+	});
+
 }
 
 

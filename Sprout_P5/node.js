@@ -52,7 +52,7 @@ function Node (args) {
 	this.leaf = true;
 	this.size = false;
 	this.start_point = false;
-	this.dw = true;
+	this.dw = false; // Debugging Vel
 	this.sprung = false;
 	this.distribute = false;
 
@@ -91,8 +91,7 @@ function Node (args) {
 	this.pt_0 = function() {
 		var _this = this;
 		var p_0 = p.createVector();
-		var isAlone =  _this.parent.parent instanceof Node;
-		if (!isAlone) {
+		if (_this.depth == 1 || _this.depth == 2) {
 			p_0 = _this.position; 
 			return p_0;
 		} 
@@ -233,7 +232,7 @@ function Node (args) {
 		  	if (_this.distribute) {
 		  		// If we're in spring mode, desired separation = distance from this to other
 		  		// Update desiredseparation to match starting position of adjacency list
-		  		desiredseparation = radius * 5;
+		  		desiredseparation = radius;
 		  	}
 	  		
 	  		// Calc distance from growing nodes
@@ -280,19 +279,19 @@ function Node (args) {
 
 		// Calculate 'x' edge offset
 		if (_this.position.x < p.width / 2) {
-			x = _this.position.x - radius;
+			x = _this.position.x + radius;
 		}
 		else {
-			x = p.width - _this.position.x - radius;
+			x = p.width - _this.position.x + radius;
 			mult_x = -1;
 		}
 
 		// Calculate 'y' edge offset
 		if (_this.position.y < p.height / 2) {
-			y = _this.position.y - radius;
+			y = _this.position.y + radius;
 		}
 		else {
-			y = p.height - _this.position.y - radius;
+			y = p.height - _this.position.y + radius;
 			mult_y = -1;
 		}
 
@@ -357,6 +356,9 @@ function Node (args) {
 
 		// Set distribute to true
 		_this.distribute = true;
+
+		// Test Radius
+		_this.render_radius();
 		
 		var cen = _this.seek(center).mult(-1); // Simply seek away from center
 		var edg = _this.check_edges(); // Move away from edges
@@ -365,7 +367,7 @@ function Node (args) {
 		// Carefully weight these forces
 		cen.mult(pow);
 		edg.mult(pow);
-		sep.mult(5*pow);
+		sep.mult(pow);
 
 		// Add the force vectors to acceleration
 		_this.applyForce(cen);
@@ -419,6 +421,9 @@ function Node (args) {
 			_this.velocity.mult(damping);
 			maxspeed = 100;
 		}
+
+		if (_this.velocity.magSq() < 0.1)  _this.velocity.mult(0); 
+
 		// Limit speed
 		_this.velocity.limit(maxspeed);
 		_this.position.add(_this.velocity);
@@ -434,13 +439,6 @@ function Node (args) {
 		p.stroke(200); // white
 		p.strokeWeight(2);
 		p.noFill();
-		// Array to store curve points
-		// var pts = [
-		// 	p.createVector(_this.pt_0().x, _this.pt_0().y),
-		// 	p.createVector(_this.pt_1().x, _this.pt_1().y),
-		// 	p.createVector(_this.pt_2().x, _this.pt_2().y),
-		// 	p.createVector(_this.pt_3().x, _this.pt_3().y)
-		// ];
 			
 		// p.line(_this.start.x, _this.start.y, _this.position.x, _this.position.y);
 		// Render Curves
@@ -499,6 +497,7 @@ function Node (args) {
 				5
 			);
 		}
+
 		// Draw Soma
 		p.push();
 			// p.fill(41,59,73); // blue
@@ -507,11 +506,23 @@ function Node (args) {
 		p.pop();
 		// Debug Neighborhood
 		p.push();
-			p.noStroke();
-			p.fill(255,10);
-			p.ellipse(_this.position.x,_this.position.y,50,50);
-			p.fill(255,255);
-		// p.pop();
+			// p.noStroke();
+			// p.fill(255,10);
+			// p.ellipse(_this.position.x,_this.position.y,50,50);
+			// p.fill(255,255);
+		p.pop();
+
+	}
+
+	this.render_radius = function() {
+		var _this = this;
+
+		// Render Radius
+		// console.log(radius);
+		p.push();
+			p.fill(200,100);
+			p.ellipse(_this.position.x, _this.position.y, radius, radius);
+		p.pop();
 	}
 
 	// Accepts an Array of Node Objects
@@ -525,7 +536,7 @@ function Node (args) {
 
 			// Make leaves go crazy on final level
 			if (_this.depth == (_this.max_depth - 1)) {
-				wan_const = 1;
+				wan_const = 0.5;
 			}
 		} else  {
 			_this.dw = false;
@@ -704,8 +715,6 @@ function Node (args) {
 
 
 		if (new_spring && new_spring.id !== _this.id) {
-			console.log(new_spring);
-
 			getSprung(new_spring);
 		}
 		
@@ -733,17 +742,13 @@ function Node (args) {
 	    // left most = 0
 
 	    if (parentIdx > 0 || this.parent.parent === undefined) {
-            // console.log('left this idx', (parentIdx - 1).mod(parentsC.length));
-	        // console.log(parentsC[(parentIdx - 1).mod(parentsC.length)].toString());
 	        return parentsC[(parentIdx - 1).mod(parentsC.length)].rightMost(depthx);
 	    } else {
-	        // console.log('going up');
 	        return this.parent.leftNode(depthx + 1);
 	    }
 	}
 
 	this.rightMost = function (depthx) {
-	    // console.log('rightMost', this.toString(), depthx);
 	    if (depthx === 0) {
 	        return this;
 	    }
@@ -779,7 +784,7 @@ function Node (args) {
 		var _this = this;
 		_this.repel();
 		_this.update();
-		_this.meta();
+		// _this.meta();
 		// Find position, then stop moving! --> Each resize event
 		// if (damping > 0.1) damping *= 0.98;
 	}
