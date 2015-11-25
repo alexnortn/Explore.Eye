@@ -59,7 +59,7 @@ function Node (args) {
 	// Private variables
 	var radius = 0;
 	var wandertheta = 0;
-	var wan_const = 0;
+	var wan_const = 0.5;
 	var maxspeed = 1.5;       // Default 2
 	var maxforce = p.random(0.8,1);    // Default 0.05
 	var damping = 0.85;
@@ -358,14 +358,14 @@ function Node (args) {
 		_this.distribute = true;
 
 		// Test Radius
-		_this.render_radius();
+		// _this.render_radius();
 		
 		var cen = _this.seek(center).mult(-1); // Simply seek away from center
 		var edg = _this.check_edges(); // Move away from edges
 		var sep = _this.separate(somas); // Move away from eachother
 
 		// Carefully weight these forces
-		cen.mult(pow);
+		// cen.mult(pow);
 		edg.mult(pow);
 		sep.mult(pow);
 
@@ -437,7 +437,7 @@ function Node (args) {
 		// Basic Fractal Lines
 		// p.stroke(41,59,73); // blue
 		p.stroke(200); // white
-		p.strokeWeight(2);
+		p.strokeWeight(1);
 		p.noFill();
 			
 		// p.line(_this.start.x, _this.start.y, _this.position.x, _this.position.y);
@@ -502,7 +502,7 @@ function Node (args) {
 		p.push();
 			// p.fill(41,59,73); // blue
 			p.fill(200); // white
-			if (_this.depth == 2) p.ellipse(_this.pt_1().x,_this.pt_1().y,15,15);
+			// if (_this.depth == 2) p.ellipse(_this.pt_1().x,_this.pt_1().y,15,15);
 		p.pop();
 		// Debug Neighborhood
 		p.push();
@@ -536,7 +536,7 @@ function Node (args) {
 
 			// Make leaves go crazy on final level
 			if (_this.depth == (_this.max_depth - 1)) {
-				wan_const = 0.5;
+				wan_const = 1;
 			}
 		} else  {
 			_this.dw = false;
@@ -773,7 +773,7 @@ function Node (args) {
 		// Update spring positions --> Run through array
 		_this.springs.forEach(function(s) {
 			s.update();
-			s.display();
+			// s.display();
 		});
 	}
 

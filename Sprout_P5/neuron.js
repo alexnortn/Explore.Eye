@@ -83,7 +83,7 @@ function Neuron (args) {
 		var n;
 
 		// Special Case for Soma
-		_this.nodes[0].render();
+		// _this.nodes[0].render();
 		
 		for (var i = _this.nodes.length - 1; i >= 1; i--) {
 			n = _this.nodes[i];
@@ -92,7 +92,7 @@ function Neuron (args) {
 
 		// Add boutons --> Synapses to leaves of neuron :: Could definitely be improved
 		_this.leaves.forEach(function (synapse) {
-			// synapse.display(); 
+			synapse.display(); 
 		});
 	}
 

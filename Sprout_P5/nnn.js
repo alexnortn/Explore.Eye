@@ -58,7 +58,7 @@ function Nnn(args) {
 				neuron.nodes[0].spread(somas, radius);
 			} 
 			else {
-				// neuron.grow();
+				neuron.grow();
 			}
 
 		});
@@ -97,7 +97,7 @@ function Nnn(args) {
 			}
 
 			// Create Neurons with similar general levels of complexity
-			_this.num_branches = p.round(p.random(6,8));
+			_this.num_branches = p.round(p.random(5,8));
 			// _this.num_branches = p.floor(p.randomGaussian(7,1));
 			// _this.num_branches = 1; 
 			_this.max_depth = _this.complexity - _this.num_branches;
