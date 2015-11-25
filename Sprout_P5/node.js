@@ -773,7 +773,7 @@ function Node (args) {
 		// Update spring positions --> Run through array
 		_this.springs.forEach(function(s) {
 			s.update();
-			// s.display();
+			s.display();
 		});
 	}
 
@@ -784,7 +784,7 @@ function Node (args) {
 		var _this = this;
 		_this.repel();
 		_this.update();
-		// _this.meta();
+		_this.meta();
 		// Find position, then stop moving! --> Each resize event
 		// if (damping > 0.1) damping *= 0.98;
 	}
