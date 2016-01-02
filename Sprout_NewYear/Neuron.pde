@@ -19,7 +19,6 @@ class Neuron {
   ArrayList<Synapse> leaves;
 
   boolean growing = true;
-  boolean done = false;
 
   Neuron (PVector loc, int b, float t, int mxd) {
 	location = loc.get();
@@ -78,14 +77,12 @@ class Neuron {
 		} 
 		else {
 		  leaves.add(new Synapse(n.location));
-		  
-		  for (Synapse synapse : leaves) {
-			synapse.display(); 
-		  }
-
-		  done = true;
 		}
 	  }
+	}
+	
+	for (Synapse synapse : leaves) {
+	   synapse.display(); 
 	}
   }
 

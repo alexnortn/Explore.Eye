@@ -124,7 +124,7 @@ class Node {
     PVector target = PVector.add(circleloc,circleOffSet);
     
     // Render wandering circle, etc. 
-    // if(dw) drawWanderStuff(location,circleloc,target,wanderR);
+    if(dw) drawWanderStuff(location,circleloc,target,wanderR);
     
     return seek(target);
 
@@ -232,7 +232,6 @@ class Node {
   // Draw a dot at location
   void render() {
     // Basic Fractal Lines
-    strokeWeight(2);
     stroke(200);
     noFill();
     // line(start.x,start.y,location.x,location.y);
@@ -242,13 +241,13 @@ class Node {
     if (size) {
       noStroke();
       fill(200,0,0);
-      // ellipse(start.x,start.y,5,5);
-      // ellipse(location.x, location.y, 5, 5);
+      ellipse(start.x,start.y,5,5);
+      ellipse(location.x, location.y, 5, 5);
     }
     if (start_point) {
       noStroke();
       fill(200,0,0);
-      // ellipse(location.x, location.y, 5, 5);
+      ellipse(location.x, location.y, 5, 5);
     }
     // Draw Soma
     pushStyle();
@@ -259,18 +258,17 @@ class Node {
     pushStyle();
       noStroke();
       fill(255,10);
-      // ellipse(location.x,location.y,50,50);
+      ellipse(location.x,location.y,50,50);
       fill(255,255);
     popStyle();
   }
 
-  void run (ArrayList<Node> nodes) {
+  void run(ArrayList<Node> nodes) {
     if (growing) {
       expand(nodes);
       update();
     }
-
-      render();
+    render();
   }
 
   // Recurse through nodes to root

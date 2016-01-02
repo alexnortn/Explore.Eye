@@ -36,30 +36,15 @@ void setup() {
 }
 
 void draw() {
-
+  background(25);
   // Run the nnn
-  background(0);
   nnn.run();
-
-  if (frame) saveFrame(counter + ":sprout-2-######.tga");
-  
-  Neuron neuron = nnn.neurons.get(0);
-  
-  if (!neuron.done) {
-    frame = true;
-    println("Not Done");
-    return;
-  }
-
-  println("done");
-
-  // frame = false;
-
-  iterate();
   // Display meta data
-  // meta(nnn.neurons.get(0));
+  meta(nnn.neurons.get(0));
 
   // plus_minus();
+  iterate();
+  if(frame) saveFrame(counter + ":sprout-######.tga");
 
   // Exit after 100 iterations
   exit_sprout();
@@ -74,14 +59,16 @@ void plus_minus() {
 }
 
 void exit_sprout() {
-	if (counter > 10) exit();
+	if (counter > 100) exit();
 }
 
 void iterate() {
-    if (record) endRecord();
+  if (frameCount % 360 == 0) {
+    if(record) endRecord();
     avg = avg_node(nnn.neurons.get(0));
     setup();
     counter++;
+  }
 }
 
 void recurse() {
